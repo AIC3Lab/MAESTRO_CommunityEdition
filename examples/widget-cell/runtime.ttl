@@ -1,0 +1,214 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ex:   <https://w3id.org/maestro/hhm/examples/widget-cell#> .
+
+#################################################################
+# EXAMPLE - WIDGET CELL (RUNTIME SNAPSHOT)
+#
+# Two executions of the Transfer skill on Module 1 (one completed,
+# one aborted with a fault), their records, the module's qualified
+# state assertions across dimensions, a state transition, energy and
+# power measurements, and the preventive maintenance action that
+# followed, with its finding and return-to-service assessment.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/widget-cell/runtime> a owl:Ontology , maestro:Snapshot ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/widget-cell/runtime/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: widget cell (runtime snapshot)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/widget-cell> ;
+    owl:versionInfo "0.1.0" ;
+    maestro:snapshotTaken "2026-06-24T08:10:00Z"^^xsd:dateTime .
+
+#################################################################
+# EXECUTIONS
+#################################################################
+
+ex:Exec1 a maestro:SkillExecution ;
+    rdfs:label "Transfer execution #1" ;
+    maestro:executes ex:Transfer ;
+    maestro:executedOn ex:Module1 ;
+    maestro:invokedVia ex:Endpoint1 ;
+    maestro:hasInput ex:PV1 ;
+    maestro:hasStatus maestro:Completed ;
+    maestro:hasTime ex:TI1 ;
+    maestro:startedAtTime "2026-06-24T08:00:01Z"^^xsd:dateTime ;
+    maestro:endedAtTime "2026-06-24T08:00:04Z"^^xsd:dateTime .
+
+ex:TI1 a maestro:TimeInterval ;
+    maestro:startTime "2026-06-24T08:00:01Z"^^xsd:dateTime ;
+    maestro:endTime   "2026-06-24T08:00:04Z"^^xsd:dateTime .
+
+ex:PV1 a maestro:ParameterValue ;
+    maestro:instanceOf ex:Param1 ;
+    maestro:value 50.0 .
+
+ex:Exec2 a maestro:SkillExecution ;
+    rdfs:label "Transfer execution #2 (aborted)" ;
+    maestro:executes ex:Transfer ;
+    maestro:executedOn ex:Module1 ;
+    maestro:invokedVia ex:Endpoint1 ;
+    maestro:hasInput ex:PV2 ;
+    maestro:hasStatus maestro:Aborted ;
+    maestro:mayRaise ex:Fault1 ;
+    maestro:hasTime ex:TI2 .
+
+ex:TI2 a maestro:TimeInterval ;
+    maestro:startTime "2026-06-24T08:05:00Z"^^xsd:dateTime ;
+    maestro:endTime   "2026-06-24T08:05:02Z"^^xsd:dateTime .
+
+ex:PV2 a maestro:ParameterValue ;
+    maestro:instanceOf ex:Param1 ;
+    maestro:value 95.0 .
+
+ex:Fault1 a maestro:Fault ;
+    rdfs:label "axis overload during execution #2" ;
+    maestro:instanceOfFault ex:FS_Overload ;
+    maestro:eventSubject ex:Module1 ;
+    maestro:faultCode "E42" ;
+    maestro:faultCause "Carriage blocked by misplaced widget" ;
+    maestro:faultSeverity "error" ;
+    maestro:timestamp "2026-06-24T08:05:02Z"^^xsd:dateTime .
+
+ex:Rec1 a maestro:ExecutionRecord ;
+    rdfs:label "MES record of Transfer execution #1" ;
+    maestro:describesExecution ex:Exec1 ;
+    maestro:recordedAt "2026-06-24T08:00:05Z"^^xsd:dateTime .
+
+ex:Rec2 a maestro:ExecutionRecord ;
+    rdfs:label "MES record of Transfer execution #2" ;
+    maestro:describesExecution ex:Exec2 ;
+    maestro:recordedAt "2026-06-24T08:05:03Z"^^xsd:dateTime .
+
+#################################################################
+# STATE ASSERTIONS AND TRANSITIONS
+#
+# Module 1 was busy, then available, then faulted; its health is a
+# separate dimension. Only the open operational assertion is also
+# stated as the maestro:hasState shortcut.
+#################################################################
+
+ex:SA_Module1_Busy a maestro:StateAssertion ;
+    maestro:stateSubject ex:Module1 ;
+    maestro:stateDimension maestro:OperationalDimension ;
+    maestro:stateValue maestro:Busy ;
+    maestro:validFrom "2026-06-24T08:00:01Z"^^xsd:dateTime ;
+    maestro:validTo   "2026-06-24T08:00:04Z"^^xsd:dateTime ;
+    maestro:observedAt "2026-06-24T08:00:01Z"^^xsd:dateTime ;
+    maestro:stateEvidence ex:Exec1 .
+
+ex:SA_Module1_Available a maestro:StateAssertion ;
+    maestro:stateSubject ex:Module1 ;
+    maestro:stateDimension maestro:OperationalDimension ;
+    maestro:stateValue maestro:Available ;
+    maestro:validFrom "2026-06-24T08:00:04Z"^^xsd:dateTime ;
+    maestro:validTo   "2026-06-24T08:05:02Z"^^xsd:dateTime ;
+    maestro:observedAt "2026-06-24T08:00:04Z"^^xsd:dateTime .
+
+ex:SA_Module1_FaultState a maestro:StateAssertion ;
+    maestro:stateSubject ex:Module1 ;
+    maestro:stateDimension maestro:OperationalDimension ;
+    maestro:stateValue maestro:FaultState ;
+    maestro:validFrom "2026-06-24T08:05:02Z"^^xsd:dateTime ;
+    maestro:observedAt "2026-06-24T08:05:02Z"^^xsd:dateTime ;
+    maestro:stateEvidence ex:Fault1 .
+
+ex:SA_Module1_Degraded a maestro:StateAssertion ;
+    maestro:stateSubject ex:Module1 ;
+    maestro:stateDimension maestro:HealthDimension ;
+    maestro:stateValue maestro:Degraded ;
+    maestro:validFrom "2026-06-24T08:05:02Z"^^xsd:dateTime ;
+    maestro:observedAt "2026-06-24T08:05:02Z"^^xsd:dateTime .
+
+ex:SA_Station1_Available a maestro:StateAssertion ;
+    maestro:stateSubject ex:Station1 ;
+    maestro:stateDimension maestro:OperationalDimension ;
+    maestro:stateValue maestro:Available ;
+    maestro:validFrom "2026-06-24T00:00:00Z"^^xsd:dateTime ;
+    maestro:observedAt "2026-06-24T08:10:00Z"^^xsd:dateTime .
+
+ex:Module1 maestro:hasState maestro:FaultState .
+ex:Station1 maestro:hasState maestro:Available .
+
+ex:Evt1 a maestro:StateTransition ;
+    rdfs:label "Module 1: Busy -> Available" ;
+    maestro:eventSubject ex:Module1 ;
+    maestro:fromState maestro:Busy ;
+    maestro:enteredState maestro:Available ;
+    maestro:timestamp "2026-06-24T08:00:04Z"^^xsd:dateTime .
+
+ex:Evt2 a maestro:StateTransition ;
+    rdfs:label "Module 1: Available -> Fault" ;
+    maestro:eventSubject ex:Module1 ;
+    maestro:fromState maestro:Available ;
+    maestro:enteredState maestro:FaultState ;
+    maestro:timestamp "2026-06-24T08:05:02Z"^^xsd:dateTime .
+
+#################################################################
+# ENERGY
+#################################################################
+
+ex:EM1 a maestro:EnergyMeasurement ;
+    rdfs:label "energy of execution #1" ;
+    maestro:measuredSubject ex:Module1 ;
+    maestro:overInterval ex:TI1 ;
+    maestro:energyKwh 0.42 .
+
+ex:EM2 a maestro:EnergyMeasurement ;
+    rdfs:label "energy of execution #2" ;
+    maestro:measuredSubject ex:Exec2 ;
+    maestro:overInterval ex:TI2 ;
+    maestro:energyKwh 0.31 .
+
+ex:PM1 a maestro:PowerMeasurement ;
+    rdfs:label "power reading during execution #1" ;
+    maestro:measuredSubject ex:Module1 ;
+    maestro:powerWatts 350 ;
+    maestro:timestamp "2026-06-24T08:00:02Z"^^xsd:dateTime .
+
+#################################################################
+# MAINTENANCE WORK
+#################################################################
+
+ex:MA1 a maestro:Corrective ;
+    rdfs:label "Clear blockage and lubricate guide" ;
+    maestro:performsTask ex:Task1 ;
+    maestro:affectsAsset ex:Module1 ;
+    maestro:triggeredBy ex:Fault1 ;
+    maestro:scheduledFor "2026-06-24T08:15:00Z"^^xsd:dateTime ;
+    maestro:performedAt "2026-06-24T08:20:00Z"^^xsd:dateTime ;
+    maestro:hasTime ex:TI3 ;
+    maestro:hasFinding ex:Finding1 .
+
+ex:TI3 a maestro:TimeInterval ;
+    maestro:startTime "2026-06-24T08:20:00Z"^^xsd:dateTime ;
+    maestro:endTime   "2026-06-24T08:50:00Z"^^xsd:dateTime .
+
+ex:Finding1 a maestro:Finding ;
+    rdfs:label "guide wear" ;
+    maestro:findingDescription "Slight wear on the linear guide; within tolerance." .
+
+ex:Diag1 a maestro:FaultDiagnosis ;
+    rdfs:label "diagnosis of fault E42" ;
+    maestro:diagnosesFault ex:Fault1 ;
+    maestro:description "Misplaced widget blocked the carriage; no component damage." .
+
+ex:RTS1 a maestro:ReturnToServiceAssessment ;
+    rdfs:label "return to service after MA1" ;
+    maestro:assessesWork ex:MA1 ;
+    maestro:rtsOutcome maestro:Cleared ;
+    maestro:rtsEvidence ex:Ev3 .
+
+ex:Ev3 a maestro:Evidence ;
+    rdfs:label "test run after maintenance" ;
+    maestro:evidenceRef "https://example.org/records/tests/tr-2026-06-24-1"^^xsd:anyURI .
+
+ex:Inspection1 a maestro:Inspection ;
+    rdfs:label "visual inspection of the linear guide" ;
+    maestro:affectsAsset ex:Module1 ;
+    maestro:performedAt "2026-06-24T08:45:00Z"^^xsd:dateTime ;
+    maestro:hasFinding ex:Finding1 .
+
+ex:Station1Twin maestro:hasExecutionHistory ex:Exec1 , ex:Exec2 .

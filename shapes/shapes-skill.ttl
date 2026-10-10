@@ -1,0 +1,124 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE SKILL CLUSTER (core/skill.ttl)
+#
+# Atomic and composite skills, typed parameter definitions and
+# values, pre-/postconditions and the skill interface contract.
+#
+# Also holds the numeric datatype contract (ADR-0007): the OWL range
+# of measured-value properties is rdfs:Literal so that xsd:decimal,
+# xsd:integer, xsd:double and xsd:float literals are all admitted;
+# the shape mhsh:NumericLiteralShape requires one of those four and
+# excludes NaN and the infinities. Source literals are preserved as
+# written.
+#################################################################
+
+mhsh:CompositeSkillSubSkillShape a sh:NodeShape ;
+    sh:targetClass maestro:CompositeSkill ;
+    rdfs:label "A composite skill links to at least one sub-skill."@en ;
+    sh:property [
+        sh:path maestro:hasSubSkillLink ;
+        sh:minCount 1 ;
+        sh:class maestro:Skill ;
+        sh:message "A maestro:CompositeSkill must link to at least one maestro:Skill via maestro:hasSubSkillLink." ;
+    ] .
+
+mhsh:AtomicSkillNoSubSkillShape a sh:NodeShape ;
+    sh:targetClass maestro:AtomicSkill ;
+    rdfs:label "An atomic skill has no sub-skills."@en ;
+    sh:property [
+        sh:path maestro:hasSubSkillLink ;
+        sh:maxCount 0 ;
+        sh:message "A maestro:AtomicSkill must not declare maestro:hasSubSkillLink; use maestro:CompositeSkill for decomposed skills." ;
+    ] .
+
+mhsh:ParameterDefStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:ParameterDef ;
+    rdfs:label "A parameter definition has exactly one type IRI, exactly one direction and at most one unit reference."@en ;
+    sh:property [
+        sh:path maestro:paramType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:anyURI ;
+        sh:message "A maestro:ParameterDef must carry exactly one maestro:paramType as an xsd:anyURI literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:parameterDirection ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( maestro:Input maestro:Output ) ;
+        sh:message "A maestro:ParameterDef must carry exactly one maestro:parameterDirection, either maestro:Input or maestro:Output." ;
+    ] ;
+    sh:property [
+        sh:path maestro:unitRef ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:anyURI ;
+        sh:message "maestro:unitRef on a maestro:ParameterDef is at most one xsd:anyURI literal." ;
+    ] .
+
+mhsh:ParameterValueStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:ParameterValue ;
+    rdfs:label "A parameter value instantiates exactly one parameter definition and carries a value."@en ;
+    sh:property [
+        sh:path maestro:instanceOf ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ParameterDef ;
+        sh:message "A maestro:ParameterValue must be maestro:instanceOf exactly one maestro:ParameterDef." ;
+    ] ;
+    sh:property [
+        sh:path maestro:value ;
+        sh:minCount 1 ;
+        sh:message "A maestro:ParameterValue must carry at least one maestro:value." ;
+    ] .
+
+mhsh:PreconditionExpressionShape a sh:NodeShape ;
+    sh:targetClass maestro:Precondition ;
+    rdfs:label "A precondition should state its expression."@en ;
+    sh:property [
+        sh:path maestro:expression ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Precondition should carry an maestro:expression." ;
+    ] .
+
+mhsh:PostconditionExpressionShape a sh:NodeShape ;
+    sh:targetClass maestro:Postcondition ;
+    rdfs:label "A postcondition should state its expression."@en ;
+    sh:property [
+        sh:path maestro:expression ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Postcondition should carry an maestro:expression." ;
+    ] .
+
+mhsh:SkillInterfaceContractShape a sh:NodeShape ;
+    sh:targetClass maestro:Skill ;
+    rdfs:label "A skill's interface contract is a skill interface."@en ;
+    sh:property [
+        sh:path maestro:hasInterfaceContract ;
+        sh:class maestro:SkillInterface ;
+        sh:message "maestro:hasInterfaceContract on a maestro:Skill must point to a maestro:SkillInterface." ;
+    ] .
+
+mhsh:NumericLiteralShape a sh:NodeShape ;
+    sh:targetObjectsOf maestro:minValue , maestro:maxValue ,
+                       maestro:energyKwh , maestro:powerWatts , maestro:carbonGCO2eqPerKwh ,
+                       maestro:mtbfHours , maestro:remainingUsefulLifeHours ;
+    rdfs:label "A numeric value is a finite decimal, integer, double or float literal."@en ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        [ sh:datatype xsd:decimal ]
+        [ sh:datatype xsd:integer ]
+        [ sh:datatype xsd:double ]
+        [ sh:datatype xsd:float ]
+    ) ;
+    sh:not [ sh:in ( "NaN"^^xsd:double "INF"^^xsd:double "-INF"^^xsd:double
+                     "NaN"^^xsd:float  "INF"^^xsd:float  "-INF"^^xsd:float ) ] ;
+    sh:message "Numeric values must be a finite xsd:decimal, xsd:integer, xsd:double or xsd:float literal (MAESTRO numeric datatype contract, ADR-0007)." .

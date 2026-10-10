@@ -1,0 +1,265 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix DINEN61360: <http://www.w3id.org/hsu-aut/DINEN61360#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core : Product cluster
+#
+# HHM-Core v1 cluster "Product": ProductType, ProductInstance,
+# Variant, Feature, Requirement, Identifier (GTIN / UUID / IRDI / IRI),
+# BOMNode and Material, with the edges the diagram draws.
+#
+# Extension points named by the HHM diagram and kept as hooks only
+# (none of these standards is in the listed basis, so no IRIs and no
+# mappings): DPP / DPPO / RePlanIT product passport view, ECLASS /
+# eClassOWL semanticId on Feature and ParameterDef, PRONTO variant
+# and BOM semantics.
+#################################################################
+
+<https://w3id.org/maestro/hhm/product> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/product/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Product" ;
+    rdfs:label "MAESTRO HHM-Core: Product"@en ;
+    dct:description "HHM-Core v1 Product cluster: product types and instances, variants, features, requirements, scheme-qualified identifiers, bill-of-materials nodes and materials."@en ;
+    rdfs:comment "Apart from a documentary skos:closeMatch of Requirement to the HSU DIN EN 61360 ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 product and core modules; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/product> , <https://w3id.org/maestro/core> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/recipe> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:ProductType a owl:Class ;
+    rdfs:label "Product type"@en ;
+    skos:definition "An information entity specifying a repeatable product design or configuration."@en ;
+    rdfs:comment "HHM-Core Product cluster: the catalogue or design item (what is specified), as opposed to the produced unit (maestro:ProductInstance)."@en ;
+    dct:source <https://w3id.org/maestro/product#ProductType> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:ProductInstance a owl:Class ;
+    rdfs:label "Product instance"@en ;
+    skos:definition "A particular physical manufactured item realising a product type."@en ;
+    rdfs:comment "HHM-Core Product cluster: the physically produced unit (what is built). Disjoint with maestro:ProductType."@en ;
+    owl:disjointWith maestro:ProductType ;
+    dct:source <https://w3id.org/maestro/product#ProductInstance> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:Variant a owl:Class ;
+    rdfs:label "Variant"@en ;
+    skos:definition "A configuration or variant of a product type, itself a product type."@en ;
+    rdfs:comment "HHM-Core Product cluster. Reached from the base type with maestro:hasVariant."@en ;
+    rdfs:subClassOf maestro:ProductType ;
+    dct:source <https://w3id.org/maestro/product#Variant> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:Feature a owl:Class ;
+    rdfs:label "Feature"@en ;
+    skos:definition "A geometric or functional feature of a product, such as a hole, a slot or a surface."@en ;
+    rdfs:comment "HHM-Core Product cluster. A feature may require a plan step that produces it (maestro:requiresOperation)."@en ;
+    dct:source <https://w3id.org/maestro/product#Feature> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:Requirement a owl:Class ;
+    rdfs:label "Requirement"@en ;
+    skos:definition "A requirement that applies to a product or one of its features: functional, dimensional or regulatory."@en ;
+    rdfs:comment "HHM-Core Product cluster. Close match to DINEN61360:Instance_Description of the HSU DIN EN 61360 ODP, whose expression goal is a requirement. Also the demand side of a manufacturing-as-a-service request (maestro:hasRequirement)."@en ;
+    skos:closeMatch DINEN61360:Instance_Description ;
+    dct:source <https://w3id.org/maestro/product#Requirement> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:Identifier a owl:Class ;
+    rdfs:label "Identifier"@en ;
+    skos:definition "A scheme-qualified identifier of an entity, such as a GTIN, a UUID, an IRDI or an IRI, whose value is unique within its scheme."@en ;
+    rdfs:comment "HHM-Core Product cluster (Identifier: GTIN / UUID / IRDI / IRI). The scheme is a literal (maestro:identifierScheme) so that no class per scheme is needed."@en ;
+    dct:source <https://w3id.org/maestro/product#Identifier> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:BOMNode a owl:Class ;
+    rdfs:label "BOM node"@en ;
+    skos:definition "A node in a structured bill of materials: a referenced product type with quantity and reference designator."@en ;
+    rdfs:comment "HHM-Core Product cluster. Nested with maestro:hasPart; the referenced part type is maestro:nodeFor; the material with maestro:madeOf."@en ;
+    dct:source <https://w3id.org/maestro/product#BOMNode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:Material a owl:Class ;
+    rdfs:label "Material"@en ;
+    skos:definition "A substance a product or part is made of, referenced by requirements and bill-of-materials nodes."@en ;
+    rdfs:comment "HHM-Core Product cluster."@en ;
+    dct:source <https://w3id.org/maestro/product#Material> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:hasVariant a owl:ObjectProperty ;
+    rdfs:label "has variant"@en ;
+    skos:definition "Relates a product type to one of its variants."@en ;
+    rdfs:comment "HHM-Core edge ProductType hasVariant Variant, read from the base type. MAESTRO 1.0 reads the inverse, prod:variantOf, from the variant."@en ;
+    rdfs:domain maestro:ProductType ;
+    rdfs:range  maestro:Variant ;
+    dct:references <https://w3id.org/maestro/product#variantOf> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasFeature a owl:ObjectProperty ;
+    rdfs:label "has feature"@en ;
+    skos:definition "Relates a product type to a geometric or functional feature."@en ;
+    rdfs:comment "HHM-Core edge ProductType hasFeature Feature."@en ;
+    rdfs:domain maestro:ProductType ;
+    rdfs:range  maestro:Feature ;
+    dct:source <https://w3id.org/maestro/product#hasFeature> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasBOM a owl:ObjectProperty ;
+    rdfs:label "has BOM"@en ;
+    skos:definition "Relates a product type to a top-level node of its bill of materials."@en ;
+    rdfs:comment "HHM-Core edge ProductType hasBOM BOMNode; MAESTRO 1.0 calls it prod:hasBOMNode."@en ;
+    rdfs:domain maestro:ProductType ;
+    rdfs:range  maestro:BOMNode ;
+    dct:source <https://w3id.org/maestro/product#hasBOMNode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:madeOf a owl:ObjectProperty ;
+    rdfs:label "made of"@en ;
+    skos:definition "Relates a bill-of-materials node to the material its part is made of."@en ;
+    rdfs:comment "HHM-Core edge BOMNode madeOf Material. MAESTRO 1.0 states the material on the product; the HHM diagram states it on the BOM node."@en ;
+    rdfs:domain maestro:BOMNode ;
+    rdfs:range  maestro:Material ;
+    dct:references <https://w3id.org/maestro/product#madeOf> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasPart a owl:ObjectProperty ;
+    rdfs:label "has part"@en ;
+    skos:definition "Relates a bill-of-materials node to a node nested under it."@en ;
+    rdfs:comment "HHM-Core edge BOMNode hasPart BOMNode. Transitive."@en ;
+    rdfs:domain maestro:BOMNode ;
+    rdfs:range  maestro:BOMNode ;
+    dct:references <https://w3id.org/maestro/core#hasPart> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasPart a owl:TransitiveProperty .
+
+maestro:nodeFor a owl:ObjectProperty ;
+    rdfs:label "node for"@en ;
+    skos:definition "Relates a bill-of-materials node to the product type it references."@en ;
+    rdfs:comment "Implied by the HHM diagram: a BOM node stands for a part. Not drawn in the diagram."@en ;
+    rdfs:domain maestro:BOMNode ;
+    rdfs:range  maestro:ProductType ;
+    dct:references <https://w3id.org/maestro/product#nodeFor> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:appliesTo a owl:ObjectProperty ;
+    rdfs:label "applies to"@en ;
+    skos:definition "Relates a requirement to the feature it applies to."@en ;
+    rdfs:comment "HHM-Core edge Requirement appliesTo Feature."@en ;
+    rdfs:domain maestro:Requirement ;
+    rdfs:range  maestro:Feature ;
+    dct:source <https://w3id.org/maestro/product#appliesTo> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasIdentifier a owl:ObjectProperty ;
+    schema:domainIncludes maestro:ProductType , maestro:ProductInstance ;
+    rdfs:label "has identifier"@en ;
+    skos:definition "Relates an entity to a scheme-qualified identifier it carries."@en ;
+    rdfs:comment "HHM-Core edges ProductType hasIdentifier Identifier and ProductInstance hasIdentifier Identifier. Domain left open so modules, stations and executions may carry identifiers too; an entity may carry several identifiers from different schemes."@en ;
+    rdfs:range  maestro:Identifier ;
+    dct:source <https://w3id.org/maestro/core#hasIdentifier> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasInstance a owl:ObjectProperty ;
+    rdfs:label "has instance"@en ;
+    skos:definition "Relates a product type to a produced unit that realises it."@en ;
+    rdfs:comment "HHM-Core edge ProductType hasInstance ProductInstance, read from the type. MAESTRO 1.0 reads the inverse, prod:instanceOfType, from the instance."@en ;
+    rdfs:domain maestro:ProductType ;
+    rdfs:range  maestro:ProductInstance ;
+    dct:references <https://w3id.org/maestro/product#instanceOfType> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:hasRequirement a owl:ObjectProperty ;
+    schema:domainIncludes maestro:ProductType , maestro:Variant , maestro:ServiceRequest ;
+    rdfs:label "has requirement"@en ;
+    skos:definition "Relates a product type, a variant or a service request to a requirement it carries."@en ;
+    rdfs:comment "Domain left open: shared by the product and the manufacturing-as-a-service modules."@en ;
+    rdfs:range  maestro:Requirement ;
+    dct:source <https://w3id.org/maestro/product#hasRequirement> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:requiresOperation a owl:ObjectProperty ;
+    rdfs:label "requires operation"@en ;
+    skos:definition "Relates a product feature to the plan step that produces it."@en ;
+    rdfs:comment "HHM-Core edge Feature requiresOperation PlanStep."@en ;
+    rdfs:domain maestro:Feature ;
+    rdfs:range  maestro:PlanStep ;
+    dct:source <https://w3id.org/maestro/recipe#requiresOperation> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:identifierValue a owl:DatatypeProperty ;
+    rdfs:label "identifier value"@en ;
+    skos:definition "The identifier string as issued, preserved verbatim."@en ;
+    rdfs:domain maestro:Identifier ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/core#identifierValue> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:identifierScheme a owl:DatatypeProperty ;
+    rdfs:label "identifier scheme"@en ;
+    skos:definition "Name of the identifier scheme, for example GTIN, UUID, IRDI or IRI."@en ;
+    rdfs:domain maestro:Identifier ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/core#identifierScheme> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:quantity a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:BOMNode , maestro:ProductionOrder ;
+    rdfs:label "quantity"@en ;
+    skos:definition "Quantity of the referenced product type in a bill-of-materials node, or the number of units a production order covers."@en ;
+    rdfs:comment "Domain left open: used by maestro:BOMNode and maestro:ProductionOrder."@en ;
+    rdfs:range  xsd:decimal ;
+    dct:source <https://w3id.org/maestro/product#quantity> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:refDesignator a owl:DatatypeProperty ;
+    rdfs:label "reference designator"@en ;
+    skos:definition "Reference designator of a bill-of-materials node, for example R1 or C3."@en ;
+    rdfs:domain maestro:BOMNode ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/product#refDesignator> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:requiredValue a owl:DatatypeProperty ;
+    rdfs:label "required value"@en ;
+    skos:definition "The value a requirement demands, as a literal."@en ;
+    rdfs:comment "MAESTRO 1.0 demands a unit-bearing quantity or an enumerated entity; this package keeps a literal, since it has no unit module."@en ;
+    rdfs:domain maestro:Requirement ;
+    rdfs:range  xsd:string ;
+    dct:references <https://w3id.org/maestro/product#requiredValue> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .
+
+maestro:mandatory a owl:DatatypeProperty ;
+    rdfs:label "mandatory"@en ;
+    skos:definition "Whether a violated or unknown evaluation of this requirement decides the feasibility of a plan. Absent means true."@en ;
+    rdfs:domain maestro:Requirement ;
+    rdfs:range  xsd:boolean ;
+    dct:source <https://w3id.org/maestro/product#mandatory> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/product> .

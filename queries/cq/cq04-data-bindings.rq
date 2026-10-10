@@ -1,0 +1,16 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ04 - Which output parameter feeds which input parameter of which step, and in which unit?
+SELECT ?step ?binding ?fromParam ?fromUnit ?toParam ?toUnit
+WHERE {
+    ?step a maestro:PlanStep ;
+          maestro:hasDataBinding ?binding .
+    ?binding maestro:bindsFrom ?fromParam ;
+             maestro:bindsTo ?toParam .
+    ?fromParam maestro:parameterDirection maestro:Output .
+    ?toParam   maestro:parameterDirection maestro:Input .
+    OPTIONAL { ?fromParam maestro:unitRef ?fromUnit }
+    OPTIONAL { ?toParam maestro:unitRef ?toUnit }
+}
+ORDER BY ?step ?binding

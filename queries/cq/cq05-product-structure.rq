@@ -1,0 +1,20 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ05 - Which variants, features, requirements, identifiers and instances does a product type have?
+SELECT ?productType ?variant ?feature ?requirement ?scheme ?identifier ?instance
+WHERE {
+    ?productType a maestro:ProductType .
+    FILTER NOT EXISTS { ?productType a maestro:Variant }
+    OPTIONAL { ?productType maestro:hasVariant ?variant }
+    OPTIONAL { ?productType maestro:hasFeature ?feature }
+    OPTIONAL { ?productType maestro:hasRequirement ?requirement }
+    OPTIONAL {
+        ?productType maestro:hasIdentifier ?id .
+        ?id maestro:identifierScheme ?scheme ;
+            maestro:identifierValue ?identifier .
+    }
+    OPTIONAL { ?productType maestro:hasInstance ?instance }
+    FILTER(BOUND(?variant) || BOUND(?feature) || BOUND(?requirement) || BOUND(?identifier) || BOUND(?instance))
+}
+ORDER BY ?productType

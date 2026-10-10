@@ -1,0 +1,18 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ10 - Which executions of which skill ran on which resource via which endpoint, with which status, start and end time?
+SELECT ?execution ?skill ?resource ?endpoint ?status ?start ?end
+WHERE {
+    ?execution a maestro:SkillExecution ;
+               maestro:executes ?skill ;
+               maestro:hasStatus ?status .
+    OPTIONAL { ?execution maestro:executedOn ?resource }
+    OPTIONAL { ?execution maestro:invokedVia ?endpoint }
+    OPTIONAL {
+        ?execution maestro:hasTime ?interval .
+        ?interval maestro:startTime ?start .
+        OPTIONAL { ?interval maestro:endTime ?end }
+    }
+}
+ORDER BY ?start ?execution

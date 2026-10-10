@@ -1,0 +1,14 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ06 - Which parts, in what quantity and of which material, appear anywhere in the bill of materials of a product type?
+SELECT ?productType ?node ?partType ?quantity ?refDesignator ?material
+WHERE {
+    ?productType maestro:hasBOM ?top .
+    ?top maestro:hasPart* ?node .
+    ?node maestro:nodeFor ?partType .
+    OPTIONAL { ?node maestro:quantity ?quantity }
+    OPTIONAL { ?node maestro:refDesignator ?refDesignator }
+    OPTIONAL { ?node maestro:madeOf ?material }
+}
+ORDER BY ?productType ?refDesignator

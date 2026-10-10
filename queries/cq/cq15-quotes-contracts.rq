@@ -1,0 +1,22 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ15 - Which quotes answer which request, from which provider on which marketplace, at what price, currency and lead time, and which became a contract and production order?
+SELECT ?request ?customer ?product ?quote ?provider ?marketplace ?price ?currency ?leadTimeDays ?contract ?order
+WHERE {
+    ?quote a maestro:Quote ;
+           maestro:quoteFor ?request ;
+           maestro:basedOnOffer ?offer ;
+           maestro:price ?price ;
+           maestro:currency ?currency .
+    ?request maestro:requestedBy ?customer ;
+             maestro:forProduct ?product .
+    ?offer maestro:offeredBy ?provider .
+    OPTIONAL { ?offer maestro:listedOn ?marketplace }
+    OPTIONAL { ?quote maestro:leadTimeDays ?leadTimeDays }
+    OPTIONAL {
+        ?contract maestro:acceptsQuote ?quote .
+        OPTIONAL { ?contract maestro:realizedByOrder ?order }
+    }
+}
+ORDER BY ?request ?quote

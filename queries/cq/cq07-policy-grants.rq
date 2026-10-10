@@ -1,0 +1,15 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ07 - Which role may perform which action on which target, under which policy, required mode and evidence?
+SELECT ?policy ?permission ?role ?action ?target ?mode ?evidence
+WHERE {
+    ?policy a maestro:Policy ;
+            maestro:hasPermission ?permission .
+    ?permission maestro:grantedTo ?role ;
+                maestro:action ?action ;
+                maestro:target ?target .
+    OPTIONAL { ?policy maestro:requiresMode ?mode }
+    OPTIONAL { ?policy maestro:hasEvidence ?evidence }
+}
+ORDER BY ?policy ?permission

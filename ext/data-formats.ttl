@@ -1,0 +1,64 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : Data formats
+#
+# The general-purpose payload encodings a binding can name with
+# maestro:usesDataFormat: JSON, XML and Protocol Buffers. They are not
+# tied to one protocol (JSON travels over HTTP, MQTT and WebSocket
+# alike), so they share this module. An encoding that belongs to one
+# protocol lives in that protocol's module (maestro:OpcUaBinaryFormat in
+# ext/opcua.ttl). The class maestro:DataFormat and the property
+# maestro:usesDataFormat stay in core/invocation.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/data-formats> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/data-formats/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Data formats" ;
+    rdfs:label "MAESTRO HHM-Core: Data formats"@en ;
+    dct:description "General-purpose payload encodings for the invocation hooks: the JSON, XML and Protocol Buffers data-format individuals."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The individuals are plain names of technologies and reuse their definitions from the MAESTRO 1.0 communication module (dct:source)."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-10-02"^^xsd:date ;
+    dct:modified "2026-10-02"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/communication> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/invocation> .
+
+#################################################################
+# INDIVIDUALS
+#################################################################
+
+maestro:JsonFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "JSON"@en ;
+    skos:definition "JavaScript Object Notation payloads."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: data-format individuals are declared in the extension modules."@en ;
+    dct:source <https://w3id.org/maestro/communication#JsonFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/data-formats> .
+
+maestro:XmlFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "XML"@en ;
+    skos:definition "Extensible Markup Language payloads."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: data-format individuals are declared in the extension modules."@en ;
+    dct:source <https://w3id.org/maestro/communication#XmlFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/data-formats> .
+
+maestro:ProtobufFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "Protocol Buffers"@en ;
+    skos:definition "Protocol Buffers binary payloads."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: data-format individuals are declared in the extension modules."@en ;
+    dct:source <https://w3id.org/maestro/communication#ProtobufFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/data-formats> .

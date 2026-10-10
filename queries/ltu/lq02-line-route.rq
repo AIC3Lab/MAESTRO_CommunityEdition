@@ -1,0 +1,26 @@
+# LQ02 - Which LTU station can run each step of the MPS line recipe?
+# A station qualifies when its modules provide every capability the step's
+# skill requires (capability matching).
+# Also returns the condition under which the line passes on to the next step.
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?order ?step ?skill ?station ?nextStep ?condition
+WHERE {
+    <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line#MPSLineRecipe> maestro:hasStep ?s .
+    ?s rdfs:label ?step ;
+       maestro:stepOrder ?order ;
+       maestro:realizedBy ?sk .
+    ?sk rdfs:label ?skill .
+    ?st a maestro:Station ;
+        rdfs:label ?station ;
+        maestro:partOfWorkCenter <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#MPSLine> .
+    FILTER NOT EXISTS {
+        ?sk maestro:requiresCapability ?cap .
+        FILTER NOT EXISTS { ?st maestro:hasModule ?m . ?m maestro:providesCapability ?cap }
+    }
+    OPTIONAL { ?s maestro:hasControlFlow ?cf . ?cf maestro:relatedStep/rdfs:label ?next ; maestro:expression ?cond }
+    BIND(COALESCE(?next, "(end of line)") AS ?nextStep)
+    BIND(COALESCE(?cond, "") AS ?condition)
+}
+ORDER BY ?order ?station

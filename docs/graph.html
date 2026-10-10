@@ -1,0 +1,2787 @@
+<title>MAESTRO HHM-Core Graph</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a technical drawing sheet. Sticky tab bar, then one wide graph panel that scrolls sideways
+     on its own light "paper"; cluster colours are taken from the user's own DOT so the page reads as their graph. */
+  :root {
+    --bg: #f5f4f0;
+    --fg: #1d1f24;
+    --muted: #6b6e78;
+    --line: #d9d7d0;
+    --panel: #ffffff;
+    --paper: #ffffff;
+    --accent: #3b5bdb;
+    --chip: #ebe9e2;
+    --ok: #1a7f4b; --warn: #b45309; --new: #1d4ed8;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #16171b; --fg: #e8e7e2; --muted: #9a9ca6; --line: #33353c; --panel: #1e2025;
+      --paper: #f7f6f2; --accent: #8da2fb; --chip: #2a2c33; --ok: #4ade80; --warn: #fbbf24; --new: #93c5fd; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171b; --fg: #e8e7e2; --muted: #9a9ca6; --line: #33353c; --panel: #1e2025;
+    --paper: #f7f6f2; --accent: #8da2fb; --chip: #2a2c33; --ok: #4ade80; --warn: #fbbf24; --new: #93c5fd; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); margin: 0; padding-inline: 16px; padding-block: 20px 48px; font-size: 14px; line-height: 1.5; }
+  .wrap { max-width: 1440px; margin-inline: auto; display: grid; gap: 16px; }
+  header h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 4px; letter-spacing: -0.01em; text-wrap: balance; }
+  header p { margin: 0; color: var(--muted); max-width: 72ch; }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .stat { background: var(--chip); border-radius: 6px; padding: 4px 10px; font-size: 12.5px; font-variant-numeric: tabular-nums; }
+  .stat b { font-weight: 600; }
+  .tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2; background: var(--bg); padding-block: 8px; display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--line); }
+  .tab { font: inherit; font-size: 13px; font-weight: 500; background: transparent; color: var(--muted); border: 1px solid transparent; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  .tab[aria-selected="true"] { color: var(--fg); background: var(--panel); border-color: var(--line); }
+  .tab:focus-visible, .toolbar input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; color: var(--muted); font-size: 12.5px; }
+  .toolbar label { display: flex; align-items: center; gap: 6px; }
+  .toolbar input[type=range] { width: 150px; accent-color: var(--accent); }
+  .toolbar input[type=checkbox] { accent-color: var(--accent); }
+  .layers { display: flex; flex-wrap: wrap; gap: 10px 14px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12.5px; color: var(--muted); }
+  .legend span::before { content: ""; display: inline-block; width: 22px; height: 0; border-top: 2px solid currentColor; vertical-align: middle; margin-right: 6px; }
+  .legend .dashed::before { border-top-style: dashed; }
+  .legend .dotted::before { border-top-style: dotted; }
+  .legend .sub::before { border-top: 0; width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 10px solid currentColor; }
+  .legend .box::before { width: 14px; height: 10px; border: 1px solid #555; background: #f9f9fb; border-radius: 2px; }
+  .legend .boxadd::before { width: 14px; height: 10px; border: 1px solid #555; background: #e8f1ff; border-radius: 2px; }
+  .paper { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; overflow: auto; min-height: 320px; padding: 12px; }
+  .paper svg { display: block; height: auto; transform-origin: 0 0; }
+  .status { color: #555; font-size: 13px; padding: 24px; text-align: center; }
+  .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+  .mod { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; border-top: 3px solid var(--mc); min-width: 0; }
+  .mod h2 { font-size: 14px; font-weight: 600; margin: 0 0 2px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .pill { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; padding: 1px 7px; border-radius: 999px; background: var(--chip); color: var(--muted); font-weight: 600; }
+  .mod .file { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); margin-bottom: 10px; }
+  .mod h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin: 12px 0 6px; font-weight: 600; }
+  .mod ul { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 3px; }
+  .mod li { font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
+  .mod li .dp, .mod li .arr { color: var(--muted); }
+  .mod li .src { color: var(--new); font-family: var(--font-body); font-size: 11px; }
+  .mod .ext li { font-family: var(--font-body); font-size: 12px; color: var(--muted); }
+  .note { font-size: 12.5px; color: var(--muted); max-width: 92ch; }
+  .note code, .place code { font-family: var(--font-mono); font-size: 12px; }
+  .place { display: grid; gap: 12px; }
+  .prow { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; grid-template-columns: minmax(200px, 1.1fr) minmax(0, 3fr); gap: 6px 20px; min-width: 0; }
+  .prow > div { min-width: 0; }
+  .prow h2 { font-family: var(--font-mono); font-size: 13px; font-weight: 500; margin: 0 0 6px; overflow-wrap: anywhere; }
+  .decision { font-size: 13px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; margin-bottom: 4px; }
+  .decision::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--dc); }
+  .prow dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 3px 12px; font-size: 12.5px; }
+  .prow dt { color: var(--muted); }
+  .prow dd { margin: 0; overflow-wrap: anywhere; }
+  .summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .sum { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; border-left: 4px solid var(--dc); }
+  .sum b { display: block; font-size: 13px; margin-bottom: 4px; }
+  .sum span { font-size: 12.5px; color: var(--muted); }
+  @media (max-width: 720px) { .prow { grid-template-columns: 1fr; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>MAESTRO HHM-Core Graph</h1>
+    <p>Generated from the Turtle modules of the package by tools/gen_graph.py. One namespace (<code style="font-family:var(--font-mono)">maestro:</code>), one file per module. Classes list their datatype properties; arrows are object properties. Blue-tinted classes come from the nine MAESTRO modules you asked to add.</p>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-view="proposed">Proposed MAESTRO HHM-Core</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="placement">Where your 9 modules go</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="terms">Term list by module</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="given">Your HHM Core (as given)</button>
+    <button class="tab" role="tab" aria-selected="false" data-view="dt">Your Digital Twin extension</button>
+  </div>
+
+  <section id="view-graph">
+    <div class="toolbar">
+      <div class="layers" id="layers">
+        <label><input type="checkbox" id="layer-core" checked disabled> core (HHM clusters)</label>
+        <label><input type="checkbox" id="layer-module" checked> modules (telemetry, energy, maintenance, MaaS)</label>
+        <label><input type="checkbox" id="layer-ext"> extensions (OPC UA, digital twin)</label>
+      </div>
+      <label>Zoom <input type="range" id="zoom" min="40" max="160" value="100"> <span id="zoomv">100%</span></label>
+    </div>
+    <div class="legend">
+      <span class="box">HHM core class</span>
+      <span class="boxadd">added from a MAESTRO module</span>
+      <span>HHM-Core relation</span>
+      <span class="dashed">added relation</span>
+      <span class="dotted">extension hook</span>
+      <span class="sub">subClassOf</span>
+    </div>
+    <div class="paper" id="paper"><div class="status">Rendering graph…</div></div>
+    <p class="note" id="graphnote"></p>
+  </section>
+
+  <section id="view-placement" hidden>
+    <div class="summary" id="summary"></div>
+    <div class="place" id="place"></div>
+    <p class="note">"Fold in" means the terms join an HHM cluster file because the cluster already owns that concern. "New module" means no HHM cluster covers the concern, so it becomes its own file under <code>modules/</code>. "Realises extension point" means the HHM diagram already reserves a hook for it, so it becomes that <code>ext/</code> file. "Removed" records your decision to leave unit and sensor out. Dropped terms are those whose parent classes (Plant, Site, Process, Agent, Quality, Quantity) do not exist in the HHM-core version.</p>
+  </section>
+
+  <section id="view-terms" hidden>
+    <div class="modules" id="modules"></div>
+    <p class="note">Every class and property reuses the MAESTRO 1.0 definition of the matching term where one exists. Blue source tags name the MAESTRO file a term was taken from. Relations marked <em>implied</em> are not drawn in the HHM diagram but are needed to make the annotated node usable.</p>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/viz.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/viz.js/2.1.2/full.render.js"></script>
+<script>
+// ---------- the proposed model (single source for graph, term list and counts) ----------
+// class: [name, [datatype props], sourceFile?]   prop: [name, domain, range, style?, tag?]
+const MODEL = {
+ "ns": "maestro:",
+ "modules": [
+  {
+   "id": "resource",
+   "layer": "core",
+   "title": "Physical Resources",
+   "file": "core/resource.ttl",
+   "color": "#12A594",
+   "classes": [
+    [
+     "Capability",
+     [
+      "description : string  (open domain)"
+     ]
+    ],
+    [
+     "Module",
+     [
+      "manufacturer : string  (open domain)",
+      "model : string  (open domain)",
+      "serialNumber : string  (open domain)"
+     ]
+    ],
+    [
+     "Station",
+     [
+      "location : string  (open domain)"
+     ]
+    ]
+   ],
+   "sub": [],
+   "props": [
+    [
+     "hasModule",
+     "Station",
+     "Module",
+     "",
+     null
+    ],
+    [
+     "providesCapability",
+     "Module",
+     "Capability",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "AutomationML / CAEX topology -> ext/automationml.ttl",
+    "ISA-88 equipment model -> ext/isa88.ttl",
+    "open-domain datatype properties (drawn on the classes that use them): description : string, location : string, manufacturer : string, model : string, serialNumber : string, version : string"
+   ]
+  },
+  {
+   "id": "skill",
+   "layer": "core",
+   "title": "Skills",
+   "file": "core/skill.ttl",
+   "color": "#E54D2E",
+   "classes": [
+    [
+     "AtomicSkill",
+     []
+    ],
+    [
+     "CompositeSkill",
+     []
+    ],
+    [
+     "ParameterDef",
+     [
+      "maxValue : number",
+      "minValue : number",
+      "paramType : anyURI",
+      "unitRef : anyURI"
+     ]
+    ],
+    [
+     "ParameterDirection",
+     [
+      "individuals: Input, Output"
+     ]
+    ],
+    [
+     "ParameterValue",
+     [
+      "value : literal"
+     ]
+    ],
+    [
+     "Postcondition",
+     [
+      "expression : string  (open domain)"
+     ]
+    ],
+    [
+     "Precondition",
+     [
+      "expression : string  (open domain)"
+     ]
+    ],
+    [
+     "Skill",
+     [
+      "description : string  (open domain)",
+      "version : string  (open domain)"
+     ]
+    ],
+    [
+     "SkillInterface",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "AtomicSkill",
+     "Skill"
+    ],
+    [
+     "CompositeSkill",
+     "Skill"
+    ]
+   ],
+   "props": [
+    [
+     "hasInterfaceContract",
+     "Skill",
+     "SkillInterface",
+     "",
+     null
+    ],
+    [
+     "hasParameterDef",
+     "Skill",
+     "ParameterDef",
+     "",
+     null
+    ],
+    [
+     "hasParameterDef",
+     "OperationSignature",
+     "ParameterDef",
+     "",
+     null
+    ],
+    [
+     "hasPostcondition",
+     "Skill",
+     "Postcondition",
+     "",
+     "adapted"
+    ],
+    [
+     "hasPrecondition",
+     "Skill",
+     "Precondition",
+     "",
+     "adapted"
+    ],
+    [
+     "hasSubSkillLink",
+     "CompositeSkill",
+     "Skill",
+     "",
+     "adapted"
+    ],
+    [
+     "instanceOf",
+     "ParameterValue",
+     "ParameterDef",
+     "",
+     null
+    ],
+    [
+     "parameterDirection",
+     "ParameterDef",
+     "ParameterDirection",
+     "dashed",
+     null
+    ],
+    [
+     "requiresCapability",
+     "Skill",
+     "Capability",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "QUDT: unitRef holds a QUDT unit IRI (hook only)",
+    "SOSA observation evidence (hook only)",
+    "CSS / CaSkMan patterns (hook only)",
+    "open-domain datatype properties (drawn on the classes that use them): expression : string"
+   ]
+  },
+  {
+   "id": "recipe",
+   "layer": "core",
+   "title": "Recipe / Planning",
+   "file": "core/recipe.ttl",
+   "color": "#3B82F6",
+   "classes": [
+    [
+     "ControlFlowConstraint",
+     []
+    ],
+    [
+     "ControlFlowType",
+     [
+      "individuals: Alternative, Loop, Optional, Parallel, Precedes"
+     ]
+    ],
+    [
+     "DataBinding",
+     []
+    ],
+    [
+     "PlanStep",
+     [
+      "stepOrder : integer"
+     ]
+    ],
+    [
+     "Recipe",
+     [
+      "version : string  (open domain)"
+     ]
+    ]
+   ],
+   "sub": [],
+   "props": [
+    [
+     "bindsFrom",
+     "DataBinding",
+     "ParameterDef",
+     "dashed",
+     null
+    ],
+    [
+     "bindsTo",
+     "DataBinding",
+     "ParameterDef",
+     "dashed",
+     null
+    ],
+    [
+     "flowType",
+     "ControlFlowConstraint",
+     "ControlFlowType",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasControlFlow",
+     "PlanStep",
+     "ControlFlowConstraint",
+     "",
+     null
+    ],
+    [
+     "hasDataBinding",
+     "PlanStep",
+     "DataBinding",
+     "",
+     null
+    ],
+    [
+     "hasStep",
+     "Recipe",
+     "PlanStep",
+     "",
+     null
+    ],
+    [
+     "realizedBy",
+     "PlanStep",
+     "Skill",
+     "",
+     null
+    ],
+    [
+     "relatedStep",
+     "ControlFlowConstraint",
+     "PlanStep",
+     "dashed",
+     "added"
+    ]
+   ],
+   "ext": [
+    "ISA-88 procedural model -> ext/isa88.ttl",
+    "ISA-95 / IEC 62264 -> ext/isa95.ttl, maestro:ProductionOrder"
+   ]
+  },
+  {
+   "id": "product",
+   "layer": "core",
+   "title": "Product",
+   "file": "core/product.ttl",
+   "color": "#6E56CF",
+   "classes": [
+    [
+     "BOMNode",
+     [
+      "refDesignator : string",
+      "quantity : decimal  (open domain)"
+     ]
+    ],
+    [
+     "Feature",
+     [
+      "description : string  (open domain)"
+     ]
+    ],
+    [
+     "Identifier",
+     [
+      "identifierScheme : string",
+      "identifierValue : string"
+     ]
+    ],
+    [
+     "Material",
+     []
+    ],
+    [
+     "ProductInstance",
+     [
+      "serialNumber : string  (open domain)"
+     ]
+    ],
+    [
+     "ProductType",
+     []
+    ],
+    [
+     "Requirement",
+     [
+      "mandatory : boolean",
+      "requiredValue : string"
+     ]
+    ],
+    [
+     "Variant",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "Variant",
+     "ProductType"
+    ]
+   ],
+   "props": [
+    [
+     "appliesTo",
+     "Requirement",
+     "Feature",
+     "",
+     null
+    ],
+    [
+     "hasBOM",
+     "ProductType",
+     "BOMNode",
+     "",
+     null
+    ],
+    [
+     "hasFeature",
+     "ProductType",
+     "Feature",
+     "",
+     null
+    ],
+    [
+     "hasIdentifier",
+     "ProductType",
+     "Identifier",
+     "",
+     null
+    ],
+    [
+     "hasIdentifier",
+     "ProductInstance",
+     "Identifier",
+     "",
+     null
+    ],
+    [
+     "hasInstance",
+     "ProductType",
+     "ProductInstance",
+     "",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMNode",
+     "BOMNode",
+     "",
+     "adapted"
+    ],
+    [
+     "hasRequirement",
+     "ProductType",
+     "Requirement",
+     "dashed",
+     null
+    ],
+    [
+     "hasRequirement",
+     "Variant",
+     "Requirement",
+     "dashed",
+     null
+    ],
+    [
+     "hasRequirement",
+     "ServiceRequest",
+     "Requirement",
+     "dashed",
+     null
+    ],
+    [
+     "hasVariant",
+     "ProductType",
+     "Variant",
+     "",
+     "adapted"
+    ],
+    [
+     "madeOf",
+     "BOMNode",
+     "Material",
+     "",
+     "adapted"
+    ],
+    [
+     "nodeFor",
+     "BOMNode",
+     "ProductType",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "requiresOperation",
+     "Feature",
+     "PlanStep",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "DPP / product passport view (hook only)",
+    "ECLASS semanticId (hook only)",
+    "PRONTO variant/BOM semantics (hook only)",
+    "open-domain datatype properties (drawn on the classes that use them): quantity : decimal"
+   ]
+  },
+  {
+   "id": "invocation",
+   "layer": "core",
+   "title": "Invocation Hooks",
+   "file": "core/invocation.ttl",
+   "color": "#F59E0B",
+   "classes": [
+    [
+     "Binding",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DataFormat",
+     [
+      "individuals: JSON, OPC UA Binary, Protocol Buffers, XML"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Endpoint",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "EventStream",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InterfaceDescriptionLanguage",
+     [
+      "individuals: Asset Administration Shell submodel template, DTDL, OPC UA NodeSet, OpenAPI"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OperationSignature",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Protocol",
+     [
+      "individuals: DDS, EtherCAT, HTTP, MQTT, Modbus, OPC UA, PROFINET"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "SkillService",
+     []
+    ]
+   ],
+   "sub": [],
+   "props": [
+    [
+     "describedIn",
+     "SkillInterface",
+     "InterfaceDescriptionLanguage",
+     "dashed",
+     null
+    ],
+    [
+     "describedIn",
+     "Binding",
+     "InterfaceDescriptionLanguage",
+     "dashed",
+     null
+    ],
+    [
+     "emits",
+     "Endpoint",
+     "EventStream",
+     "",
+     null
+    ],
+    [
+     "exposedVia",
+     "SkillInterface",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "exposedVia",
+     "SkillService",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "exposesInterface",
+     "SkillService",
+     "SkillInterface",
+     "dashed",
+     null
+    ],
+    [
+     "hasBinding",
+     "Endpoint",
+     "Binding",
+     "",
+     null
+    ],
+    [
+     "hasSignature",
+     "Binding",
+     "OperationSignature",
+     "dashed",
+     null
+    ],
+    [
+     "returns",
+     "OperationSignature",
+     "ParameterDef",
+     "dashed",
+     null
+    ],
+    [
+     "specializesAs",
+     "Binding",
+     "Protocol",
+     "dashed",
+     null
+    ],
+    [
+     "usesDataFormat",
+     "Binding",
+     "DataFormat",
+     "dashed",
+     null
+    ],
+    [
+     "usesProtocol",
+     "Endpoint",
+     "Protocol",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "address, port, topic -> ext/addressing.ttl",
+    "JSON, XML, Protobuf data formats -> ext/data-formats.ttl",
+    "OPC UA -> ext/opcua.ttl",
+    "HTTP / REST (WADL) -> ext/rest.ttl",
+    "MQTT -> ext/mqtt.ttl",
+    "DDS -> ext/dds.ttl",
+    "Modbus -> ext/modbus.ttl",
+    "PROFINET -> ext/profinet.ttl",
+    "EtherCAT -> ext/ethercat.ttl",
+    "DTDL -> ext/dtdl.ttl",
+    "AAS submodel publish (hook only)"
+   ]
+  },
+  {
+   "id": "policy",
+   "layer": "core",
+   "title": "Safety / Security / Policy",
+   "file": "core/policy.ttl",
+   "color": "#111827",
+   "classes": [
+    [
+     "Action",
+     [
+      "individuals: Change a configuration, Invoke a skill or service, Read data, Write data"
+     ]
+    ],
+    [
+     "Constraint",
+     [
+      "expression : string  (open domain)"
+     ]
+    ],
+    [
+     "EmergencyStop",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Evidence",
+     [
+      "evidenceRef : anyURI"
+     ]
+    ],
+    [
+     "Hazard",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Mitigation",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Mode",
+     [
+      "individuals: Automatic, Maintenance, Manual"
+     ]
+    ],
+    [
+     "PerformanceLevel",
+     [
+      "individuals: PL a, PL b, PL c, PL d, PL e"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Permission",
+     []
+    ],
+    [
+     "Policy",
+     [
+      "version : string  (open domain)"
+     ]
+    ],
+    [
+     "Risk",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RiskAssessment",
+     [
+      "assumption : string",
+      "riskAssessmentMethod : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RiskLevel",
+     [
+      "individuals: High, Low, Medium"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Role",
+     [
+      "individuals: Customer role, Marketplace role, Provider role"
+     ]
+    ],
+    [
+     "SafetyFunction",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "SafetyIntegrityLevel",
+     [
+      "individuals: SIL 1, SIL 2, SIL 3, SIL 4"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "EmergencyStop",
+     "SafetyFunction"
+    ]
+   ],
+   "props": [
+    [
+     "achievedPerformanceLevel",
+     "SafetyFunction",
+     "PerformanceLevel",
+     "dashed",
+     null
+    ],
+    [
+     "achievedSIL",
+     "SafetyFunction",
+     "SafetyIntegrityLevel",
+     "dashed",
+     null
+    ],
+    [
+     "action",
+     "Permission",
+     "Action",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "Skill",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "PlanStep",
+     "dashed",
+     null
+    ],
+    [
+     "assessesRisk",
+     "RiskAssessment",
+     "Risk",
+     "dashed",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "Skill",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "PlanStep",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "Module",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "contains",
+     "Policy",
+     "Constraint",
+     "",
+     null
+    ],
+    [
+     "grantedTo",
+     "Permission",
+     "Role",
+     "",
+     null
+    ],
+    [
+     "hasEvidence",
+     "Policy",
+     "Evidence",
+     "",
+     null
+    ],
+    [
+     "hasPermission",
+     "Policy",
+     "Permission",
+     "dashed",
+     null
+    ],
+    [
+     "identifiesHazard",
+     "RiskAssessment",
+     "Hazard",
+     "dashed",
+     null
+    ],
+    [
+     "increases",
+     "Hazard",
+     "Risk",
+     "",
+     null
+    ],
+    [
+     "mitigates",
+     "SafetyFunction",
+     "Hazard",
+     "dashed",
+     null
+    ],
+    [
+     "reduces",
+     "Mitigation",
+     "Risk",
+     "",
+     null
+    ],
+    [
+     "reliesOnMitigation",
+     "RiskAssessment",
+     "Mitigation",
+     "dashed",
+     null
+    ],
+    [
+     "requiredPerformanceLevel",
+     "SafetyFunction",
+     "PerformanceLevel",
+     "dashed",
+     null
+    ],
+    [
+     "requiredSIL",
+     "SafetyFunction",
+     "SafetyIntegrityLevel",
+     "dashed",
+     null
+    ],
+    [
+     "requiresMode",
+     "Policy",
+     "Mode",
+     "",
+     null
+    ],
+    [
+     "requiresPermission",
+     "Policy",
+     "Permission",
+     "",
+     null
+    ],
+    [
+     "riskEvidence",
+     "RiskAssessment",
+     "Evidence",
+     "dashed",
+     null
+    ],
+    [
+     "riskLevel",
+     "RiskAssessment",
+     "RiskLevel",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "Skill",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "SkillService",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "Endpoint",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "Module",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "SHACL shapes in shapes/ ; ODRL core profile -> ext/odrl.ttl ; XACML (hook only)"
+   ]
+  },
+  {
+   "id": "execution",
+   "layer": "core",
+   "title": "Minimal Execution (optional)",
+   "file": "core/execution.ttl",
+   "color": "#8B5CF6",
+   "classes": [
+    [
+     "ExecutionStatus",
+     [
+      "individuals: Aborted, Completed, Executing, Held, Idle"
+     ]
+    ],
+    [
+     "Fault",
+     [
+      "faultCause : string  (open domain)",
+      "faultCode : string  (open domain)",
+      "faultSeverity : string  (open domain)",
+      "timestamp : dateTime  (open domain)"
+     ]
+    ],
+    [
+     "SkillExecution",
+     []
+    ],
+    [
+     "TimeInterval",
+     [
+      "endTime : dateTime",
+      "startTime : dateTime"
+     ]
+    ]
+   ],
+   "sub": [],
+   "props": [
+    [
+     "executedOn",
+     "SkillExecution",
+     "Module",
+     "",
+     null
+    ],
+    [
+     "executedOn",
+     "SkillExecution",
+     "Station",
+     "",
+     null
+    ],
+    [
+     "executes",
+     "SkillExecution",
+     "Skill",
+     "",
+     null
+    ],
+    [
+     "hasInput",
+     "SkillExecution",
+     "ParameterValue",
+     "",
+     null
+    ],
+    [
+     "hasStatus",
+     "SkillExecution",
+     "ExecutionStatus",
+     "",
+     null
+    ],
+    [
+     "hasTime",
+     "SkillExecution",
+     "TimeInterval",
+     "",
+     null
+    ],
+    [
+     "hasTime",
+     "MaintenanceAction",
+     "TimeInterval",
+     "",
+     null
+    ],
+    [
+     "invokedVia",
+     "SkillExecution",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "mayRaise",
+     "SkillExecution",
+     "Fault",
+     "",
+     "adapted"
+    ]
+   ],
+   "ext": [
+    "PROV-O -> ext/prov.ttl",
+    "SAREF4INMA traceability (hook only)",
+    "open-domain datatype properties (drawn on the classes that use them): faultCause : string, faultCode : string, faultSeverity : string, timestamp : dateTime"
+   ]
+  },
+  {
+   "id": "telemetry",
+   "layer": "module",
+   "title": "Telemetry",
+   "file": "modules/telemetry.ttl",
+   "color": "#7C3AED",
+   "classes": [
+    [
+     "ExecutionRecord",
+     [
+      "recordedAt : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "FaultSpecification",
+     [
+      "faultCode : string  (open domain)",
+      "faultSeverity : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Snapshot",
+     [
+      "snapshotTaken : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "State",
+     [
+      "individuals: Alarm, Available, Busy, Degraded, Failed, Fault, Healthy, Reserved"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateAssertion",
+     [
+      "observedAt : dateTime",
+      "validFrom : dateTime",
+      "validTo : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateDimension",
+     [
+      "individuals: Health, Mode, Operational, Reservation"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateTransition",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "TelemetryEvent",
+     [
+      "timestamp : dateTime  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "StateTransition",
+     "TelemetryEvent"
+    ],
+    [
+     "ExecutionStatus",
+     "State"
+    ],
+    [
+     "Fault",
+     "TelemetryEvent"
+    ]
+   ],
+   "props": [
+    [
+     "describesExecution",
+     "ExecutionRecord",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "enteredState",
+     "StateTransition",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "eventSubject",
+     "TelemetryEvent",
+     "Module",
+     "dashed",
+     "added"
+    ],
+    [
+     "eventSubject",
+     "TelemetryEvent",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "eventSubject",
+     "TelemetryEvent",
+     "SkillExecution",
+     "dashed",
+     "added"
+    ],
+    [
+     "fromState",
+     "StateTransition",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "hasState",
+     "Module",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "hasState",
+     "Station",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "inDimension",
+     "State",
+     "StateDimension",
+     "dashed",
+     null
+    ],
+    [
+     "instanceOfFault",
+     "Fault",
+     "FaultSpecification",
+     "dashed",
+     null
+    ],
+    [
+     "mayRaiseFault",
+     "Skill",
+     "FaultSpecification",
+     "dashed",
+     null
+    ],
+    [
+     "stateDimension",
+     "StateAssertion",
+     "StateDimension",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "Fault",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "Evidence",
+     "dashed",
+     null
+    ],
+    [
+     "stateSubject",
+     "StateAssertion",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "stateSubject",
+     "StateAssertion",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "stateValue",
+     "StateAssertion",
+     "State",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "ExecutionStatus (core) is a subclass of State"
+   ]
+  },
+  {
+   "id": "energy",
+   "layer": "module",
+   "title": "Energy",
+   "file": "modules/energy.ttl",
+   "color": "#CA8A04",
+   "classes": [
+    [
+     "EnergyConsumer",
+     [],
+     "adapted from MAESTRO 1.0"
+    ],
+    [
+     "EnergyMeasurement",
+     [
+      "energyKwh : number"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "EnergySource",
+     [
+      "carbonGCO2eqPerKwh : number",
+      "individuals: Compressed air, Electrical grid, Solar, Wind"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "PowerMeasurement",
+     [
+      "powerWatts : number",
+      "timestamp : dateTime  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "EnergyConsumer",
+     "Module"
+    ]
+   ],
+   "props": [
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "overInterval",
+     "EnergyMeasurement",
+     "TimeInterval",
+     "dashed",
+     null
+    ],
+    [
+     "suppliedBy",
+     "EnergyConsumer",
+     "EnergySource",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "Bare-number properties carry fixed units (kWh, W, g CO2-eq/kWh)"
+   ]
+  },
+  {
+   "id": "maintenance",
+   "layer": "module",
+   "title": "Maintenance",
+   "file": "modules/maintenance.ttl",
+   "color": "#B91C1C",
+   "classes": [
+    [
+     "ConditionBased",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Corrective",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "FaultDiagnosis",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Finding",
+     [
+      "findingDescription : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Inspection",
+     [],
+     "adapted from MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceAction",
+     [
+      "performedAt : dateTime",
+      "scheduledFor : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaintenancePlan",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceTask",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Predictive",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Preventive",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ReturnToServiceAssessment",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ReturnToServiceOutcome",
+     [
+      "individuals: Cleared for service, Cleared with conditions, Not cleared"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "ConditionBased",
+     "Preventive"
+    ],
+    [
+     "Corrective",
+     "MaintenanceAction"
+    ],
+    [
+     "Inspection",
+     "MaintenanceAction"
+    ],
+    [
+     "Predictive",
+     "ConditionBased"
+    ],
+    [
+     "Preventive",
+     "MaintenanceAction"
+    ]
+   ],
+   "props": [
+    [
+     "affectsAsset",
+     "MaintenanceAction",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "assessesWork",
+     "ReturnToServiceAssessment",
+     "MaintenanceAction",
+     "dashed",
+     null
+    ],
+    [
+     "diagnosesFault",
+     "FaultDiagnosis",
+     "Fault",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasFinding",
+     "MaintenanceAction",
+     "Finding",
+     "dashed",
+     null
+    ],
+    [
+     "hasTask",
+     "MaintenancePlan",
+     "MaintenanceTask",
+     "dashed",
+     null
+    ],
+    [
+     "performsTask",
+     "MaintenanceAction",
+     "MaintenanceTask",
+     "dashed",
+     null
+    ],
+    [
+     "planForAsset",
+     "MaintenancePlan",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "rtsEvidence",
+     "ReturnToServiceAssessment",
+     "Evidence",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "rtsOutcome",
+     "ReturnToServiceAssessment",
+     "ReturnToServiceOutcome",
+     "dashed",
+     null
+    ],
+    [
+     "triggeredBy",
+     "MaintenanceAction",
+     "Fault",
+     "dashed",
+     "adapted"
+    ]
+   ],
+   "ext": [
+    "Module also carries mtbfHours and remainingUsefulLifeHours",
+    "datatype properties on classes of other modules: Module.mtbfHours : number, Module.remainingUsefulLifeHours : number"
+   ]
+  },
+  {
+   "id": "maas",
+   "layer": "module",
+   "title": "Manufacturing as a Service",
+   "file": "modules/maas.ttl",
+   "color": "#0369A1",
+   "classes": [
+    [
+     "Actor",
+     [
+      "location : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Contract",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Customer",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Marketplace",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "PhysicalResourceProvider",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ProductionOrder",
+     [
+      "dueDate : dateTime",
+      "quantity : decimal  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Quote",
+     [
+      "currency : string",
+      "price : decimal",
+      "validUntil : dateTime",
+      "leadTimeDays : decimal  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ServiceOffer",
+     [
+      "maxQuantity : integer",
+      "leadTimeDays : decimal  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ServiceRequest",
+     [
+      "maxLeadTimeDays : decimal",
+      "requestedQuantity : integer",
+      "submittedOn : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "Customer",
+     "Actor"
+    ],
+    [
+     "Marketplace",
+     "Actor"
+    ],
+    [
+     "PhysicalResourceProvider",
+     "Actor"
+    ]
+   ],
+   "props": [
+    [
+     "acceptsQuote",
+     "Contract",
+     "Quote",
+     "dashed",
+     null
+    ],
+    [
+     "basedOnOffer",
+     "Quote",
+     "ServiceOffer",
+     "dashed",
+     null
+    ],
+    [
+     "executesRecipe",
+     "ProductionOrder",
+     "Recipe",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "exposesService",
+     "ServiceOffer",
+     "SkillService",
+     "",
+     null
+    ],
+    [
+     "exposesService",
+     "DigitalTwin",
+     "SkillService",
+     "",
+     null
+    ],
+    [
+     "forProduct",
+     "ServiceRequest",
+     "ProductType",
+     "dashed",
+     null
+    ],
+    [
+     "governedBy",
+     "Contract",
+     "Policy",
+     "dashed",
+     null
+    ],
+    [
+     "listedOn",
+     "ServiceOffer",
+     "Marketplace",
+     "dashed",
+     null
+    ],
+    [
+     "offeredBy",
+     "ServiceOffer",
+     "PhysicalResourceProvider",
+     "dashed",
+     null
+    ],
+    [
+     "offersCapability",
+     "ServiceOffer",
+     "Capability",
+     "dashed",
+     null
+    ],
+    [
+     "operatedBy",
+     "Marketplace",
+     "Actor",
+     "dashed",
+     null
+    ],
+    [
+     "operates",
+     "Actor",
+     "Station",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "ordersProduct",
+     "ProductionOrder",
+     "ProductType",
+     "dashed",
+     null
+    ],
+    [
+     "providedAt",
+     "ServiceOffer",
+     "Station",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "quoteFor",
+     "Quote",
+     "ServiceRequest",
+     "dashed",
+     null
+    ],
+    [
+     "realizedByOrder",
+     "Contract",
+     "ProductionOrder",
+     "dashed",
+     null
+    ],
+    [
+     "requestedBy",
+     "ServiceRequest",
+     "Customer",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "Role individuals CustomerRole, ProviderRole, MarketplaceRole",
+    "schema.org and ISO 22400-2 closeMatch",
+    "open-domain datatype properties (drawn on the classes that use them): leadTimeDays : decimal"
+   ]
+  },
+  {
+   "id": "addressing",
+   "layer": "ext",
+   "title": "Addressing",
+   "file": "ext/addressing.ttl",
+   "color": "#78716C",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "Imported by every protocol module; mqttTopic, ddsTopic subPropertyOf topic",
+    "datatype properties on classes of other modules: Endpoint.address : string, Endpoint.port : integer, Binding.topic : string"
+   ]
+  },
+  {
+   "id": "data_formats",
+   "layer": "ext",
+   "title": "Data formats",
+   "file": "ext/data-formats.ttl",
+   "color": "#A8A29E",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "Protocol-specific encodings live in their protocol module (OpcUaBinaryFormat in ext/opcua.ttl)"
+   ]
+  },
+  {
+   "id": "digital_twin",
+   "layer": "ext",
+   "title": "Digital Twin",
+   "file": "ext/digital-twin.ttl",
+   "color": "#0EA5E9",
+   "classes": [
+    [
+     "DigitalTwin",
+     []
+    ],
+    [
+     "TwinBinding",
+     [
+      "mapsTo : anyURI",
+      "platform : string"
+     ]
+    ]
+   ],
+   "sub": [],
+   "props": [
+    [
+     "hasExecutionHistory",
+     "DigitalTwin",
+     "SkillExecution",
+     "",
+     "added"
+    ],
+    [
+     "hasTwinBinding",
+     "DigitalTwin",
+     "TwinBinding",
+     "",
+     "added"
+    ],
+    [
+     "represents",
+     "DigitalTwin",
+     "ProductInstance",
+     "",
+     "added"
+    ],
+    [
+     "represents",
+     "DigitalTwin",
+     "Station",
+     "",
+     "added"
+    ],
+    [
+     "represents",
+     "DigitalTwin",
+     "Module",
+     "",
+     "added"
+    ],
+    [
+     "usesEventStream",
+     "DigitalTwin",
+     "EventStream",
+     "",
+     "added"
+    ]
+   ],
+   "ext": [
+    "AAS packaging, DTDL twin model via mapsTo (hook only)"
+   ]
+  },
+  {
+   "id": "opcua",
+   "layer": "ext",
+   "title": "OPC UA",
+   "file": "ext/opcua.ttl",
+   "color": "#EA580C",
+   "classes": [
+    [
+     "OpcUaBinding",
+     []
+    ],
+    [
+     "OpcUaMethod",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaNode",
+     [
+      "browseName : string",
+      "nodeId : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaObject",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaServer",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaSkillInterface",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaVariable",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "OpcUaBinding",
+     "Binding"
+    ],
+    [
+     "OpcUaMethod",
+     "OpcUaNode"
+    ],
+    [
+     "OpcUaObject",
+     "OpcUaNode"
+    ],
+    [
+     "OpcUaSkillInterface",
+     "OpcUaObject"
+    ],
+    [
+     "OpcUaSkillInterface",
+     "SkillInterface"
+    ],
+    [
+     "OpcUaVariable",
+     "OpcUaNode"
+    ]
+   ],
+   "props": [
+    [
+     "bindsMethod",
+     "OpcUaBinding",
+     "OpcUaMethod",
+     "dashed",
+     "added"
+    ],
+    [
+     "exposes",
+     "OpcUaSkillInterface",
+     "Skill",
+     "dashed",
+     null
+    ],
+    [
+     "hostedOn",
+     "OpcUaServer",
+     "Module",
+     "dashed",
+     "added"
+    ],
+    [
+     "hostsInterface",
+     "OpcUaServer",
+     "OpcUaSkillInterface",
+     "dashed",
+     null
+    ],
+    [
+     "implementsSkill",
+     "OpcUaMethod",
+     "Skill",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "HSU OPC UA ODP closeMatch"
+   ]
+  },
+  {
+   "id": "isa88",
+   "layer": "ext",
+   "title": "ISA-88 bridge",
+   "file": "ext/isa88.ttl",
+   "color": "#6B7280",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "Documentary closeMatch: Recipe -> ISA88:RecipeProcedure, PlanStep -> ISA88:Phase, Station -> ISA88:Unit, Module -> ISA88:EquipmentModule"
+   ]
+  },
+  {
+   "id": "isa95",
+   "layer": "ext",
+   "title": "ISA-95 hierarchy",
+   "file": "ext/isa95.ttl",
+   "color": "#0F766E",
+   "classes": [
+    [
+     "Area",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Enterprise",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Site",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "WorkCenter",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "WorkUnit",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [],
+   "props": [
+    [
+     "partOfArea",
+     "WorkCenter",
+     "Area",
+     "dashed",
+     null
+    ],
+    [
+     "partOfEnterprise",
+     "Site",
+     "Enterprise",
+     "dashed",
+     null
+    ],
+    [
+     "partOfSite",
+     "Area",
+     "Site",
+     "dashed",
+     null
+    ],
+    [
+     "partOfWorkCenter",
+     "WorkUnit",
+     "WorkCenter",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOfWorkCenter",
+     "Station",
+     "WorkCenter",
+     "dashed",
+     "added"
+    ]
+   ],
+   "ext": [
+    "HSU DIN EN 62264-2 ODP closeMatch"
+   ]
+  },
+  {
+   "id": "automationml",
+   "layer": "ext",
+   "title": "AutomationML topology",
+   "file": "ext/automationml.ttl",
+   "color": "#4B5563",
+   "classes": [
+    [
+     "ExternalInterface",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InternalElement",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InternalLink",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "Module",
+     "InternalElement"
+    ]
+   ],
+   "props": [
+    [
+     "hasInterface",
+     "InternalElement",
+     "ExternalInterface",
+     "dashed",
+     null
+    ],
+    [
+     "linksInterface",
+     "InternalLink",
+     "ExternalInterface",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "Module becomes an InternalElement; HSU AutomationML ODP matches"
+   ]
+  },
+  {
+   "id": "dtdl",
+   "layer": "ext",
+   "title": "DTDL",
+   "file": "ext/dtdl.ttl",
+   "color": "#2563EB",
+   "classes": [
+    [
+     "DtdlBinding",
+     []
+    ],
+    [
+     "DtdlCommand",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DtdlInterface",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DtdlProperty",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DtdlTelemetry",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "DtdlBinding",
+     "Binding"
+    ],
+    [
+     "DtdlInterface",
+     "SkillInterface"
+    ]
+   ],
+   "props": [
+    [
+     "bindsInterface",
+     "DtdlBinding",
+     "DtdlInterface",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasCommand",
+     "DtdlInterface",
+     "DtdlCommand",
+     "dashed",
+     null
+    ],
+    [
+     "hasProperty",
+     "DtdlInterface",
+     "DtdlProperty",
+     "dashed",
+     null
+    ],
+    [
+     "hasTelemetry",
+     "DtdlInterface",
+     "DtdlTelemetry",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "DTDL v3 metamodel class identifiers"
+   ]
+  },
+  {
+   "id": "rest",
+   "layer": "ext",
+   "title": "REST",
+   "file": "ext/rest.ttl",
+   "color": "#D97706",
+   "classes": [
+    [
+     "RestBinding",
+     [
+      "httpMethod : string",
+      "urlTemplate : string"
+     ]
+    ],
+    [
+     "RestInterface",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "RestBinding",
+     "Binding"
+    ],
+    [
+     "RestInterface",
+     "SkillInterface"
+    ]
+   ],
+   "props": [],
+   "ext": [
+    "HSU WADL ODP: RestBinding close to WADL:Method"
+   ]
+  },
+  {
+   "id": "mqtt",
+   "layer": "ext",
+   "title": "MQTT",
+   "file": "ext/mqtt.ttl",
+   "color": "#65A30D",
+   "classes": [
+    [
+     "MqttBinding",
+     [
+      "mqttQos : integer",
+      "mqttRetain : boolean",
+      "mqttTopic : string"
+     ]
+    ],
+    [
+     "MqttBroker",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "MqttBinding",
+     "Binding"
+    ],
+    [
+     "MqttBroker",
+     "Endpoint"
+    ]
+   ],
+   "props": [],
+   "ext": []
+  },
+  {
+   "id": "dds",
+   "layer": "ext",
+   "title": "DDS",
+   "file": "ext/dds.ttl",
+   "color": "#0891B2",
+   "classes": [
+    [
+     "DdsBinding",
+     [
+      "ddsDomainId : integer",
+      "ddsTopic : string",
+      "ddsTypeName : string"
+     ]
+    ]
+   ],
+   "sub": [
+    [
+     "DdsBinding",
+     "Binding"
+    ]
+   ],
+   "props": [],
+   "ext": []
+  },
+  {
+   "id": "modbus",
+   "layer": "ext",
+   "title": "Modbus",
+   "file": "ext/modbus.ttl",
+   "color": "#A16207",
+   "classes": [
+    [
+     "ModbusBinding",
+     [
+      "modbusAddress : integer",
+      "modbusCount : integer",
+      "modbusUnitId : integer"
+     ]
+    ],
+    [
+     "ModbusDataTable",
+     [
+      "individuals: Coil, Discrete input, Holding register, Input register"
+     ]
+    ]
+   ],
+   "sub": [
+    [
+     "ModbusBinding",
+     "Binding"
+    ]
+   ],
+   "props": [
+    [
+     "modbusDataTable",
+     "ModbusBinding",
+     "ModbusDataTable",
+     "dashed",
+     "added"
+    ]
+   ],
+   "ext": []
+  },
+  {
+   "id": "profinet",
+   "layer": "ext",
+   "title": "PROFINET",
+   "file": "ext/profinet.ttl",
+   "color": "#059669",
+   "classes": [
+    [
+     "ProfinetBinding",
+     [
+      "profinetSlot : integer",
+      "profinetStationName : string",
+      "profinetSubslot : integer"
+     ]
+    ]
+   ],
+   "sub": [
+    [
+     "ProfinetBinding",
+     "Binding"
+    ]
+   ],
+   "props": [],
+   "ext": []
+  },
+  {
+   "id": "ethercat",
+   "layer": "ext",
+   "title": "EtherCAT",
+   "file": "ext/ethercat.ttl",
+   "color": "#DC2626",
+   "classes": [
+    [
+     "EthercatBinding",
+     [
+      "ethercatIndex : integer",
+      "ethercatPosition : integer",
+      "ethercatSubindex : integer"
+     ]
+    ]
+   ],
+   "sub": [
+    [
+     "EthercatBinding",
+     "Binding"
+    ]
+   ],
+   "props": [],
+   "ext": []
+  },
+  {
+   "id": "prov",
+   "layer": "ext",
+   "title": "PROV-O bridge",
+   "file": "ext/prov.ttl",
+   "color": "#9333EA",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "SkillExecution subClassOf prov:Activity; executes / hasInput / executedOn subPropertyOf prov:used",
+    "datatype properties on classes of other modules: SkillExecution.endedAtTime : dateTime, SkillExecution.startedAtTime : dateTime"
+   ]
+  },
+  {
+   "id": "odrl",
+   "layer": "ext",
+   "title": "ODRL bridge",
+   "file": "ext/odrl.ttl",
+   "color": "#374151",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "Policy, Permission subClassOf odrl:Policy, odrl:Permission; hasPermission / action / target subPropertyOf odrl:"
+   ]
+  }
+ ]
+};
+
+// ---------- where the nine MAESTRO files go ----------
+const PLACEMENT = [
+  { src: "cross-cutting/communication.ttl", kind: "fold", target: "core/invocation.ttl",
+    keep: "Protocol (+7 individuals), Endpoint (address, port: ext/addressing.ttl), Binding, EventStream, OperationSignature, DataFormat (4 individuals: ext/data-formats.ttl, ext/opcua.ttl), InterfaceDescriptionLanguage (4 individuals: ext/opcua.ttl, ext/dtdl.ttl, ext/rest.ttl, ext/digital-twin.ttl); usesProtocol, hasBinding, exposedVia, hasSignature, hasParameterDef, returns, specializesAs, usesDataFormat, describedIn. WADL relatedMatch/closeMatch kept.",
+    drop: "Channel and hasEndpoint (unused indirection), bindsEndpoint (inverse of hasBinding), deprecated DtdlProtocol, conformsToStream (needs a generic Event class the HHM core does not have).",
+    why: "Every term belongs to the HHM Invocation Hooks cluster, which already owns Endpoint, Protocol and Binding. Adding a second file would split one concern." },
+  { src: "cross-cutting/safety.ttl", kind: "fold", target: "core/policy.ttl",
+    keep: "SafetyFunction, EmergencyStop, SafetyIntegrityLevel (SIL1–4), PerformanceLevel (PLa–e), RiskLevel (Low/Medium/High), RiskAssessment; mitigates, requiredSIL, achievedSIL, requiredPerformanceLevel, achievedPerformanceLevel, assessedSubject, assessesRisk, identifiesHazard, reliesOnMitigation, riskLevel, riskEvidence, riskAssessmentMethod, assumption.",
+    drop: "Deprecated hasSIL and hasPerformanceLevel.",
+    why: "Hazard, Risk and Mitigation are already HHM core in the Safety/Security/Policy cluster; the rest extends the same cluster. If the file grows uncomfortable it can later split into policy.ttl and safety.ttl inside the same cluster without changing any IRI." },
+  { src: "runtime/runtime.ttl", kind: "split", target: "core/execution.ttl (already) + modules/telemetry.ttl (new)",
+    keep: "Core already has SkillExecution, TimeInterval, Fault, executes, executedOn, invokedVia, hasInput, hasStatus, hasTime, mayRaise. New module: State (+12 values, 4 PackML closeMatch), StateDimension (+4), StateAssertion, TelemetryEvent, StateTransition, FaultSpecification, ExecutionRecord, Snapshot; hasState, inDimension, stateSubject, stateDimension, stateValue, stateEvidence, fromState, enteredState, mayRaiseFault, instanceOfFault, describesExecution, faultCause, faultSeverity.",
+    drop: "performedBy and recordedBy (no Agent class in the HHM core; MaaS Actor could take that role later), the deprecated mayRaise-as-state reading (HHM mayRaise keeps its name and means the Fault actually raised).",
+    why: "HHM's Minimal Execution cluster covers one execution. The live state model (dimensions, assertions, transitions, snapshots) is a separate concern that no HHM cluster owns, so it becomes its own module that depends on execution." },
+  { src: "cross-cutting/unit.ttl", kind: "removed", target: "not included",
+    keep: "Nothing. ParameterDef.unitRef stays an anyURI pointing at a QUDT unit IRI, as the HHM diagram shows; energyKwh, powerWatts, leadTimeDays and maxLeadTimeDays carry their unit in the name.",
+    drop: "Unit, Quantity, the unit individuals and conversions; energyValue, powerValue, leadTime, maxLeadTime (all needed a Quantity).",
+    why: "Removed at your request. Can be re-added later as modules/unit.ttl without changing any core IRI." },
+  { src: "cross-cutting/energy.ttl", kind: "new", target: "modules/energy.ttl",
+    keep: "All: EnergyConsumer (⊑ Module), EnergyMeasurement, PowerMeasurement, EnergySource (+4 individuals); suppliedBy, measuredSubject, overInterval, energyValue, powerValue, energyKwh, powerWatts, carbonGCO2eqPerKwh.",
+    drop: "Nothing. core:Resource ranges become Module (and Station where sensible).",
+    why: "No HHM cluster covers energy. Depends on modules/unit.ttl (Quantity) and core/execution.ttl (TimeInterval, SkillExecution)." },
+  { src: "cross-cutting/maintenance.ttl", kind: "new", target: "modules/maintenance.ttl",
+    keep: "All 12 classes and their properties; mtbfHours and remainingUsefulLifeHours declared on Module.",
+    drop: "The qa:Inspection parent (there is no quality module); Inspection stays a MaintenanceAction only. triggeredBy is narrowed to Fault.",
+    why: "No HHM cluster covers maintenance. Depends on core/resource.ttl, core/execution.ttl (Fault) and core/policy.ttl (Evidence)." },
+  { src: "logical/maas.ttl", kind: "new", target: "modules/maas.ttl",
+    keep: "Actor, Customer, PhysicalResourceProvider, Marketplace, ServiceOffer, ServiceRequest, Quote, Contract and all offer/request/quote/contract properties; the three Role individuals; schema.org closeMatch. ProductionOrder added so realizedByOrder has a target.",
+    drop: "fulfilledByProcess (no process module), locatedAt → plan:Site (no Site; Actor gets a location literal), the agent:Organization and plan:Enterprise parents.",
+    why: "No HHM cluster covers the market tier. providedAt and operates point at Station, the top physical unit in HHM, instead of Plant." },
+  { src: "cross-cutting/sensor.ttl", kind: "removed", target: "not included",
+    keep: "Nothing. The HHM SOSA/SSN extension point on Skill stays a documented hook.",
+    drop: "Sensor and its 7 subtypes, Observation, ObservableProperty, FeatureOfInterest, hasObservationEvidence.",
+    why: "Removed at your request. Can be re-added later as ext/sensor.ttl." },
+  { src: "execution/opcua.ttl", kind: "ext", target: "ext/opcua.ttl",
+    keep: "OpcUaServer, OpcUaNode, OpcUaObject, OpcUaVariable, OpcUaMethod, OpcUaSkillInterface (⊑ SkillInterface); nodeId, browseName, hostsInterface, exposes, implementsSkill; HSU OpcUa closeMatch. OpcUaBinding (⊑ Binding) added to realise the HHM Binding specialisation.",
+    drop: "accessibleThrough (inverse of exposes; inverses are avoided for OWL 2 RL simplicity).",
+    why: "The HHM diagram reserves the OPC UA extension point on Binding. This file realises it." },
+];
+const KIND = {
+  fold:  { label: "Fold into existing core module", color: "#1a7f4b" },
+  split: { label: "Partly existing, rest new module", color: "#b45309" },
+  new:   { label: "New module", color: "#1d4ed8" },
+  ext:   { label: "Realises an HHM extension point", color: "#db2777" },
+  removed: { label: "Removed from the plan (your decision)", color: "#9a9ca6" },
+};
+
+// ---------- DOT generation ----------
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function nodeLabel(name, dps) {
+  const rows = dps.length
+    ? '<HR/><TR><TD ALIGN="LEFT" BALIGN="LEFT"><FONT POINT-SIZE="8" COLOR="#555555">' + dps.map(esc).join('<BR ALIGN="LEFT"/>') + '</FONT></TD></TR>'
+    : "";
+  return '<<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="3"><TR><TD ALIGN="CENTER"><B>' + esc(name) + '</B></TD></TR>' + rows + '</TABLE>>';
+}
+function buildProposedDot(layers) {
+  const visibleModules = MODEL.modules.filter(m => layers.has(m.layer));
+  const visibleClasses = new Set();
+  visibleModules.forEach(m => m.classes.forEach(([c]) => visibleClasses.add(c)));
+  const out = ['digraph MAESTRO_HHM_Core {', 'rankdir=LR; compound=true; nodesep=0.3; ranksep=0.85; fontname="Helvetica"; fontsize=10; newrank=true;',
+    'node [shape=box style="rounded,filled" fillcolor="#f9f9fb" fontname="Helvetica" fontsize=10 margin="0.08,0.04"];',
+    'edge [fontname="Helvetica" fontsize=8 arrowsize=0.7];'];
+  const edges = [];
+  for (const m of visibleModules) {
+    const clusterStyle = m.layer === "core" ? "rounded" : (m.layer === "module" ? "rounded,dashed" : "rounded,dotted");
+    if (!m.classes.length) continue;  // bridge modules add axioms only; see the term list
+    out.push('subgraph cluster_' + m.id + ' { label="' + m.title + '\\n' + m.file + '"; color="' + m.color + '"; fontcolor="' + m.color + '"; style="' + clusterStyle + '"; penwidth=1.4;');
+    for (const [c, dps, src] of m.classes) {
+      const fill = src ? "#e8f1ff" : "#f9f9fb";
+      out.push('  ' + c + ' [label=' + nodeLabel(MODEL.ns + c, dps) + ' color="' + m.color + '" fillcolor="' + fill + '"];');
+    }
+    if (m.ext && m.ext.length) {
+      out.push('  EXT_' + m.id + ' [shape=note fillcolor="#fff7ed" color="#c2410c" fontsize=8 label="' + esc(m.ext.join('\\n')).replace(/"/g, '\\"') + '"];');
+      out.push('  ' + m.classes[0][0] + ' -> EXT_' + m.id + ' [style=dotted color="#c2410c" arrowhead=none];');
+    }
+    out.push('}');
+    for (const [a, b] of (m.sub || [])) if (visibleClasses.has(a) && visibleClasses.has(b))
+      edges.push(a + ' -> ' + b + ' [arrowhead=empty label="subClassOf" color="' + m.color + '" penwidth=1.2];');
+    for (const [p, d, r, style] of m.props) if (visibleClasses.has(d) && visibleClasses.has(r))
+      edges.push(d + ' -> ' + r + ' [label="' + p + '" color="' + m.color + '" fontcolor="' + m.color + '"' + (style ? ' style=' + style : '') + '];');
+  }
+  return out.concat(edges, ['}']).join('\n');
+}
+
+// ---------- the user's diagrams, verbatim (String.raw keeps \n inside DOT labels) ----------
+const GIVEN_DOT = String.raw`digraph HHM_Core_Schema {
+  rankdir=LR; labelloc="t";
+  label="HHM Core Ontology (v1): Product • Mechanical • Skills (Atomic+Composite) • Recipe/Planning • Safety/Policy • Invocation Hooks\n(Extension points)";
+  node [shape=box, style="rounded,filled", fillcolor="#f9f9fb", fontsize=10]; edge [fontsize=9];
+  subgraph cluster_product { label="HHM-Core: Product"; color="#6E56CF"; style="rounded";
+    ProductType [label="ProductType\n(core)"]; ProductInstance [label="ProductInstance\n(core)"]; Variant [label="Variant\n(core)"]; Feature [label="Feature\n(core)"]; Requirement [label="Requirement\n(core)"]; Identifier [label="Identifier\n(core)\n(GTIN/UUID/IRDI/IRI)"]; BOMNode [label="BOMNode\n(core)"]; Material [label="Material\n(core)"];
+    EP_DPP [label="<<EXT>> DPP / DPPO / RePlanIT\n(product passport view)", shape=note, fillcolor="#fff7ed"]; EP_ECLASS [label="<<EXT>> ECLASS / eClassOWL\n(dictionary/semanticId)", shape=note, fillcolor="#fff7ed"]; EP_PRONTO [label="<<EXT>> PRONTO\n(variant/BOM semantics)", shape=note, fillcolor="#fff7ed"]; }
+  subgraph cluster_mech { label="HHM-Core: Physical Resources"; color="#12A594"; style="rounded";
+    Station [label="Station\n(core)"]; Module [label="Module\n(core)"]; Capability [label="Capability\n(core)"];
+    EP_AutomationML [label="<<EXT>> AutomationML/CAEX\n(ports, connections,\nclass libraries, geometry)", shape=note, fillcolor="#fff7ed"]; EP_ISA88_EQ [label="<<EXT>> ISA-88 Equipment Model\n(ProcessCell/Unit/\nEquipmentModule/ControlModule)", shape=note, fillcolor="#fff7ed"]; }
+  subgraph cluster_skills { label="HHM-Core: Skills"; color="#E54D2E"; style="rounded";
+    Skill [label="Skill\n(core)"]; AtomicSkill [label="AtomicSkill\n(core)"]; CompositeSkill [label="CompositeSkill\n(core)"]; ParameterDef [label="ParameterDef\n(core)\n(type, unitRef, range)"]; ParameterValue [label="ParameterValue\n(core)"]; Precondition [label="Precondition\n(core)"]; Postcondition [label="Postcondition\n(core)"]; SkillInterface [label="SkillInterface\n(core)\n(semantic contract)"];
+    EP_CSS_CaSkMan [label="<<EXT>> CSS / CaSkMan\n(capability-skill patterns,\ninterface profiles)", shape=note, fillcolor="#fff7ed"]; EP_SOSA [label="<<EXT>> SOSA/SSN\n(observations/measurement\nas evidence & conditions)", shape=note, fillcolor="#fff7ed"]; EP_QUDT [label="<<EXT>> QUDT/OM\n(units & quantities)", shape=note, fillcolor="#fff7ed"]; }
+  subgraph cluster_recipe { label="HHM-Core: Recipe / Planning"; color="#3B82F6"; style="rounded";
+    Recipe [label="Recipe / ProcessPlan\n(core)"]; PlanStep [label="PlanStep\n(core)"]; ControlFlow [label="ControlFlowConstraint\n(core)\n(precedes/parallel/alt/loop/optional)"]; DataBinding [label="DataBinding\n(core)\n(output→input)"];
+    EP_ISA88_PROC [label="<<EXT>> ISA-88 Procedural Model\n(Procedure/UnitProcedure/\nOperation/Phase + states)", shape=note, fillcolor="#fff7ed"]; EP_ISA95 [label="<<EXT>> ISA-95 / IEC 62264\n(WorkOrder/Schedule/\nPerformance/MaterialLot)", shape=note, fillcolor="#fff7ed"]; }
+  subgraph cluster_safety { label="HHM-Core: Safety / Security / Policy"; color="#111827"; style="rounded";
+    Policy [label="Policy\n(core)"]; Constraint [label="Constraint\n(core)"]; Hazard [label="Hazard\n(core)"]; Risk [label="Risk\n(core)"]; Mitigation [label="Mitigation\n(core)"]; Mode [label="Mode\n(core)"]; Role [label="Role\n(core)"]; Permission [label="Permission\n(core)"]; Evidence [label="Evidence\n(core)\n(log/doc/obs ref)"];
+    EP_SHACL_ODRL [label="<<EXT>> Rules/Validation\n(SHACL / ODRL / XACML-style)", shape=note, fillcolor="#fff7ed"]; }
+  subgraph cluster_invocation { label="HHM-Core: Invocation Hooks (protocol-agnostic)"; color="#F59E0B"; style="rounded";
+    Endpoint [label="Endpoint\n(core)"]; Protocol [label="Protocol\n(core)\n(OPC UA / REST / ... as controlled vocab)"]; Binding [label="Binding\n(core)\n(protocol-specific mapping placeholder)"];
+    EP_OPCUA [label="<<EXT>> OPC UA / VDMA\n(NodeId/Method/StateMachine/\nEventTypes, Companion Specs)", shape=note, fillcolor="#fff7ed"]; EP_REST [label="<<EXT>> REST/OpenAPI\n(URL/Verb/JSON schema)", shape=note, fillcolor="#fff7ed"]; EP_DTDL [label="<<EXT>> DTDL\n(Command/Telemetry/\nProperty mapping)", shape=note, fillcolor="#fff7ed"]; EP_AAS [label="<<EXT>> AAS\n(Submodel templates,\nsemanticId/ConceptDesc)", shape=note, fillcolor="#fff7ed"]; }
+  subgraph cluster_exec { label="HHM-Core (optional): Minimal Execution"; color="#8B5CF6"; style="rounded";
+    SkillExecution [label="SkillExecution\n(core-optional)"]; ExecStatus [label="ExecutionStatus\n(core-optional)"]; Fault [label="Fault\n(core-optional)"]; TimeInterval [label="TimeInterval\n(core-optional)"];
+    EP_SAREF4INMA [label="<<EXT>> SAREF4INMA\n(traceability: batch/item/\nequipment/time events)", shape=note, fillcolor="#fff7ed"]; EP_PROV [label="<<EXT>> PROV-O\n(provenance alignment)", shape=note, fillcolor="#fff7ed"]; }
+  ProductType -> Variant [label="hasVariant", color="#6E56CF"]; ProductType -> Feature [label="hasFeature", color="#6E56CF", style="dashed"]; ProductType -> BOMNode [label="hasBOM", color="#6E56CF"]; BOMNode -> Material [label="madeOf", color="#6E56CF", style="dashed"]; BOMNode -> BOMNode [label="hasPart", color="#6E56CF", style="dashed"]; Requirement -> Feature [label="appliesTo", color="#6E56CF", style="dashed"]; ProductType -> Identifier [label="hasIdentifier", color="#6E56CF", style="dashed"]; ProductInstance -> Identifier [label="hasIdentifier", color="#6E56CF", style="dashed"]; ProductType -> ProductInstance [label="hasInstance", color="#6E56CF", style="dashed"];
+  ProductType -> EP_DPP [label="export/view", color="#6E56CF", style="dotted"]; ProductType -> EP_PRONTO [label="align", color="#6E56CF", style="dotted"]; Feature -> EP_ECLASS [label="semanticId", color="#6E56CF", style="dotted"]; ParameterDef -> EP_ECLASS [label="semanticId", color="#6E56CF", style="dotted"];
+  Station -> Module [label="hasModule", color="#12A594"]; Module -> Capability [label="providesCapability", color="#12A594"]; Module -> EP_AutomationML [label="enrich topology", color="#12A594", style="dotted"]; Station -> EP_ISA88_EQ [label="map equipment", color="#12A594", style="dotted"];
+  Skill -> AtomicSkill [label="kind", color="#E54D2E", style="dotted"]; Skill -> CompositeSkill [label="kind", color="#E54D2E", style="dotted"]; Skill -> ParameterDef [label="hasParameterDef", color="#E54D2E"]; Skill -> Precondition [label="hasPrecondition", color="#E54D2E"]; Skill -> Postcondition [label="hasPostcondition", color="#E54D2E"]; Skill -> Capability [label="requiresCapability", color="#E54D2E"]; Skill -> SkillInterface [label="hasInterfaceContract", color="#E54D2E", style="dashed"]; CompositeSkill -> Skill [label="hasSubSkillLink", color="#E54D2E"]; ParameterValue -> ParameterDef [label="instanceOf", color="#E54D2E", style="dashed"];
+  Skill -> EP_CSS_CaSkMan [label="pattern extension", color="#E54D2E", style="dotted"]; ParameterDef -> EP_QUDT [label="unitRef", color="#E54D2E", style="dotted"]; Skill -> EP_SOSA [label="obs evidence", color="#E54D2E", style="dotted"];
+  Recipe -> PlanStep [label="hasStep", color="#3B82F6"]; PlanStep -> ControlFlow [label="hasControlFlow", color="#3B82F6", style="dashed"]; PlanStep -> DataBinding [label="hasDataBinding", color="#3B82F6", style="dashed"]; PlanStep -> Skill [label="realizedBy", color="#3B82F6"]; Recipe -> EP_ISA88_PROC [label="refine", color="#3B82F6", style="dotted"]; Recipe -> EP_ISA95 [label="context MOM", color="#3B82F6", style="dotted"]; Feature -> PlanStep [label="requiresOperation", color="#6E56CF", style="dashed"];
+  Policy -> Constraint [label="contains", color="#111827"]; Hazard -> Risk [label="increases", color="#111827", style="dashed"]; Mitigation -> Risk [label="reduces", color="#111827", style="dashed"]; Policy -> Evidence [label="hasEvidence", color="#111827", style="dashed"]; Permission -> Role [label="grantedTo", color="#111827", style="dashed"]; Policy -> Mode [label="requiresMode", color="#111827", style="dashed"]; Policy -> Permission [label="requiresPermission", color="#111827", style="dashed"]; Constraint -> Skill [label="constrains", color="#111827"]; Constraint -> PlanStep [label="constrains", color="#111827", style="dashed"]; Constraint -> Module [label="constrains", color="#111827", style="dashed"]; Constraint -> Endpoint [label="constrains", color="#111827", style="dashed"]; Policy -> EP_SHACL_ODRL [label="formalize rules", color="#111827", style="dotted"];
+  SkillInterface -> Endpoint [label="exposedVia", color="#F59E0B"]; Endpoint -> Protocol [label="usesProtocol", color="#F59E0B"]; Endpoint -> Binding [label="hasBinding", color="#F59E0B", style="dashed"]; Binding -> EP_OPCUA [label="specialize", color="#F59E0B", style="dotted"]; Binding -> EP_REST [label="specialize", color="#F59E0B", style="dotted"]; Binding -> EP_DTDL [label="specialize", color="#F59E0B", style="dotted"]; SkillInterface -> EP_AAS [label="publish in AAS\n(submodel)", color="#F59E0B", style="dotted"];
+  SkillExecution -> Skill [label="executes", color="#8B5CF6"]; SkillExecution -> Module [label="executedOn", color="#8B5CF6", style="dashed"]; SkillExecution -> Endpoint [label="invokedVia", color="#8B5CF6", style="dashed"]; SkillExecution -> ParameterValue [label="hasInput", color="#8B5CF6", style="dashed"]; SkillExecution -> ExecStatus [label="hasStatus", color="#8B5CF6", style="dashed"]; SkillExecution -> Fault [label="mayRaise", color="#8B5CF6", style="dashed"]; SkillExecution -> TimeInterval [label="hasTime", color="#8B5CF6", style="dashed"];
+  SkillExecution -> EP_SAREF4INMA [label="traceability events", color="#8B5CF6", style="dotted"]; SkillExecution -> EP_PROV [label="provenance", color="#8B5CF6", style="dotted"];
+}`;
+
+const DT_DOT = String.raw`digraph HHM_DigitalTwin_Minimal {
+  rankdir=LR; labelloc="t"; label="Minimal Digital Twin Extension connected to HHM-Core"; graph [fontsize=10];
+  node [shape=box, style="rounded,filled", fillcolor="#f9f9fb", fontsize=10]; edge [fontsize=9, color="#374151"];
+  subgraph cluster_core { label="HHM-Core"; color="#111827"; style="rounded";
+    ProductInstance [label="ProductInstance\n(core)"]; Station [label="Station\n(core)"]; Module [label="Module\n(core)"]; SkillService [label="SkillService\n(core)"]; Endpoint [label="Endpoint\n(core)"]; EventStream [label="EventStream\n(core)"]; SkillExecution [label="SkillExecution\n(core-optional)"];
+    Station -> Module [label="hasModule"]; SkillService -> Endpoint [label="exposedVia"]; Endpoint -> EventStream [label="emits", style="dashed"]; SkillExecution -> Module [label="executedOn", style="dashed"]; SkillExecution -> Endpoint [label="invokedVia", style="dashed"]; }
+  subgraph cluster_dt { label="Digital Twin Extension (minimal)"; color="#0EA5E9"; style="rounded,dashed";
+    DigitalTwin [label="DigitalTwin\n(extension)\ndigital representation"]; TwinBinding [label="TwinBinding\n(extension)\nAAS / DTDL / platform mapping"]; }
+  DigitalTwin -> ProductInstance [label="represents", color="#0EA5E9"]; DigitalTwin -> Station [label="represents", color="#0EA5E9"]; DigitalTwin -> Module [label="represents", color="#0EA5E9"];
+  DigitalTwin -> SkillService [label="exposes / references service", style="dashed", color="#0EA5E9"]; DigitalTwin -> EventStream [label="uses telemetry/events", style="dashed", color="#0EA5E9"]; DigitalTwin -> SkillExecution [label="hasExecutionHistory", style="dashed", color="#0EA5E9"]; DigitalTwin -> TwinBinding [label="hasTwinBinding", style="dashed", color="#0EA5E9"];
+  AAS [shape=note, fillcolor="#fff7ed", label="AAS\noptional packaging"]; DTDL [shape=note, fillcolor="#fff7ed", label="DTDL\noptional twin model"];
+  TwinBinding -> AAS [label="mapsTo", style="dotted"]; TwinBinding -> DTDL [label="mapsTo", style="dotted"];
+  Note [shape=note, fillcolor="#FEF3C7", label="DigitalTwin is not another Station/Module.\nIt represents a core entity.\nReal execution remains attached to Module."]; DigitalTwin -> Note [style="dotted", arrowhead="none"];
+}`;
+
+const NOTES = {
+  proposed: "Solid cluster borders are the seven HHM clusters; dashed borders are new modules; dotted borders are extension modules. Blue-tinted classes come from the MAESTRO files you asked to add. Use the layer checkboxes to hide modules or extensions; the term list tab has everything regardless.",
+  given: "Your HHM Core v1 schema exactly as supplied, for side-by-side comparison.",
+  dt: "Your minimal Digital Twin extension exactly as supplied.",
+};
+
+// ---------- stats ----------
+(function stats() {
+  const per = { core: [0, 0, 0], module: [0, 0, 0], ext: [0, 0, 0] };
+  let classes = 0, dprops = 0, added = 0; const oprops = new Set();
+  for (const m of MODEL.modules) {
+    for (const [, dps, src] of m.classes) { classes++; if (src) added++; dprops += dps.filter(d => d.includes(" : ")).length; per[m.layer][0]++; }
+    for (const [p] of m.props) oprops.add(p);
+  }
+  const items = [["modules", MODEL.modules.length], ["classes", classes], ["object properties", oprops.size], ["datatype properties", dprops], ["classes added from your 9 files", added]];
+  document.getElementById("stats").innerHTML = items.map(([k, v]) => '<span class="stat"><b>' + v + '</b> ' + k + '</span>').join("");
+})();
+
+// ---------- term list ----------
+(function terms() {
+  const root = document.getElementById("modules");
+  const layerName = { core: "HHM core", module: "new module", ext: "extension" };
+  for (const m of MODEL.modules) {
+    const el = document.createElement("article");
+    el.className = "mod"; el.style.setProperty("--mc", m.color);
+    const cls = m.classes.map(([c, dps, src]) => '<li>' + MODEL.ns + c + (dps.length ? ' <span class="dp">· ' + esc(dps.join(", ")) + '</span>' : '') + (src ? ' <span class="src">' + esc(src) + '</span>' : '') + '</li>').join("");
+    const sub = (m.sub || []).map(([a, b]) => '<li>' + MODEL.ns + a + ' <span class="arr">⊑</span> ' + MODEL.ns + b + '</li>').join("");
+    const props = m.props.map(([p, d, r, style, tag]) => '<li>' + MODEL.ns + esc(p) + ' <span class="arr">(</span>' + d + ' <span class="arr">→</span> ' + r + '<span class="arr">)</span>' + (tag ? ' <span class="src">' + esc(tag) + '</span>' : '') + '</li>').join("");
+    el.innerHTML = '<h2>' + m.title + ' <span class="pill">' + layerName[m.layer] + '</span></h2><div class="file">' + m.file + '</div>'
+      + '<h3>Classes</h3><ul>' + cls + '</ul>'
+      + (sub ? '<h3>Subclasses</h3><ul>' + sub + '</ul>' : '')
+      + '<h3>Object properties</h3><ul>' + props + '</ul>'
+      + '<h3>Notes and extension points</h3><ul class="ext">' + m.ext.map(e => '<li>' + esc(e) + '</li>').join("") + '</ul>';
+    root.appendChild(el);
+  }
+})();
+
+// ---------- placement ----------
+(function placement() {
+  const counts = {};
+  PLACEMENT.forEach(p => counts[p.kind] = (counts[p.kind] || 0) + 1);
+  document.getElementById("summary").innerHTML = Object.keys(KIND).map(k =>
+    '<div class="sum" style="--dc:' + KIND[k].color + '"><b>' + (counts[k] || 0) + ' file' + ((counts[k] || 0) === 1 ? '' : 's') + '</b><span>' + KIND[k].label + '</span></div>').join("");
+  document.getElementById("place").innerHTML = PLACEMENT.map(p =>
+    '<article class="prow" style="--dc:' + KIND[p.kind].color + '"><div><h2>ontologies/' + esc(p.src) + '</h2><div class="decision">' + KIND[p.kind].label + '</div><div class="note">→ <code>' + esc(p.target) + '</code></div></div>'
+    + '<dl><dt>Keep</dt><dd>' + esc(p.keep) + '</dd><dt>Drop</dt><dd>' + esc(p.drop) + '</dd><dt>Why</dt><dd>' + esc(p.why) + '</dd></dl></article>').join("");
+})();
+
+// ---------- rendering ----------
+const paper = document.getElementById("paper");
+const graphnote = document.getElementById("graphnote");
+const zoom = document.getElementById("zoom"), zoomv = document.getElementById("zoomv");
+const layerBoxes = { module: document.getElementById("layer-module"), ext: document.getElementById("layer-ext") };
+let viz = null, current = "proposed";
+const cache = {};
+function activeLayers() {
+  const s = new Set(["core"]);
+  if (layerBoxes.module.checked) s.add("module");
+  if (layerBoxes.ext.checked) s.add("ext");
+  return s;
+}
+function dotFor(view) {
+  if (view === "given") return { key: "given", dot: GIVEN_DOT };
+  if (view === "dt") return { key: "dt", dot: DT_DOT };
+  const layers = activeLayers();
+  const key = "proposed:" + [...layers].sort().join(",");
+  return { key, dot: buildProposedDot(layers) };
+}
+function applyZoom() {
+  const svg = paper.querySelector("svg");
+  zoomv.textContent = zoom.value + "%";
+  if (!svg) return;
+  const f = zoom.value / 100;
+  svg.style.transform = "scale(" + f + ")";
+  const w = parseFloat(svg.getAttribute("data-w")), h = parseFloat(svg.getAttribute("data-h"));
+  svg.parentElement.style.width = (w * f) + "px"; svg.parentElement.style.height = (h * f) + "px";
+}
+zoom.addEventListener("input", applyZoom);
+Object.values(layerBoxes).forEach(b => b.addEventListener("change", () => render(current)));
+async function render(view) {
+  current = view;
+  graphnote.textContent = NOTES[view] || "";
+  document.getElementById("layers").hidden = view !== "proposed";
+  paper.innerHTML = '<div class="status">Rendering graph…</div>';
+  try {
+    if (!viz) viz = new Viz();
+    const { key, dot } = dotFor(view);
+    let svg = cache[key];
+    if (!svg) {
+      svg = await viz.renderSVGElement(dot);
+      const w = parseFloat(svg.getAttribute("width")), h = parseFloat(svg.getAttribute("height"));
+      svg.setAttribute("data-w", w); svg.setAttribute("data-h", h);
+      svg.removeAttribute("width"); svg.removeAttribute("height");
+      svg.style.width = w + "px"; svg.style.height = h + "px";
+      cache[key] = svg;
+    }
+    const holder = document.createElement("div"); holder.style.position = "relative"; holder.appendChild(svg);
+    paper.innerHTML = ""; paper.appendChild(holder);
+    applyZoom();
+  } catch (e) {
+    viz = null;
+    paper.innerHTML = '<div class="status">The graph could not be rendered: ' + esc(String(e && e.message || e)) + '</div>';
+  }
+}
+const GRAPH_VIEWS = new Set(["proposed", "given", "dt"]);
+document.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", b === btn ? "true" : "false"));
+  const v = btn.dataset.view;
+  document.getElementById("view-graph").hidden = !GRAPH_VIEWS.has(v);
+  document.getElementById("view-placement").hidden = v !== "placement";
+  document.getElementById("view-terms").hidden = v !== "terms";
+  if (GRAPH_VIEWS.has(v)) render(v);
+  try { localStorage.setItem("mh-view", v); } catch (_) {}
+}));
+(function boot() {
+  let v = "proposed";
+  try { v = localStorage.getItem("mh-view") || v; } catch (_) {}
+  const btn = document.querySelector('.tab[data-view="' + v + '"]') || document.querySelector('.tab[data-view="proposed"]');
+  btn.click();
+})();
+</script>

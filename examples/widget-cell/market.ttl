@@ -1,0 +1,79 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ex:   <https://w3id.org/maestro/hhm/examples/widget-cell#> .
+
+#################################################################
+# EXAMPLE - WIDGET CELL (MARKET)
+#
+# The manufacturing-as-a-service tier around the widget cell: a
+# customer requests 100 widgets, the provider that operates Station 1
+# has a standing offer for its transport capability on a marketplace,
+# quotes the request, and the accepted quote becomes a contract and a
+# production order that executes the widget recipe.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/widget-cell/market> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/widget-cell/market/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: widget cell (market)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/widget-cell> ;
+    owl:versionInfo "0.1.0" .
+
+ex:AcmeCustomer a maestro:Customer ;
+    rdfs:label "Acme Devices" ;
+    maestro:location "Turin, Italy" .
+
+ex:ProviderCo a maestro:PhysicalResourceProvider ;
+    rdfs:label "Example Manufacturing" ;
+    maestro:location "Site A" ;
+    maestro:operates ex:Station1 .
+
+ex:Market1 a maestro:Marketplace ;
+    rdfs:label "Regional B2B manufacturing marketplace" ;
+    maestro:operatedBy ex:MarketOperator .
+
+ex:MarketOperator a maestro:Actor ;
+    rdfs:label "Marketplace operator" .
+
+ex:Offer1 a maestro:ServiceOffer ;
+    rdfs:label "Widget transfer and assembly, Station 1" ;
+    maestro:offeredBy ex:ProviderCo ;
+    maestro:offersCapability ex:TransportCapability ;
+    maestro:providedAt ex:Station1 ;
+    maestro:listedOn ex:Market1 ;
+    maestro:exposesService ex:TransferService ;
+    maestro:leadTimeDays 5 ;
+    maestro:maxQuantity 500 .
+
+ex:Request1 a maestro:ServiceRequest ;
+    rdfs:label "100 widgets by end of quarter" ;
+    maestro:requestedBy ex:AcmeCustomer ;
+    maestro:forProduct ex:WidgetType ;
+    maestro:hasRequirement ex:ReqBaseEnvelope ;
+    maestro:requestedQuantity 100 ;
+    maestro:maxLeadTimeDays 10 ;
+    maestro:submittedOn "2026-06-01T09:30:00Z"^^xsd:dateTime .
+
+ex:Quote1 a maestro:Quote ;
+    rdfs:label "Quote for 100 widgets" ;
+    maestro:quoteFor ex:Request1 ;
+    maestro:basedOnOffer ex:Offer1 ;
+    maestro:price 1250.00 ;
+    maestro:currency "EUR" ;
+    maestro:leadTimeDays 5 ;
+    maestro:validUntil "2026-06-15T00:00:00Z"^^xsd:dateTime .
+
+ex:Contract1 a maestro:Contract ;
+    rdfs:label "Contract 2026-0042" ;
+    maestro:acceptsQuote ex:Quote1 ;
+    maestro:governedBy ex:OpPolicy ;
+    maestro:realizedByOrder ex:Order1 .
+
+ex:Order1 a maestro:ProductionOrder ;
+    rdfs:label "Production order PO-2026-0042" ;
+    maestro:ordersProduct ex:WidgetType ;
+    maestro:executesRecipe ex:WidgetRecipe ;
+    maestro:quantity 100 ;
+    maestro:dueDate "2026-06-30T16:00:00Z"^^xsd:dateTime .

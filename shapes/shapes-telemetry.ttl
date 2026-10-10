@@ -1,0 +1,118 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - RUNTIME STATE MODULE (modules/telemetry.ttl)
+#
+# Qualified state assertions (subject, dimension, value, validity),
+# state transitions, fault specifications, execution records and
+# snapshots. A state value asserted in a dimension must belong to
+# that dimension.
+#################################################################
+
+mhsh:StateAssertionStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:StateAssertion ;
+    rdfs:label "A state assertion names exactly one subject, dimension, value and start of validity."@en ;
+    sh:property [
+        sh:path maestro:stateSubject ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:StateAssertion must name exactly one maestro:stateSubject." ;
+    ] ;
+    sh:property [
+        sh:path maestro:stateDimension ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:StateDimension ;
+        sh:message "A maestro:StateAssertion must name exactly one maestro:StateDimension via maestro:stateDimension." ;
+    ] ;
+    sh:property [
+        sh:path maestro:stateValue ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:State ;
+        sh:message "A maestro:StateAssertion must name exactly one maestro:State via maestro:stateValue." ;
+    ] ;
+    sh:property [
+        sh:path maestro:validFrom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "A maestro:StateAssertion must carry exactly one maestro:validFrom as an xsd:dateTime literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:validTo ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "maestro:validTo on a maestro:StateAssertion is at most one xsd:dateTime literal." ;
+    ] .
+
+mhsh:StateAssertionDimensionShape a sh:NodeShape ;
+    sh:targetClass maestro:StateAssertion ;
+    rdfs:label "The asserted state value belongs to the asserted dimension."@en ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "State assertion {$this} asserts {?value} in dimension {?dim}, but that state is declared maestro:inDimension {?valueDim}; the value's dimension must equal the assertion's maestro:stateDimension." ;
+        sh:select """
+            PREFIX maestro: <https://w3id.org/maestro#>
+            SELECT $this ?value ?dim ?valueDim
+            WHERE {
+                $this  maestro:stateDimension ?dim ;
+                       maestro:stateValue     ?value .
+                ?value maestro:inDimension    ?valueDim .
+                FILTER NOT EXISTS { ?value maestro:inDimension ?dim }
+            }
+        """ ;
+    ] .
+
+mhsh:StateTransitionStatesShape a sh:NodeShape ;
+    sh:targetClass maestro:StateTransition ;
+    rdfs:label "A state transition leaves exactly one state and enters exactly one state."@en ;
+    sh:property [
+        sh:path maestro:fromState ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:State ;
+        sh:message "A maestro:StateTransition must name exactly one maestro:State via maestro:fromState." ;
+    ] ;
+    sh:property [
+        sh:path maestro:enteredState ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:State ;
+        sh:message "A maestro:StateTransition must name exactly one maestro:State via maestro:enteredState." ;
+    ] .
+
+mhsh:FaultSpecificationCodeShape a sh:NodeShape ;
+    sh:targetClass maestro:FaultSpecification ;
+    rdfs:label "A fault specification carries a fault code."@en ;
+    sh:property [
+        sh:path maestro:faultCode ;
+        sh:minCount 1 ;
+        sh:message "A maestro:FaultSpecification must carry at least one maestro:faultCode." ;
+    ] .
+
+mhsh:ExecutionRecordSubjectShape a sh:NodeShape ;
+    sh:targetClass maestro:ExecutionRecord ;
+    rdfs:label "An execution record describes exactly one skill execution."@en ;
+    sh:property [
+        sh:path maestro:describesExecution ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:SkillExecution ;
+        sh:message "A maestro:ExecutionRecord must describe exactly one maestro:SkillExecution via maestro:describesExecution." ;
+    ] .
+
+mhsh:SnapshotTimestampShape a sh:NodeShape ;
+    sh:targetClass maestro:Snapshot ;
+    rdfs:label "A snapshot states exactly once when it was taken."@en ;
+    sh:property [
+        sh:path maestro:snapshotTaken ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:Snapshot must carry exactly one maestro:snapshotTaken." ;
+    ] .

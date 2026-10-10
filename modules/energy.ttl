@@ -1,0 +1,164 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core module : Energy
+#
+# Not an HHM-Core cluster. Energy-aware manufacturing: power,
+# consumption and carbon footprint per module and per execution.
+# Measurements carry bare numbers with the unit fixed by the property
+# name (kWh, W, g CO2-eq per kWh); the package has no unit module.
+#################################################################
+
+<https://w3id.org/maestro/hhm/energy> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/energy/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Energy" ;
+    rdfs:label "MAESTRO HHM-Core: Energy"@en ;
+    dct:description "Energy-aware manufacturing: energy consumers and sources, accumulated energy over an interval and instantaneous power."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. Definitions are reused from the MAESTRO 1.0 energy module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/energy> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/resource> , <https://w3id.org/maestro/hhm/execution> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:EnergyConsumer a owl:Class ;
+    rdfs:label "Energy consumer"@en ;
+    skos:definition "A module that draws energy from an energy source while operating."@en ;
+    rdfs:comment "Type a module additionally as an energy consumer to record its supply."@en ;
+    rdfs:subClassOf maestro:Module ;
+    dct:references <https://w3id.org/maestro/energy#EnergyConsumer> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:EnergyMeasurement a owl:Class ;
+    rdfs:label "Energy measurement"@en ;
+    skos:definition "A measurement of energy accumulated by a subject over an interval."@en ;
+    dct:source <https://w3id.org/maestro/energy#EnergyMeasurement> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:PowerMeasurement a owl:Class ;
+    rdfs:label "Power measurement"@en ;
+    skos:definition "An instantaneous measurement of the power drawn by a subject at a time."@en ;
+    rdfs:comment "Distinct from accumulated energy: a power reading has a timestamp and no interval."@en ;
+    dct:source <https://w3id.org/maestro/energy#PowerMeasurement> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:EnergySource a owl:Class ;
+    rdfs:label "Energy source"@en ;
+    skos:definition "A source that supplies energy, such as a grid connection, a generator or a battery."@en ;
+    rdfs:comment "Controlled vocabulary of individuals; add site-specific sources as further individuals."@en ;
+    dct:source <https://w3id.org/maestro/energy#EnergySource> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:ElectricalGrid a owl:NamedIndividual , maestro:EnergySource ;
+    rdfs:label "Electrical grid"@en ;
+    skos:definition "Electricity drawn from the public grid."@en ;
+    dct:source <https://w3id.org/maestro/energy#ElectricalGrid> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:Solar a owl:NamedIndividual , maestro:EnergySource ;
+    rdfs:label "Solar"@en ;
+    skos:definition "Electricity from photovoltaic generation."@en ;
+    dct:source <https://w3id.org/maestro/energy#Solar> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:Wind a owl:NamedIndividual , maestro:EnergySource ;
+    rdfs:label "Wind"@en ;
+    skos:definition "Electricity from wind generation."@en ;
+    dct:source <https://w3id.org/maestro/energy#Wind> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:CompressedAir a owl:NamedIndividual , maestro:EnergySource ;
+    rdfs:label "Compressed air"@en ;
+    skos:definition "Energy delivered as compressed air."@en ;
+    dct:source <https://w3id.org/maestro/energy#CompressedAir> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:suppliedBy a owl:ObjectProperty ;
+    rdfs:label "supplied by"@en ;
+    skos:definition "Relates an energy consumer to the energy source that supplies it."@en ;
+    rdfs:domain maestro:EnergyConsumer ;
+    rdfs:range  maestro:EnergySource ;
+    dct:source <https://w3id.org/maestro/energy#suppliedBy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:measuredSubject a owl:ObjectProperty ;
+    schema:domainIncludes maestro:EnergyMeasurement , maestro:PowerMeasurement ;
+    schema:rangeIncludes maestro:Module , maestro:Station , maestro:SkillExecution ;
+    rdfs:label "measured subject"@en ;
+    skos:definition "Relates a measurement to the module, station or execution it is of."@en ;
+    rdfs:comment "Domain and range left open: energy and power measurements, of modules, stations or executions."@en ;
+    dct:source <https://w3id.org/maestro/energy#measuredSubject> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:overInterval a owl:ObjectProperty ;
+    rdfs:label "over interval"@en ;
+    skos:definition "Relates an energy measurement to the interval the energy accumulated over."@en ;
+    rdfs:comment "The join to an execution's maestro:hasTime."@en ;
+    rdfs:domain maestro:EnergyMeasurement ;
+    rdfs:range  maestro:TimeInterval ;
+    dct:source <https://w3id.org/maestro/energy#overInterval> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:energyKwh a owl:DatatypeProperty ;
+    rdfs:label "energy (kWh)"@en ;
+    skos:definition "Accumulated energy in kilowatt hours."@en ;
+    rdfs:comment "Numeric value; the range is rdfs:Literal so decimal, integer, double and float literals are all accepted (checked by the shapes)."@en ;
+    rdfs:domain maestro:EnergyMeasurement ;
+    rdfs:range  rdfs:Literal ;
+    dct:source <https://w3id.org/maestro/energy#energyKwh> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:powerWatts a owl:DatatypeProperty ;
+    rdfs:label "power (W)"@en ;
+    skos:definition "Instantaneous power in watts."@en ;
+    rdfs:comment "Numeric value; range rdfs:Literal for the same reason as maestro:energyKwh."@en ;
+    rdfs:domain maestro:PowerMeasurement ;
+    rdfs:range  rdfs:Literal ;
+    dct:source <https://w3id.org/maestro/energy#powerWatts> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+maestro:carbonGCO2eqPerKwh a owl:DatatypeProperty ;
+    rdfs:label "carbon intensity (g CO2-eq per kWh)"@en ;
+    skos:definition "Grams of CO2-equivalent emitted per kilowatt hour produced by an energy source."@en ;
+    rdfs:comment "Numeric value; range rdfs:Literal for the same reason as maestro:energyKwh."@en ;
+    rdfs:domain maestro:EnergySource ;
+    rdfs:range  rdfs:Literal ;
+    dct:source <https://w3id.org/maestro/energy#carbonGCO2eqPerKwh> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/energy> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# Energy sources
+[] a owl:AllDifferent ;
+    owl:members ( maestro:ElectricalGrid maestro:Solar maestro:Wind maestro:CompressedAir ) .

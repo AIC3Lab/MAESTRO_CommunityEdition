@@ -1,0 +1,365 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix ISO22400: <http://www.w3id.org/hsu-aut/ISO22400-2#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core module : Manufacturing as a Service
+#
+# Not an HHM-Core cluster. The market tier: who offers manufacturing
+# as a service, who asks for it, on which marketplace, at what price
+# and lead time, under which contract, and the production order the
+# contract turns into. The module stops at the market boundary: an
+# offer names a capability and the station that provides it; whether
+# the offer can be met is decided by the technical layer.
+#################################################################
+
+<https://w3id.org/maestro/hhm/maas> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/maas/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Manufacturing as a Service" ;
+    rdfs:label "MAESTRO HHM-Core: Manufacturing as a Service"@en ;
+    dct:description "Manufacturing-as-a-service actors, offers, requests, quotes, contracts and production orders."@en ;
+    rdfs:comment "Apart from documentary skos:closeMatch links to schema.org and to the HSU ISO 22400-2 ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 maas and planning modules; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/maas> , <https://w3id.org/maestro/planning> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/product> , <https://w3id.org/maestro/hhm/invocation> , <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# ACTORS
+#
+# A party is not fixed to one role: the same company may buy on one
+# order and sell on the next, so Customer and PhysicalResourceProvider
+# are not disjoint.
+#################################################################
+
+maestro:Actor a owl:Class ;
+    rdfs:label "Actor"@en ;
+    skos:definition "An organisation participating in the manufacturing-as-a-service ecosystem."@en ;
+    rdfs:comment "Close match to schema:Organization."@en ;
+    skos:closeMatch schema:Organization ;
+    dct:source <https://w3id.org/maestro/maas#Actor> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:Customer a owl:Class ;
+    rdfs:label "Customer"@en ;
+    skos:definition "An actor asking the ecosystem to manufacture something it cannot or will not make itself."@en ;
+    rdfs:subClassOf maestro:Actor ;
+    dct:source <https://w3id.org/maestro/maas#Customer> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:PhysicalResourceProvider a owl:Class ;
+    rdfs:label "Physical resource provider"@en ;
+    skos:definition "An actor that owns and operates production equipment and offers its capabilities as a service."@en ;
+    rdfs:comment "The same party may also be a customer."@en ;
+    rdfs:subClassOf maestro:Actor ;
+    dct:source <https://w3id.org/maestro/maas#PhysicalResourceProvider> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:Marketplace a owl:Class ;
+    rdfs:label "Marketplace"@en ;
+    skos:definition "A platform on which offers are listed and matched."@en ;
+    rdfs:subClassOf maestro:Actor ;
+    dct:source <https://w3id.org/maestro/maas#Marketplace> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:CustomerRole a owl:NamedIndividual , maestro:Role ;
+    rdfs:label "Customer role"@en ;
+    skos:definition "Held by the party a request is requested by."@en ;
+    dct:source <https://w3id.org/maestro/maas#CustomerRole> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:ProviderRole a owl:NamedIndividual , maestro:Role ;
+    rdfs:label "Provider role"@en ;
+    skos:definition "Held by the party an offer is offered by."@en ;
+    dct:source <https://w3id.org/maestro/maas#ProviderRole> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:MarketplaceRole a owl:NamedIndividual , maestro:Role ;
+    rdfs:label "Marketplace role"@en ;
+    skos:definition "Held by the party operating a marketplace."@en ;
+    dct:source <https://w3id.org/maestro/maas#MarketplaceRole> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+#################################################################
+# OFFERS, REQUESTS, QUOTES, CONTRACTS, ORDERS
+#################################################################
+
+maestro:ServiceOffer a owl:Class ;
+    rdfs:label "Service offer"@en ;
+    skos:definition "A standing offer to perform manufacturing work: which capability, at which station, listed on which marketplace."@en ;
+    rdfs:comment "Close match to schema:Offer. The commercial face of a technical maestro:SkillService, reached with maestro:exposesService."@en ;
+    skos:closeMatch schema:Offer ;
+    dct:source <https://w3id.org/maestro/maas#ServiceOffer> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:ServiceRequest a owl:Class ;
+    rdfs:label "Service request"@en ;
+    skos:definition "A customer's demand for a product to be manufactured, carrying its requirements and the latest acceptable lead time."@en ;
+    rdfs:comment "Close match to schema:Demand."@en ;
+    skos:closeMatch schema:Demand ;
+    dct:source <https://w3id.org/maestro/maas#ServiceRequest> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:Quote a owl:Class ;
+    rdfs:label "Quote"@en ;
+    skos:definition "A provider's priced, time-bound answer to one request, derived from one offer."@en ;
+    rdfs:comment "Close match to schema:PriceSpecification."@en ;
+    skos:closeMatch schema:PriceSpecification ;
+    dct:source <https://w3id.org/maestro/maas#Quote> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:Contract a owl:Class ;
+    rdfs:label "Contract"@en ;
+    skos:definition "An accepted quote: the agreement that turns a market transaction into a production order, governed by a policy."@en ;
+    rdfs:comment "Close match to schema:Order."@en ;
+    skos:closeMatch schema:Order ;
+    dct:source <https://w3id.org/maestro/maas#Contract> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:ProductionOrder a owl:Class ;
+    rdfs:label "Production order"@en ;
+    skos:definition "An order to produce a quantity of a product type by a due date, executing a recipe."@en ;
+    rdfs:comment "Close match to ISO22400:ProductionOrder of the HSU ISO 22400-2 ODP. The hook for ISA-95 / IEC 62264 work orders (ext/isa95.ttl)."@en ;
+    skos:closeMatch ISO22400:ProductionOrder ;
+    dct:source <https://w3id.org/maestro/planning#ProductionOrder> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:offeredBy a owl:ObjectProperty ;
+    rdfs:label "offered by"@en ;
+    skos:definition "Relates a service offer to the provider standing behind it."@en ;
+    rdfs:domain maestro:ServiceOffer ;
+    rdfs:range  maestro:PhysicalResourceProvider ;
+    dct:source <https://w3id.org/maestro/maas#offeredBy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:offersCapability a owl:ObjectProperty ;
+    rdfs:label "offers capability"@en ;
+    skos:definition "Relates a service offer to a capability it sells."@en ;
+    rdfs:domain maestro:ServiceOffer ;
+    rdfs:range  maestro:Capability ;
+    dct:source <https://w3id.org/maestro/maas#offersCapability> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:providedAt a owl:ObjectProperty ;
+    rdfs:label "provided at"@en ;
+    skos:definition "Relates a service offer to the station that would do the work."@en ;
+    rdfs:comment "The join to the technical layer; MAESTRO 1.0 names a plant, the HHM-Core package a station."@en ;
+    rdfs:domain maestro:ServiceOffer ;
+    rdfs:range  maestro:Station ;
+    dct:references <https://w3id.org/maestro/maas#providedAt> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:listedOn a owl:ObjectProperty ;
+    rdfs:label "listed on"@en ;
+    skos:definition "Relates a service offer to the marketplace it is published on."@en ;
+    rdfs:domain maestro:ServiceOffer ;
+    rdfs:range  maestro:Marketplace ;
+    dct:source <https://w3id.org/maestro/maas#listedOn> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:exposesService a owl:ObjectProperty ;
+    schema:domainIncludes maestro:ServiceOffer , maestro:DigitalTwin ;
+    rdfs:label "exposes service"@en ;
+    skos:definition "Relates a service offer, or a digital twin, to the skill service it resolves to."@en ;
+    rdfs:comment "Domain left open: a commercial offer and a digital twin both point at a skill service, so a matched offer can be invoked through its interface and endpoint."@en ;
+    rdfs:range  maestro:SkillService ;
+    dct:source <https://w3id.org/maestro/maas#exposesService> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:requestedBy a owl:ObjectProperty ;
+    rdfs:label "requested by"@en ;
+    skos:definition "Relates a service request to the customer that raised it."@en ;
+    rdfs:domain maestro:ServiceRequest ;
+    rdfs:range  maestro:Customer ;
+    dct:source <https://w3id.org/maestro/maas#requestedBy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:forProduct a owl:ObjectProperty ;
+    rdfs:label "for product"@en ;
+    skos:definition "Relates a service request to the product type it asks for."@en ;
+    rdfs:domain maestro:ServiceRequest ;
+    rdfs:range  maestro:ProductType ;
+    dct:source <https://w3id.org/maestro/maas#forProduct> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:quoteFor a owl:ObjectProperty ;
+    rdfs:label "quote for"@en ;
+    skos:definition "Relates a quote to the request it answers."@en ;
+    rdfs:domain maestro:Quote ;
+    rdfs:range  maestro:ServiceRequest ;
+    dct:source <https://w3id.org/maestro/maas#quoteFor> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:basedOnOffer a owl:ObjectProperty ;
+    rdfs:label "based on offer"@en ;
+    skos:definition "Relates a quote to the standing offer it was priced from."@en ;
+    rdfs:domain maestro:Quote ;
+    rdfs:range  maestro:ServiceOffer ;
+    dct:source <https://w3id.org/maestro/maas#basedOnOffer> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:acceptsQuote a owl:ObjectProperty ;
+    rdfs:label "accepts quote"@en ;
+    skos:definition "Relates a contract to the quote it accepts."@en ;
+    rdfs:domain maestro:Contract ;
+    rdfs:range  maestro:Quote ;
+    dct:source <https://w3id.org/maestro/maas#acceptsQuote> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:governedBy a owl:ObjectProperty ;
+    rdfs:label "governed by"@en ;
+    skos:definition "Relates a contract to the policy that governs it: confidentiality of shared data, permitted roles, permitted operating modes."@en ;
+    rdfs:domain maestro:Contract ;
+    rdfs:range  maestro:Policy ;
+    dct:source <https://w3id.org/maestro/maas#governedBy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:realizedByOrder a owl:ObjectProperty ;
+    rdfs:label "realized by order"@en ;
+    skos:definition "Relates a contract to the production order that executes it."@en ;
+    rdfs:domain maestro:Contract ;
+    rdfs:range  maestro:ProductionOrder ;
+    dct:source <https://w3id.org/maestro/maas#realizedByOrder> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:ordersProduct a owl:ObjectProperty ;
+    rdfs:label "orders product"@en ;
+    skos:definition "Relates a production order to the product type it produces."@en ;
+    rdfs:domain maestro:ProductionOrder ;
+    rdfs:range  maestro:ProductType ;
+    dct:source <https://w3id.org/maestro/planning#ordersProduct> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:executesRecipe a owl:ObjectProperty ;
+    rdfs:label "executes recipe"@en ;
+    skos:definition "Relates a production order to the recipe it executes."@en ;
+    rdfs:comment "MAESTRO 1.0 relates the executing equipment to the recipe; this package relates the order."@en ;
+    rdfs:domain maestro:ProductionOrder ;
+    rdfs:range  maestro:Recipe ;
+    dct:references <https://w3id.org/maestro/recipe#executesRecipe> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:operates a owl:ObjectProperty ;
+    rdfs:label "operates"@en ;
+    skos:definition "Relates an actor to a station it owns and runs."@en ;
+    rdfs:domain maestro:Actor ;
+    rdfs:range  maestro:Station ;
+    dct:references <https://w3id.org/maestro/maas#operates> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:operatedBy a owl:ObjectProperty ;
+    rdfs:label "operated by"@en ;
+    skos:definition "Relates a marketplace to the actor that runs it."@en ;
+    rdfs:domain maestro:Marketplace ;
+    rdfs:range  maestro:Actor ;
+    dct:source <https://w3id.org/maestro/maas#operatedBy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:leadTimeDays a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:ServiceOffer , maestro:Quote ;
+    rdfs:label "lead time (days)"@en ;
+    skos:definition "Time from acceptance to delivery, in days, as promised by an offer or a quote."@en ;
+    rdfs:comment "Domain left open for offers and quotes. MAESTRO 1.0 uses a unit-bearing quantity; this package has no unit module."@en ;
+    rdfs:range  xsd:decimal ;
+    dct:references <https://w3id.org/maestro/maas#leadTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:maxLeadTimeDays a owl:DatatypeProperty ;
+    rdfs:label "maximum lead time (days)"@en ;
+    skos:definition "The latest lead time, in days, the customer will accept; compared against the lead time of each quote."@en ;
+    rdfs:domain maestro:ServiceRequest ;
+    rdfs:range  xsd:decimal ;
+    dct:references <https://w3id.org/maestro/maas#maxLeadTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:requestedQuantity a owl:DatatypeProperty ;
+    rdfs:label "requested quantity"@en ;
+    skos:definition "How many units the request covers."@en ;
+    rdfs:domain maestro:ServiceRequest ;
+    rdfs:range  xsd:integer ;
+    dct:source <https://w3id.org/maestro/maas#requestedQuantity> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:submittedOn a owl:DatatypeProperty ;
+    rdfs:label "submitted on"@en ;
+    skos:definition "When the request was raised."@en ;
+    rdfs:domain maestro:ServiceRequest ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/maas#submittedOn> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:maxQuantity a owl:DatatypeProperty ;
+    rdfs:label "maximum quantity"@en ;
+    skos:definition "The largest quantity one order under this offer may cover. Absent means unknown capacity."@en ;
+    rdfs:domain maestro:ServiceOffer ;
+    rdfs:range  xsd:integer ;
+    dct:source <https://w3id.org/maestro/maas#maxQuantity> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:price a owl:DatatypeProperty ;
+    rdfs:label "price"@en ;
+    skos:definition "Monetary amount of a quote, paired with maestro:currency."@en ;
+    rdfs:comment "Corresponds to schema:price."@en ;
+    rdfs:domain maestro:Quote ;
+    rdfs:range  xsd:decimal ;
+    dct:source <https://w3id.org/maestro/maas#price> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:currency a owl:DatatypeProperty ;
+    rdfs:label "currency"@en ;
+    skos:definition "Three-letter currency code for the accompanying amount, for example EUR."@en ;
+    rdfs:comment "Corresponds to schema:priceCurrency."@en ;
+    rdfs:domain maestro:Quote ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/maas#currency> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:validUntil a owl:DatatypeProperty ;
+    rdfs:label "valid until"@en ;
+    skos:definition "Expiry of the quote."@en ;
+    rdfs:comment "Corresponds to schema:validThrough."@en ;
+    rdfs:domain maestro:Quote ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/maas#validUntil> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+maestro:dueDate a owl:DatatypeProperty ;
+    rdfs:label "due date"@en ;
+    skos:definition "The instant by which a production order is to be completed."@en ;
+    rdfs:domain maestro:ProductionOrder ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/planning#dueDate> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maas> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# Market roles
+[] a owl:AllDifferent ;
+    owl:members ( maestro:CustomerRole maestro:ProviderRole maestro:MarketplaceRole ) .

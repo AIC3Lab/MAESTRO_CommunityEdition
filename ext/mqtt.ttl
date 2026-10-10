@@ -1,0 +1,92 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : MQTT
+#
+# Realises an extension point on Binding for MQTT: the MQTT protocol
+# individual, an MQTT broker endpoint and an MQTT binding that names the
+# topic, quality-of-service level and retain flag of a publish or
+# subscribe. Payload encodings stay maestro:DataFormat (maestro:usesDataFormat).
+#################################################################
+
+<https://w3id.org/maestro/hhm/mqtt> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/mqtt/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: MQTT" ;
+    rdfs:label "MAESTRO HHM-Core: MQTT"@en ;
+    dct:description "MQTT realisation of the invocation hooks: the MQTT protocol individual, an MQTT broker endpoint and an MQTT binding carrying topic, quality of service and retain flag."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The protocol individual reuses its definition from the MAESTRO 1.0 communication module (dct:source); the binding and its properties have no MAESTRO 1.0 counterpart."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-10-02"^^xsd:date ;
+    dct:modified "2026-10-02"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/communication> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/addressing> .
+
+#################################################################
+# INDIVIDUALS
+#################################################################
+
+maestro:MqttProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "MQTT"@en ;
+    skos:definition "The MQTT publish-subscribe protocol."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each protocol individual is declared in the extension module of its protocol. An maestro:MqttBinding names it with maestro:specializesAs."@en ;
+    dct:source <https://w3id.org/maestro/communication#MqttProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/mqtt> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:MqttBroker a owl:Class ;
+    rdfs:label "MQTT broker"@en ;
+    skos:definition "An endpoint at which an MQTT broker accepts client connections and forwards each published message to the clients subscribed to its topic."@en ;
+    rdfs:comment "Clients that publish or subscribe reach the broker, not each other; the broker address is the endpoint address."@en ;
+    rdfs:subClassOf maestro:Endpoint ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/mqtt> .
+
+maestro:MqttBinding a owl:Class ;
+    rdfs:label "MQTT binding"@en ;
+    skos:definition "A binding that maps an endpoint onto MQTT: the topic a message is published to or subscribed from, with its quality of service and retain flag."@en ;
+    rdfs:comment "Specialises maestro:Binding, realising the HHM extension point on Binding."@en ;
+    rdfs:subClassOf maestro:Binding ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/mqtt> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:mqttTopic a owl:DatatypeProperty ;
+    rdfs:label "MQTT topic"@en ;
+    skos:definition "The MQTT topic name an MQTT binding publishes to, or the topic filter it subscribes with."@en ;
+    rdfs:comment "A topic filter may contain the wildcards + (one level) and # (all remaining levels)."@en ;
+    rdfs:subPropertyOf maestro:topic ;
+    rdfs:domain maestro:MqttBinding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/mqtt> .
+
+maestro:mqttQos a owl:DatatypeProperty ;
+    rdfs:label "MQTT QoS"@en ;
+    skos:definition "The MQTT quality-of-service level of an MQTT binding: 0 (at most once), 1 (at least once) or 2 (exactly once)."@en ;
+    rdfs:domain maestro:MqttBinding ;
+    rdfs:range  xsd:integer ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/mqtt> .
+
+maestro:mqttRetain a owl:DatatypeProperty ;
+    rdfs:label "MQTT retain"@en ;
+    skos:definition "Whether messages published through an MQTT binding carry the retain flag, so the broker keeps the last message for clients that subscribe later."@en ;
+    rdfs:domain maestro:MqttBinding ;
+    rdfs:range  xsd:boolean ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/mqtt> .

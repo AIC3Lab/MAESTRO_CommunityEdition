@@ -1,0 +1,89 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core : umbrella ontology
+#
+# Imports every module of the package. The seven core modules mirror
+# the HHM-Core v1 clusters one to one; the modules under modules/
+# carry concerns no HHM cluster covers (telemetry, energy,
+# maintenance, manufacturing as a service); the modules under ext/
+# realise the extension points the HHM diagram names for standards in
+# the MAESTRO standards basis, and give each communication protocol
+# its own module (protocol individual plus binding). The alignment
+# files under alignment/ import this umbrella and are not imported by
+# it. The three axioms below the header close the protocol, data-format
+# and interface-language vocabularies, whose individuals are spread
+# over the extension modules.
+#################################################################
+
+<https://w3id.org/maestro/hhm> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core" ;
+    rdfs:label "MAESTRO HHM-Core"@en ;
+    dct:description "A version of the MAESTRO manufacturing ontology structured after the HHM-Core v1 reference model: product, physical resources, skills, recipe and planning, safety and policy, invocation hooks and minimal execution, with modules for telemetry, energy, maintenance and manufacturing as a service, and extensions for data formats, the digital twin, OPC UA, ISA-88, ISA-95, AutomationML, DTDL, REST, MQTT, DDS, Modbus, PROFINET, EtherCAT, PROV-O and ODRL."@en ;
+    rdfs:comment "All terms share the namespace https://w3id.org/maestro# (prefix maestro); rdfs:isDefinedBy names the module that defines each term. Definitions are reused from MAESTRO 1.0 wherever a matching term exists (dct:source per term). Standards are referenced only where their ontology design pattern or schema is pinned under references/ in the MAESTRO repository; ECLASS, DPP, PRONTO, CaSkMan, AAS, OpenAPI, SAREF4INMA and XACML are named as hooks and carry no IRIs and no mappings."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/resource> ,
+                <https://w3id.org/maestro/hhm/skill> ,
+                <https://w3id.org/maestro/hhm/recipe> ,
+                <https://w3id.org/maestro/hhm/product> ,
+                <https://w3id.org/maestro/hhm/invocation> ,
+                <https://w3id.org/maestro/hhm/policy> ,
+                <https://w3id.org/maestro/hhm/execution> ,
+                <https://w3id.org/maestro/hhm/telemetry> ,
+                <https://w3id.org/maestro/hhm/energy> ,
+                <https://w3id.org/maestro/hhm/maintenance> ,
+                <https://w3id.org/maestro/hhm/maas> ,
+                <https://w3id.org/maestro/hhm/addressing> ,
+                <https://w3id.org/maestro/hhm/data-formats> ,
+                <https://w3id.org/maestro/hhm/digital-twin> ,
+                <https://w3id.org/maestro/hhm/opcua> ,
+                <https://w3id.org/maestro/hhm/isa88> ,
+                <https://w3id.org/maestro/hhm/isa95> ,
+                <https://w3id.org/maestro/hhm/automationml> ,
+                <https://w3id.org/maestro/hhm/dtdl> ,
+                <https://w3id.org/maestro/hhm/rest> ,
+                <https://w3id.org/maestro/hhm/mqtt> ,
+                <https://w3id.org/maestro/hhm/dds> ,
+                <https://w3id.org/maestro/hhm/modbus> ,
+                <https://w3id.org/maestro/hhm/profinet> ,
+                <https://w3id.org/maestro/hhm/ethercat> ,
+                <https://w3id.org/maestro/hhm/prov> ,
+                <https://w3id.org/maestro/hhm/odrl> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# Each maestro:Protocol, maestro:DataFormat and
+# maestro:InterfaceDescriptionLanguage individual is declared in an
+# extension module; the umbrella imports all of them and states once per
+# vocabulary that its members are pairwise distinct.
+#################################################################
+
+# Protocols
+[] a owl:AllDifferent ;
+    owl:members ( maestro:OpcUaProtocol maestro:DdsProtocol maestro:MqttProtocol maestro:ProfinetProtocol maestro:EthercatProtocol maestro:ModbusProtocol maestro:HttpProtocol ) .
+
+# Data formats
+[] a owl:AllDifferent ;
+    owl:members ( maestro:JsonFormat maestro:XmlFormat maestro:ProtobufFormat maestro:OpcUaBinaryFormat ) .
+
+# Interface description languages
+[] a owl:AllDifferent ;
+    owl:members ( maestro:OpcUaNodeSetIDL maestro:DtdlIDL maestro:AasSubmodelTemplateIDL maestro:OpenApiIDL ) .

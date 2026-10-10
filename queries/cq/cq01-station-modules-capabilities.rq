@@ -1,0 +1,14 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ01 - Which stations have which modules, and which capabilities does each module provide?
+SELECT ?station ?module ?capability ?capabilityLabel
+WHERE {
+    ?station a maestro:Station ;
+             maestro:hasModule ?module .
+    OPTIONAL {
+        ?module maestro:providesCapability ?capability .
+        OPTIONAL { ?capability rdfs:label ?capabilityLabel }
+    }
+}
+ORDER BY ?station ?module ?capability

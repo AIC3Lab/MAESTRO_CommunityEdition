@@ -1,0 +1,189 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix OpcUa: <http://www.w3id.org/hsu-aut/OpcUa#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : OPC UA
+#
+# Realises the HHM extension point "OPC UA / VDMA" on Binding: the
+# OPC UA protocol individual, the OPC UA binary encoding (a
+# maestro:DataFormat) and the OPC UA node set (a
+# maestro:InterfaceDescriptionLanguage), an OPC UA server hosting an OPC
+# UA skill interface whose methods implement skills, and an OPC UA
+# binding that specialises the protocol-neutral maestro:Binding.
+#################################################################
+
+<https://w3id.org/maestro/hhm/opcua> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/opcua/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: OPC UA" ;
+    rdfs:label "MAESTRO HHM-Core: OPC UA"@en ;
+    dct:description "OPC UA realisation of the invocation hooks: the OPC UA protocol, data-format and interface-language individuals, servers, nodes, objects, variables, methods, an OPC UA skill interface and an OPC UA binding."@en ;
+    rdfs:comment "Apart from documentary skos:closeMatch links to the HSU OPC UA ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 opcua module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/opcua> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/addressing> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:OpcUaServer a owl:Class ;
+    rdfs:label "OPC UA server"@en ;
+    skos:definition "An OPC UA server that holds a node set of OPC UA nodes."@en ;
+    rdfs:comment "Close match to OpcUa:UAServer of the HSU OPC UA ODP."@en ;
+    skos:closeMatch OpcUa:UAServer ;
+    dct:source <https://w3id.org/maestro/opcua#OpcUaServer> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaNode a owl:Class ;
+    rdfs:label "OPC UA node"@en ;
+    skos:definition "A node of an OPC UA server's node set, identified by a node id and a browse name."@en ;
+    rdfs:comment "Close match to OpcUa:UANode of the HSU OPC UA ODP."@en ;
+    skos:closeMatch OpcUa:UANode ;
+    dct:source <https://w3id.org/maestro/opcua#OpcUaNode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaObject a owl:Class ;
+    rdfs:label "OPC UA object"@en ;
+    skos:definition "An OPC UA object node, to which variable and method nodes can be attached as components."@en ;
+    rdfs:comment "Close match to OpcUa:UAObject of the HSU OPC UA ODP."@en ;
+    rdfs:subClassOf maestro:OpcUaNode ;
+    skos:closeMatch OpcUa:UAObject ;
+    dct:source <https://w3id.org/maestro/opcua#OpcUaObject> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaVariable a owl:Class ;
+    rdfs:label "OPC UA variable"@en ;
+    skos:definition "An OPC UA variable node that holds a value."@en ;
+    rdfs:comment "Close match to OpcUa:UAVariable of the HSU OPC UA ODP."@en ;
+    rdfs:subClassOf maestro:OpcUaNode ;
+    skos:closeMatch OpcUa:UAVariable ;
+    dct:source <https://w3id.org/maestro/opcua#OpcUaVariable> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaMethod a owl:Class ;
+    rdfs:label "OPC UA method"@en ;
+    skos:definition "An OPC UA method node that a client can call."@en ;
+    rdfs:comment "Close match to OpcUa:UAMethod of the HSU OPC UA ODP."@en ;
+    rdfs:subClassOf maestro:OpcUaNode ;
+    skos:closeMatch OpcUa:UAMethod ;
+    dct:source <https://w3id.org/maestro/opcua#OpcUaMethod> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaSkillInterface a owl:Class ;
+    rdfs:label "OPC UA skill interface"@en ;
+    skos:definition "An OPC UA object that exposes a skill to network clients; the OPC UA realisation of the protocol-neutral skill interface."@en ;
+    rdfs:subClassOf maestro:OpcUaObject , maestro:SkillInterface ;
+    dct:source <https://w3id.org/maestro/opcua#OpcUaSkillInterface> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaBinding a owl:Class ;
+    rdfs:label "OPC UA binding"@en ;
+    skos:definition "A binding that maps an endpoint onto OPC UA: the method that is called and the encoding used."@en ;
+    rdfs:comment "Specialises maestro:Binding, realising the HHM extension point on Binding."@en ;
+    rdfs:subClassOf maestro:Binding ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+#################################################################
+# INDIVIDUALS
+#################################################################
+
+maestro:OpcUaProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "OPC UA"@en ;
+    skos:definition "The OPC Unified Architecture protocol."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each protocol individual is declared in the extension module of its protocol. An OPC UA binding names it with maestro:specializesAs."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpcUaProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaBinaryFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "OPC UA Binary"@en ;
+    skos:definition "The OPC UA binary encoding."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: a data format that belongs to one protocol is declared in that protocol's module. An OPC UA binding names it with maestro:usesDataFormat."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpcUaBinaryFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:OpcUaNodeSetIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "OPC UA NodeSet"@en ;
+    skos:definition "An interface described as an OPC UA node set."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each interface description language is declared in the extension module of its technology. A skill interface or binding names it with maestro:describedIn."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpcUaNodeSetIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:hostsInterface a owl:ObjectProperty ;
+    rdfs:label "hosts interface"@en ;
+    skos:definition "Relates an OPC UA server to a skill interface it hosts."@en ;
+    rdfs:domain maestro:OpcUaServer ;
+    rdfs:range  maestro:OpcUaSkillInterface ;
+    dct:source <https://w3id.org/maestro/opcua#hostsInterface> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:hostedOn a owl:ObjectProperty ;
+    rdfs:label "hosted on"@en ;
+    skos:definition "Relates an OPC UA server to the module whose controller runs it."@en ;
+    rdfs:comment "Implied: MAESTRO 1.0 places servers on control components; this package has none and names the module."@en ;
+    rdfs:domain maestro:OpcUaServer ;
+    rdfs:range  maestro:Module ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:exposes a owl:ObjectProperty ;
+    rdfs:label "exposes"@en ;
+    skos:definition "Relates an OPC UA skill interface to the skill it exposes."@en ;
+    rdfs:domain maestro:OpcUaSkillInterface ;
+    rdfs:range  maestro:Skill ;
+    dct:source <https://w3id.org/maestro/opcua#exposes> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:implementsSkill a owl:ObjectProperty ;
+    rdfs:label "implements skill"@en ;
+    skos:definition "Relates an OPC UA method to the skill specification it implements."@en ;
+    rdfs:domain maestro:OpcUaMethod ;
+    rdfs:range  maestro:Skill ;
+    dct:source <https://w3id.org/maestro/opcua#implementsSkill> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:bindsMethod a owl:ObjectProperty ;
+    rdfs:label "binds method"@en ;
+    skos:definition "Relates an OPC UA binding to the OPC UA method a call through the endpoint invokes."@en ;
+    rdfs:comment "Implied: the protocol-specific content of an OPC UA binding."@en ;
+    rdfs:domain maestro:OpcUaBinding ;
+    rdfs:range  maestro:OpcUaMethod ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:nodeId a owl:DatatypeProperty ;
+    rdfs:label "node id"@en ;
+    skos:definition "The node id of an OPC UA node, as a string."@en ;
+    rdfs:domain maestro:OpcUaNode ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/opcua#nodeId> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .
+
+maestro:browseName a owl:DatatypeProperty ;
+    rdfs:label "browse name"@en ;
+    skos:definition "The browse name of an OPC UA node."@en ;
+    rdfs:domain maestro:OpcUaNode ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/opcua#browseName> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/opcua> .

@@ -1,0 +1,279 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core module : Maintenance
+#
+# Not an HHM-Core cluster. Maintenance plans and tasks, the actions
+# that perform them (preventive, corrective, condition-based,
+# predictive, inspection), findings, fault diagnoses and the
+# return-to-service assessment.
+#################################################################
+
+<https://w3id.org/maestro/hhm/maintenance> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/maintenance/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Maintenance" ;
+    rdfs:label "MAESTRO HHM-Core: Maintenance"@en ;
+    dct:description "Maintenance plans, tasks, actions, findings, fault diagnoses and return-to-service assessments for modules."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The preventive, corrective, condition-based and predictive hierarchy is a modelling choice. Definitions are reused from the MAESTRO 1.0 maintenance module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/maintenance> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/resource> , <https://w3id.org/maestro/hhm/execution> , <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:MaintenanceAction a owl:Class ;
+    rdfs:label "Maintenance action"@en ;
+    skos:definition "Maintenance work performed on an asset: an occurrence with duration, trigger, affected asset, findings and a return-to-service assessment."@en ;
+    rdfs:comment "Its duration is an maestro:TimeInterval through maestro:hasTime."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#MaintenanceAction> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:Preventive a owl:Class ;
+    rdfs:label "Preventive"@en ;
+    skos:definition "A maintenance action performed at planned intervals or conditions to prevent failure."@en ;
+    rdfs:subClassOf maestro:MaintenanceAction ;
+    dct:source <https://w3id.org/maestro/maintenance#Preventive> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:Corrective a owl:Class ;
+    rdfs:label "Corrective"@en ;
+    skos:definition "A maintenance action performed after a fault to restore an asset to its required condition."@en ;
+    rdfs:subClassOf maestro:MaintenanceAction ;
+    dct:source <https://w3id.org/maestro/maintenance#Corrective> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:ConditionBased a owl:Class ;
+    rdfs:label "Condition-based"@en ;
+    skos:definition "Preventive maintenance triggered by the measured or analysed condition of the asset, together with the maintenance actions that follow from that assessment."@en ;
+    rdfs:subClassOf maestro:Preventive ;
+    dct:source <https://w3id.org/maestro/maintenance#ConditionBased> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:Predictive a owl:Class ;
+    rdfs:label "Predictive"@en ;
+    skos:definition "Condition-based maintenance scheduled from a forecast of the asset's degradation, derived from repeated analysis of its condition data."@en ;
+    rdfs:subClassOf maestro:ConditionBased ;
+    dct:source <https://w3id.org/maestro/maintenance#Predictive> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:Inspection a owl:Class ;
+    rdfs:label "Inspection"@en ;
+    skos:definition "An inspection carried out as maintenance work, examining the condition of an asset and recording findings."@en ;
+    rdfs:comment "MAESTRO 1.0 also types it as a quality inspection; this package has no quality module."@en ;
+    rdfs:subClassOf maestro:MaintenanceAction ;
+    dct:references <https://w3id.org/maestro/maintenance#Inspection> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:FaultDiagnosis a owl:Class ;
+    rdfs:label "Fault diagnosis"@en ;
+    skos:definition "The record of a fault diagnosis: the recognised fault, its localisation and its identified cause."@en ;
+    rdfs:comment "The diagnosing activity itself is not modelled; this class records its result."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#FaultDiagnosis> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:MaintenancePlan a owl:Class ;
+    rdfs:label "Maintenance plan"@en ;
+    skos:definition "A specification of the maintenance tasks an asset receives and when."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#MaintenancePlan> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:MaintenanceTask a owl:Class ;
+    rdfs:label "Maintenance task"@en ;
+    skos:definition "A specified unit of maintenance work; a maintenance action performs it."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#MaintenanceTask> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:Finding a owl:Class ;
+    rdfs:label "Finding"@en ;
+    skos:definition "Something observed during maintenance work: wear, damage, a deviation."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#Finding> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:ReturnToServiceAssessment a owl:Class ;
+    rdfs:label "Return-to-service assessment"@en ;
+    skos:definition "The assessment, after maintenance work, whether the asset may return to service."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#ReturnToServiceAssessment> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:ReturnToServiceOutcome a owl:Class ;
+    rdfs:label "Return-to-service outcome"@en ;
+    skos:definition "The controlled outcome of a return-to-service assessment: whether an asset may return to service, with or without restrictions."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#ReturnToServiceOutcome> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:Cleared a owl:NamedIndividual , maestro:ReturnToServiceOutcome ;
+    rdfs:label "Cleared for service"@en ;
+    skos:definition "The asset may return to service without restriction."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#Cleared> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:ConditionallyCleared a owl:NamedIndividual , maestro:ReturnToServiceOutcome ;
+    rdfs:label "Cleared with conditions"@en ;
+    skos:definition "The asset may return to service under stated restrictions."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#ConditionallyCleared> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:NotCleared a owl:NamedIndividual , maestro:ReturnToServiceOutcome ;
+    rdfs:label "Not cleared"@en ;
+    skos:definition "The asset may not return to service."@en ;
+    dct:source <https://w3id.org/maestro/maintenance#NotCleared> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:hasTask a owl:ObjectProperty ;
+    rdfs:label "has task"@en ;
+    skos:definition "Relates a maintenance plan to a task it schedules."@en ;
+    rdfs:domain maestro:MaintenancePlan ;
+    rdfs:range  maestro:MaintenanceTask ;
+    dct:source <https://w3id.org/maestro/maintenance#hasTask> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:planForAsset a owl:ObjectProperty ;
+    rdfs:label "plan for asset"@en ;
+    skos:definition "Relates a maintenance plan to the module it is defined for."@en ;
+    rdfs:domain maestro:MaintenancePlan ;
+    rdfs:range  maestro:Module ;
+    dct:source <https://w3id.org/maestro/maintenance#planForAsset> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:performsTask a owl:ObjectProperty ;
+    rdfs:label "performs task"@en ;
+    skos:definition "Relates a maintenance action to the planned task it carries out."@en ;
+    rdfs:domain maestro:MaintenanceAction ;
+    rdfs:range  maestro:MaintenanceTask ;
+    dct:source <https://w3id.org/maestro/maintenance#performsTask> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:affectsAsset a owl:ObjectProperty ;
+    rdfs:label "affects asset"@en ;
+    skos:definition "Relates a maintenance action to the module it concerns."@en ;
+    rdfs:domain maestro:MaintenanceAction ;
+    rdfs:range  maestro:Module ;
+    dct:source <https://w3id.org/maestro/maintenance#affectsAsset> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:triggeredBy a owl:ObjectProperty ;
+    rdfs:label "triggered by"@en ;
+    skos:definition "Relates a maintenance action to the fault that caused the work."@en ;
+    rdfs:comment "MAESTRO 1.0 also admits state assertions, plan intervals and predictions as triggers; this package narrows it to faults."@en ;
+    rdfs:domain maestro:MaintenanceAction ;
+    rdfs:range  maestro:Fault ;
+    dct:references <https://w3id.org/maestro/maintenance#triggeredBy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:hasFinding a owl:ObjectProperty ;
+    rdfs:label "has finding"@en ;
+    skos:definition "Relates a maintenance action or inspection to a finding recorded during it."@en ;
+    rdfs:domain maestro:MaintenanceAction ;
+    rdfs:range  maestro:Finding ;
+    dct:source <https://w3id.org/maestro/maintenance#hasFinding> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:diagnosesFault a owl:ObjectProperty ;
+    rdfs:label "diagnoses fault"@en ;
+    skos:definition "Relates a fault diagnosis to the fault occurrence it explains."@en ;
+    rdfs:comment "Implied: MAESTRO 1.0 leaves the diagnosis unlinked; this package joins it to the fault."@en ;
+    rdfs:domain maestro:FaultDiagnosis ;
+    rdfs:range  maestro:Fault ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:assessesWork a owl:ObjectProperty ;
+    rdfs:label "assesses work"@en ;
+    skos:definition "Relates a return-to-service assessment to the maintenance action it assesses."@en ;
+    rdfs:domain maestro:ReturnToServiceAssessment ;
+    rdfs:range  maestro:MaintenanceAction ;
+    dct:source <https://w3id.org/maestro/maintenance#assessesWork> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:rtsOutcome a owl:ObjectProperty ;
+    rdfs:label "return-to-service outcome"@en ;
+    skos:definition "Relates a return-to-service assessment to its outcome."@en ;
+    rdfs:domain maestro:ReturnToServiceAssessment ;
+    rdfs:range  maestro:ReturnToServiceOutcome ;
+    dct:source <https://w3id.org/maestro/maintenance#rtsOutcome> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:rtsEvidence a owl:ObjectProperty ;
+    rdfs:label "return-to-service evidence"@en ;
+    skos:definition "Relates a return-to-service assessment to the evidence the clearance rests on: an inspection, a test run, an observation."@en ;
+    rdfs:domain maestro:ReturnToServiceAssessment ;
+    rdfs:range  maestro:Evidence ;
+    dct:references <https://w3id.org/maestro/maintenance#rtsEvidence> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:scheduledFor a owl:DatatypeProperty ;
+    rdfs:label "scheduled for"@en ;
+    skos:definition "The instant at which a maintenance action is scheduled to take place."@en ;
+    rdfs:domain maestro:MaintenanceAction ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/maintenance#scheduledFor> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:performedAt a owl:DatatypeProperty ;
+    rdfs:label "performed at"@en ;
+    skos:definition "The instant at which a maintenance action was performed."@en ;
+    rdfs:domain maestro:MaintenanceAction ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/maintenance#performedAt> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:findingDescription a owl:DatatypeProperty ;
+    rdfs:label "finding description"@en ;
+    skos:definition "Free-text description of a maintenance finding."@en ;
+    rdfs:domain maestro:Finding ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/maintenance#findingDescription> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:mtbfHours a owl:DatatypeProperty ;
+    rdfs:label "MTBF (hours)"@en ;
+    skos:definition "Mean time between failures of a module, in hours."@en ;
+    rdfs:comment "Numeric value; the range is rdfs:Literal so decimal, integer, double and float literals are all accepted (checked by the shapes)."@en ;
+    rdfs:domain maestro:Module ;
+    rdfs:range  rdfs:Literal ;
+    dct:source <https://w3id.org/maestro/maintenance#mtbfHours> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+maestro:remainingUsefulLifeHours a owl:DatatypeProperty ;
+    rdfs:label "remaining useful life (hours)"@en ;
+    skos:definition "Forecast remaining useful life of a module, in hours."@en ;
+    rdfs:comment "Numeric value; range rdfs:Literal for the same reason as maestro:mtbfHours."@en ;
+    rdfs:domain maestro:Module ;
+    rdfs:range  rdfs:Literal ;
+    dct:source <https://w3id.org/maestro/maintenance#remainingUsefulLifeHours> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/maintenance> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# Return-to-service outcomes
+[] a owl:AllDifferent ;
+    owl:members ( maestro:Cleared maestro:ConditionallyCleared maestro:NotCleared ) .

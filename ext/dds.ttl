@@ -1,0 +1,85 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : DDS
+#
+# Realises an extension point on Binding for DDS: the DDS protocol
+# individual and a DDS binding that names the domain, the topic and the
+# data type a participant publishes or subscribes. Quality-of-service
+# policies are out of scope.
+#################################################################
+
+<https://w3id.org/maestro/hhm/dds> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/dds/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: DDS" ;
+    rdfs:label "MAESTRO HHM-Core: DDS"@en ;
+    dct:description "DDS realisation of the invocation hooks: the DDS protocol individual and a DDS binding carrying domain id, topic name and type name."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The protocol individual reuses its definition from the MAESTRO 1.0 communication module (dct:source); the binding and its properties have no MAESTRO 1.0 counterpart."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-10-02"^^xsd:date ;
+    dct:modified "2026-10-02"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/communication> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/addressing> .
+
+#################################################################
+# INDIVIDUALS
+#################################################################
+
+maestro:DdsProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "DDS"@en ;
+    skos:definition "The Data Distribution Service protocol."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each protocol individual is declared in the extension module of its protocol. An maestro:DdsBinding names it with maestro:specializesAs."@en ;
+    dct:source <https://w3id.org/maestro/communication#DdsProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dds> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:DdsBinding a owl:Class ;
+    rdfs:label "DDS binding"@en ;
+    skos:definition "A binding that maps an endpoint onto DDS: the domain, topic and data type through which a participant publishes or subscribes."@en ;
+    rdfs:comment "Specialises maestro:Binding, realising the HHM extension point on Binding."@en ;
+    rdfs:subClassOf maestro:Binding ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dds> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:ddsDomainId a owl:DatatypeProperty ;
+    rdfs:label "DDS domain id"@en ;
+    skos:definition "The id of the DDS domain in which the participants of a DDS binding communicate."@en ;
+    rdfs:comment "Participants in different domains do not see each other."@en ;
+    rdfs:domain maestro:DdsBinding ;
+    rdfs:range  xsd:integer ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dds> .
+
+maestro:ddsTopic a owl:DatatypeProperty ;
+    rdfs:label "DDS topic"@en ;
+    skos:definition "The name of the DDS topic a DDS binding publishes or subscribes."@en ;
+    rdfs:subPropertyOf maestro:topic ;
+    rdfs:domain maestro:DdsBinding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dds> .
+
+maestro:ddsTypeName a owl:DatatypeProperty ;
+    rdfs:label "DDS type name"@en ;
+    skos:definition "The name of the data type registered for the topic of a DDS binding."@en ;
+    rdfs:domain maestro:DdsBinding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dds> .

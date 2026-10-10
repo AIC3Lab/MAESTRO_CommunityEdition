@@ -1,0 +1,145 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix VDI2206: <http://www.w3id.org/hsu-aut/VDI2206#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core : Physical Resources cluster
+#
+# HHM-Core v1 cluster "Physical Resources": Station, Module,
+# Capability, and the two edges hasModule and providesCapability.
+# This is the root module of the package; it also declares the few
+# datatype properties every other module reuses (description,
+# version, serialNumber, manufacturer, model, location).
+#
+# Extension points named by the HHM diagram: AutomationML / CAEX
+# topology (ext/automationml.ttl) and the ISA-88 equipment model
+# (ext/isa88.ttl).
+#################################################################
+
+<https://w3id.org/maestro/hhm/resource> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/resource/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Physical Resources" ;
+    rdfs:label "MAESTRO HHM-Core: Physical Resources"@en ;
+    dct:description "HHM-Core v1 Physical Resources cluster: stations composed of plug-and-produce modules, and the capabilities a module provides."@en ;
+    rdfs:comment "Root module of the MAESTRO HHM-Core package. Apart from a documentary skos:closeMatch of Module to the HSU VDI 2206 ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 resource and core modules; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/resource> , <https://w3id.org/maestro/core> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:Station a owl:Class ;
+    rdfs:label "Station"@en ;
+    skos:definition "A work station composed of plug-and-produce modules; the top physical unit of the HHM-Core resource model."@en ;
+    rdfs:comment "HHM-Core Physical Resources cluster. A station carries modules through maestro:hasModule; which modules it carries may change through reconfiguration while the station itself stays stable."@en ;
+    dct:source <https://w3id.org/maestro/resource#Station> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:Module a owl:Class ;
+    rdfs:label "Module"@en ;
+    skos:definition "A reconfigurable, plug-and-produce production module that provides capabilities and executes skills."@en ;
+    rdfs:comment "HHM-Core Physical Resources cluster. Close match to VDI2206:Module of the HSU VDI 2206 ODP: system elements or components combined into a group that together perform a specific function. Real execution is attached to the module (see maestro:SkillExecution); a digital twin only represents it."@en ;
+    skos:closeMatch VDI2206:Module ;
+    dct:source <https://w3id.org/maestro/resource#Module> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:Capability a owl:Class ;
+    rdfs:label "Capability"@en ;
+    skos:definition "A specification of a manufacturing possibility: what a holder can do, independent of how it is done."@en ;
+    rdfs:comment "HHM-Core Physical Resources cluster. Provided by modules (maestro:providesCapability) and required by skills (maestro:requiresCapability); reusable capability specifications are individuals of this class."@en ;
+    dct:source <https://w3id.org/maestro/core#Capability> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:hasModule a owl:ObjectProperty ;
+    rdfs:label "has module"@en ;
+    skos:definition "Relates a station to a plug-and-produce module it carries."@en ;
+    rdfs:comment "HHM-Core edge Station hasModule Module."@en ;
+    rdfs:domain maestro:Station ;
+    rdfs:range  maestro:Module ;
+    dct:source <https://w3id.org/maestro/resource#hasModule> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:providesCapability a owl:ObjectProperty ;
+    rdfs:label "provides capability"@en ;
+    skos:definition "Relates a module to a capability it provides."@en ;
+    rdfs:comment "HHM-Core edge Module providesCapability Capability. An asserted capability claim; whether a skill deployed on the module actually realises it is not entailed."@en ;
+    rdfs:domain maestro:Module ;
+    rdfs:range  maestro:Capability ;
+    dct:source <https://w3id.org/maestro/resource#providesCapability> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+#################################################################
+# DATATYPE PROPERTIES (shared across the package)
+#################################################################
+
+maestro:description a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Feature , maestro:Capability , maestro:Hazard , maestro:Risk , maestro:Mitigation , maestro:SafetyFunction , maestro:Skill , maestro:FaultDiagnosis ;
+    rdfs:label "description"@en ;
+    skos:definition "Free-text description of an entity."@en ;
+    rdfs:comment "Domain left open: used by features, hazards, mitigations, safety functions and other entities."@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://w3id.org/maestro/core#description> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:version a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Skill , maestro:Recipe , maestro:Policy ;
+    rdfs:label "version"@en ;
+    skos:definition "Version designation of an entity's description."@en ;
+    rdfs:comment "Domain left open: used by skills, recipes and policies."@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://w3id.org/maestro/core#version> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:manufacturer a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Module ;
+    rdfs:label "manufacturer"@en ;
+    skos:definition "The name of the manufacturer of a resource."@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://w3id.org/maestro/resource#manufacturer> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:model a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Module ;
+    rdfs:label "model"@en ;
+    skos:definition "The model designation of a resource as given by its manufacturer."@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://w3id.org/maestro/resource#model> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:serialNumber a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Module , maestro:ProductInstance ;
+    rdfs:label "serial number"@en ;
+    skos:definition "The serial number of a resource or product instance as given by its manufacturer."@en ;
+    rdfs:comment "Domain left open: a module and a product instance both carry one."@en ;
+    rdfs:range xsd:string ;
+    dct:source <https://w3id.org/maestro/resource#serialNumber> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+
+maestro:location a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Station , maestro:Actor ;
+    rdfs:label "location"@en ;
+    skos:definition "Free-text location of a station or an actor, such as a hall, a site or an address."@en ;
+    rdfs:comment "MAESTRO 1.0 places entities at a planning Site; the HHM-Core package keeps a literal."@en ;
+    rdfs:range xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .

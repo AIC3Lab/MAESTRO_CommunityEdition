@@ -1,0 +1,91 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE MINIMAL EXECUTION CLUSTER (core/execution.ttl)
+#
+# Skill executions with status, executing resource and time
+# interval; well-ordered time intervals; faults with a code.
+#################################################################
+
+mhsh:SkillExecutionStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:SkillExecution ;
+    rdfs:label "A skill execution executes exactly one skill, has exactly one status, runs on a resource and has at most one time interval."@en ;
+    sh:property [
+        sh:path maestro:executes ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:Skill ;
+        sh:message "A maestro:SkillExecution must execute exactly one maestro:Skill via maestro:executes." ;
+    ] ;
+    sh:property [
+        sh:path maestro:hasStatus ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ExecutionStatus ;
+        sh:message "A maestro:SkillExecution must carry exactly one maestro:hasStatus naming a maestro:ExecutionStatus." ;
+    ] ;
+    sh:property [
+        sh:path maestro:executedOn ;
+        sh:minCount 1 ;
+        sh:message "A maestro:SkillExecution must name the resource it ran on via maestro:executedOn." ;
+    ] ;
+    sh:property [
+        sh:path maestro:hasTime ;
+        sh:maxCount 1 ;
+        sh:class maestro:TimeInterval ;
+        sh:message "maestro:hasTime on a maestro:SkillExecution is at most one maestro:TimeInterval." ;
+    ] ;
+    sh:property [
+        sh:path maestro:mayRaise ;
+        sh:class maestro:Fault ;
+        sh:message "maestro:mayRaise on a maestro:SkillExecution must point to a maestro:Fault." ;
+    ] .
+
+mhsh:TimeIntervalStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:TimeInterval ;
+    rdfs:label "A time interval has exactly one start and at most one end, both xsd:dateTime."@en ;
+    sh:property [
+        sh:path maestro:startTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "A maestro:TimeInterval must carry exactly one maestro:startTime as an xsd:dateTime literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:endTime ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:dateTime ;
+        sh:message "maestro:endTime on a maestro:TimeInterval is at most one xsd:dateTime literal." ;
+    ] .
+
+mhsh:TimeIntervalOrderShape a sh:NodeShape ;
+    sh:targetClass maestro:TimeInterval ;
+    rdfs:label "A time interval does not end before it starts."@en ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "Time interval {$this} ends ({?end}) before it starts ({?start}); maestro:endTime must be >= maestro:startTime." ;
+        sh:select """
+            PREFIX maestro: <https://w3id.org/maestro#>
+            SELECT $this ?start ?end
+            WHERE {
+                $this maestro:startTime ?start ;
+                      maestro:endTime   ?end .
+                FILTER ( ?end < ?start )
+            }
+        """ ;
+    ] .
+
+mhsh:FaultCodeShape a sh:NodeShape ;
+    sh:targetClass maestro:Fault ;
+    rdfs:label "A fault carries a fault code."@en ;
+    sh:property [
+        sh:path maestro:faultCode ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:Fault must carry at least one maestro:faultCode as an xsd:string literal." ;
+    ] .

@@ -1,0 +1,12 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ02 - Which skills compose a composite skill, and which capability does each constituent require?
+SELECT ?composite ?subSkill ?subSkillKind ?requiredCapability
+WHERE {
+    ?composite a maestro:CompositeSkill ;
+               maestro:hasSubSkillLink ?subSkill .
+    OPTIONAL { ?subSkill a ?subSkillKind . FILTER(?subSkillKind IN (maestro:AtomicSkill, maestro:CompositeSkill)) }
+    OPTIONAL { ?subSkill maestro:requiresCapability ?requiredCapability }
+}
+ORDER BY ?composite ?subSkill

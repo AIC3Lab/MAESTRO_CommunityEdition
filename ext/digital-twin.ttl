@@ -1,0 +1,125 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : Digital Twin (minimal)
+#
+# The HHM "Minimal Digital Twin Extension connected to HHM-Core":
+# DigitalTwin and TwinBinding, with the relations that diagram draws.
+# A digital twin is not another station or module. It represents a
+# core entity; real execution remains attached to the module.
+#
+# AAS packaging and DTDL twin models are named by the diagram as
+# optional targets of a twin binding. DTDL is in the listed standards
+# basis (ext/dtdl.ttl); AAS is not, so maestro:mapsTo stays a plain IRI.
+# The interface-language individual maestro:AasSubmodelTemplateIDL is
+# declared here, as a plain name of the technology.
+#################################################################
+
+<https://w3id.org/maestro/hhm/digital-twin> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/digital-twin/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Digital Twin" ;
+    rdfs:label "MAESTRO HHM-Core: Digital Twin"@en ;
+    dct:description "Minimal digital-twin extension: a digital representation of a product instance, station or module, with its bindings to services, event streams, execution history and twin platforms."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. Follows the HHM digital-twin diagram."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/product> , <https://w3id.org/maestro/hhm/execution> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:DigitalTwin a owl:Class ;
+    rdfs:label "Digital twin"@en ;
+    skos:definition "A digital representation of a product instance, a station or a module."@en ;
+    rdfs:comment "HHM digital-twin extension. Not another station or module: it represents a core entity, and real execution remains attached to the module it represents."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+maestro:TwinBinding a owl:Class ;
+    rdfs:label "Twin binding"@en ;
+    skos:definition "The mapping of a digital twin onto a twin platform or model, such as an Asset Administration Shell package or a DTDL model."@en ;
+    rdfs:comment "HHM digital-twin extension. The platform is a literal (maestro:platform); the model is an IRI (maestro:mapsTo)."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+#################################################################
+# INDIVIDUALS
+#################################################################
+
+maestro:AasSubmodelTemplateIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "Asset Administration Shell submodel template"@en ;
+    skos:definition "An interface described as an Asset Administration Shell submodel template. A plain name of the technology; no conformance claim."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each interface description language is declared in the extension module of its technology. AAS packaging is one of the twin-binding targets the HHM digital-twin diagram names."@en ;
+    dct:source <https://w3id.org/maestro/communication#AasIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:represents a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:ProductInstance , maestro:Station , maestro:Module ;
+    rdfs:label "represents"@en ;
+    skos:definition "Relates a digital twin to the product instance, station or module it represents."@en ;
+    rdfs:comment "HHM edges DigitalTwin represents ProductInstance / Station / Module. Range left open for the three."@en ;
+    rdfs:domain maestro:DigitalTwin ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+maestro:usesEventStream a owl:ObjectProperty ;
+    rdfs:label "uses event stream"@en ;
+    skos:definition "Relates a digital twin to an event-stream contract it consumes for telemetry and events."@en ;
+    rdfs:comment "HHM edge DigitalTwin uses telemetry / events EventStream."@en ;
+    rdfs:domain maestro:DigitalTwin ;
+    rdfs:range  maestro:EventStream ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+maestro:hasExecutionHistory a owl:ObjectProperty ;
+    rdfs:label "has execution history"@en ;
+    skos:definition "Relates a digital twin to a skill execution of the entity it represents."@en ;
+    rdfs:comment "HHM edge DigitalTwin hasExecutionHistory SkillExecution."@en ;
+    rdfs:domain maestro:DigitalTwin ;
+    rdfs:range  maestro:SkillExecution ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+maestro:hasTwinBinding a owl:ObjectProperty ;
+    rdfs:label "has twin binding"@en ;
+    skos:definition "Relates a digital twin to a binding onto a twin platform or model."@en ;
+    rdfs:comment "HHM edge DigitalTwin hasTwinBinding TwinBinding. The service a twin exposes is stated with maestro:exposesService (modules/maas.ttl), shared with service offers."@en ;
+    rdfs:domain maestro:DigitalTwin ;
+    rdfs:range  maestro:TwinBinding ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:platform a owl:DatatypeProperty ;
+    rdfs:label "platform"@en ;
+    skos:definition "Name of the twin platform or packaging the binding targets, for example a DTDL-based twin service or an Asset Administration Shell package."@en ;
+    rdfs:comment "A plain name; naming a platform is not a conformance claim."@en ;
+    rdfs:domain maestro:TwinBinding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .
+
+maestro:mapsTo a owl:DatatypeProperty ;
+    rdfs:label "maps to"@en ;
+    skos:definition "IRI of the twin model or package the binding maps to, for example a DTDL interface identifier."@en ;
+    rdfs:comment "HHM edge TwinBinding mapsTo AAS / DTDL."@en ;
+    rdfs:domain maestro:TwinBinding ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/digital-twin> .

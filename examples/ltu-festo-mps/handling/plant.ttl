@@ -1,0 +1,1051 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix han:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling#> .
+
+#################################################################
+# LTU FESTO MPS - HANDLING STATION - PLANT (DESIGN TIME)
+#
+# Sources (FESTO CD/04_Handling): 655633_Manual_Handling (DE/EN 04/06
+# R2.2), Electric_Circuit_Diagram_Handling (drawing 195783, 05.04.06),
+# Pneumatic_Circuit_Diagram_Handling, 526883_Parts_list_Handling,
+# assembly
+# instructions, data sheets, operating instructions, 04_Handling_GRAFCET.
+#
+# Documents disagree on: 7 digital outputs in the technical data vs 5
+# wired (O0-O3, O7); 1 slide module in the parts list vs 2 in the manual
+# and assembly instructions. The valve-to-solenoid mapping is inferred
+# from the circuit symbols and data sheets.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - Handling station (plant)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "The Festo MPS Handling station of the LTU line: modules, parts list, I/O allocation, skills, safety and care. The GRAFCET control sequence is in product.ttl. Built from manual 655633, the electric and pneumatic circuit diagrams, parts list 526883, data sheets and the GRAFCET."@en .
+
+
+#################################################################
+# STATION
+#
+# Material number 526883 (parts list) and manual order number 655633.
+#################################################################
+
+han:ID_StationMaterialNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo material number (station)" ;
+    maestro:identifierValue "526883" .
+
+han:ID_ManualOrderNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo order number (technical documentation)" ;
+    maestro:identifierValue "655633" .
+
+han:Station a maestro:Station , maestro:WorkUnit ;
+    rdfs:label "Handling station"@en ;
+    maestro:description "Station 4 (HA) of the MPS. Takes a workpiece from the receptacle with the PicAlfa two-axis pneumatic handling device, tells black from non-black (red, metallic) with an optical sensor in the gripper jaw, and puts black workpieces on slide 1 (inner) and red/silver ones on slide 2 (outer); after moving the slide-2 end stop it can pass workpieces to a downstream station instead. Last station of the LTU line."@en ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Handling station (HA, PicAlfa)" ;
+    maestro:hasIdentifier han:ID_StationMaterialNo , han:ID_ManualOrderNo ;
+    maestro:partOfWorkCenter ltu:MPSLine ;
+    maestro:hasModule han:ReceptacleModule ,
+                 han:PicAlfaModule ,
+                 han:Slide1 ,
+                 han:Slide2 ,
+                 han:ValveTerminal ,
+                 han:ServiceUnit ,
+                 han:IOTerminal ,
+                 han:PLCBoard ,
+                 han:ControlConsole ,
+                 han:StationLinkTransmitter ,
+                 han:StationLinkReceiver ;
+    maestro:hasParameterDef han:TD_OperatingPressure ,
+                       han:TD_MaxPressure ,
+                       han:TD_AirConsumption ,
+                       han:TD_SupplyVoltage ,
+                       han:TD_SupplyCurrent ,
+                       han:TD_DigitalInputs ,
+                       han:TD_DigitalOutputs ,
+                       han:TD_SlideCapacity .
+
+ltu:LTU maestro:operates han:Station .
+
+han:PSU a maestro:EnergySource ;
+    rdfs:label "24 V DC power supply unit, Handling station"@en ;
+    maestro:description "Power supply unit 24 V DC, 4.5 A (max. 5 A); feeds the whole station through the PLC board."@en .
+
+
+#################################################################
+# TECHNICAL DATA
+#
+# Static values from the manual's technical-data table and commissioning
+# section.
+#################################################################
+
+han:TD_OperatingPressure a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Operating pressure 4 bar"@en ;
+    maestro:description "Service unit setting. Operating pressure 4 bar (400 kPa), the maximum operating pressure of the Handling station."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 4.0 ;
+    maestro:maxValue 4.0 .
+
+han:TD_MaxPressure a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Maximum permissible pressure 8 bar"@en ;
+    maestro:description "'Do not exceed' limit of the safety chapter."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 8.0 .
+
+han:TD_AirConsumption a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Compressed-air supply, suction capacity approx. 50 l/min"@en ;
+    maestro:description "Compressed-air supply named for commissioning (approximate value)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/L-PER-MIN"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 50.0 .
+
+han:TD_SupplyVoltage a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Supply voltage 24 V DC"@en ;
+    maestro:description "Power supply unit 24 V DC; the whole station is supplied through the PLC board."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 24.0 ;
+    maestro:maxValue 24.0 .
+
+han:TD_SupplyCurrent a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Supply current 4.5 A"@en ;
+    maestro:description "Technical data 4.5 A; section 'voltage supply' says max. 5 A."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/A"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 4.5 .
+
+han:TD_DigitalInputs a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Digital inputs: 8"@en ;
+    maestro:description "Number of digital inputs in the technical-data table."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 8.0 ;
+    maestro:maxValue 8.0 .
+
+han:TD_DigitalOutputs a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Digital outputs: 7"@en ;
+    maestro:description "Number of digital outputs in the technical-data table."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 7.0 ;
+    maestro:maxValue 7.0 .
+
+han:TD_SlideCapacity a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Slide capacity: 5 workpieces each"@en ;
+    maestro:description "Each of the two slides holds 5 workpieces; the slides have no fill-level sensor."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 5.0 .
+
+
+#################################################################
+# MODULES
+#################################################################
+
+han:ReceptacleModule a maestro:Module ;
+    rdfs:label "Receptacle (holder) module"@en ;
+    maestro:description "Holds the workpiece at the pick-up position ('upstream station' in the circuit diagram); fibre-optic diffuse sensor PART_AV detects it. Stand-alone, workpieces are inserted by hand."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-AN-BS" ;
+    maestro:hasIdentifier ltu:PN_195777 ;
+    maestro:providesCapability ltu:PresenceSensingCapability ;
+    maestro:hasInterface han:Port_MaterialIn .
+
+han:Port_MaterialIn a maestro:ExternalInterface ;
+    rdfs:label "Material input: receptacle (pick-up position 'upstream station')"@en ;
+    maestro:description "The upstream station delivers the workpiece here; how it does so is not stated."@en .
+
+han:PicAlfaModule a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "PicAlfa module (two-axis pick & place)"@en ;
+    maestro:description "Rodless linear axis 1A1 (DGPL-12, positions receptacle / slide 1 / slide 2, end stops with shock absorbers, sensors 1B1-1B3), flat lifting cylinder 2A1 (DZF-18-80, sensors 2B1/2B2) and parallel gripper 3A1 (HGP-10) with fibre-optic sensor 3B1 flush in the jaw. The gripper state is not sensed."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-PA-B-BS" ;
+    maestro:hasIdentifier ltu:PN_526215 ;
+    maestro:providesCapability ltu:TransferCapability ,
+                          ltu:LiftingCapability ,
+                          ltu:MechanicalGrippingCapability ,
+                          ltu:MaterialRecognitionCapability ,
+                          ltu:SortingCapability ;
+    maestro:suppliedBy maestro:CompressedAir ;
+    maestro:hasInterface han:Port_MaterialOut .
+
+han:Port_MaterialOut a maestro:ExternalInterface ;
+    rdfs:label "Transfer point to a downstream station"@en ;
+    maestro:description "Only after the slide-2 end stop is moved to the downstream 'material input' and 1B2 to 'downstream station'; not used in the LTU line, where Handling is last."@en .
+
+han:Slide1 a maestro:Module ;
+    rdfs:label "Slide 1 (inner, black workpieces)"@en ;
+    maestro:description "Receives black workpieces; holds 5; inclination adjustable."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RT250" ;
+    maestro:hasIdentifier ltu:PN_653393 ;
+    maestro:providesCapability ltu:SlideConveyingCapability .
+
+han:Slide2 a maestro:Module ;
+    rdfs:label "Slide 2 (outer, red/silver workpieces)"@en ;
+    maestro:description "Receives red and silver workpieces; holds 5; inclination adjustable."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RT250" ;
+    maestro:hasIdentifier ltu:PN_653393 ;
+    maestro:providesCapability ltu:SlideConveyingCapability .
+
+han:ValveTerminal a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "CPV valve terminal 0V1"@en ;
+    maestro:description "CPV10 valve terminal with 1M1/1M2 (linear axis), 1V1 (5/3 closed-centre kit), 2M1 (extend gripper) and 3M1 (open gripper). Valve-to-coil mapping inferred."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-CP-GMM" ;
+    maestro:hasIdentifier ltu:PN_526872 ;
+    maestro:providesCapability ltu:PneumaticActuationCapability ;
+    maestro:suppliedBy maestro:CompressedAir , han:PSU .
+
+han:ServiceUnit a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:description "Compressed-air inlet, set to 4 bar."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:S-PVW-LFR" ;
+    maestro:hasIdentifier ltu:PN_152894 ;
+    maestro:providesCapability ltu:PneumaticActuationCapability ;
+    maestro:suppliedBy maestro:CompressedAir .
+
+han:IOTerminal a maestro:Module ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:description "Station side of SysLink XMA2: inputs I0-I7, outputs O0-O3 and O7 used (O4-O6 free)."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:hasIdentifier ltu:PN_034035 ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+han:PLCBoard a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "PLC board"@en ;
+    maestro:description "Connects to XMA2, XMG1, the power supply and the PC."@en ;
+    maestro:model "PLC board (controller not stated)" ;
+    maestro:providesCapability ltu:StationControlCapability ;
+    maestro:suppliedBy han:PSU .
+
+han:ControlConsole a maestro:Module ;
+    rdfs:label "Control console"@en ;
+    maestro:description "START, STOP, RESET, AUTO/MAN and EMERGENCY-STOP (if available); connected via XMG1."@en ;
+    maestro:providesCapability ltu:OperatorInterfaceCapability .
+
+han:StationLinkTransmitter a maestro:Module ;
+    rdfs:label "StationLink transmitter IP_N_FO"@en ;
+    maestro:description "Incoming-material side; signals 'station occupied' to the upstream station (O7)."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLS" ;
+    maestro:hasIdentifier ltu:PN_196963 ;
+    maestro:providesCapability ltu:StationLinkCapability ;
+    maestro:hasInterface han:Port_StationLinkTx .
+
+han:Port_StationLinkTx a maestro:ExternalInterface ;
+    rdfs:label "StationLink transmitter (incoming-material side)"@en .
+
+han:StationLinkReceiver a maestro:Module ;
+    rdfs:label "StationLink receiver IP_FI"@en ;
+    maestro:description "Outgoing-material side; reads 'downstream station free' (I7). As the last station of the line it faces no transmitter; what the program then reads is not stated."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLE" ;
+    maestro:hasIdentifier ltu:PN_196964 ;
+    maestro:providesCapability ltu:StationLinkCapability ;
+    maestro:hasInterface han:Port_StationLinkRx .
+
+han:Port_StationLinkRx a maestro:ExternalInterface ;
+    rdfs:label "StationLink receiver (outgoing-material side)"@en .
+
+
+#################################################################
+# BILL OF MATERIALS
+#
+# Parts list 526883 (11.11.2002) with the components of the circuit
+# diagrams below each assembly.
+#################################################################
+
+han:StationType a maestro:ProductType ;
+    rdfs:label "Festo MPS Handling station (equipment type)"@en ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Handling station (HA, PicAlfa)" ;
+    maestro:description "The station as a Festo product; its bill of materials follows the parts list and the component tables of the documents."@en ;
+    maestro:hasIdentifier han:ID_StationMaterialNo , han:ID_ManualOrderNo ;
+    maestro:hasBOM han:BOM_Receptacle ,
+              han:BOM_DiffuseSensors ,
+              han:BOM_PicAlfa ,
+              han:BOM_Slides ,
+              han:BOM_ValveTerminal ,
+              han:BOM_IOTerminal ,
+              han:BOM_ServiceUnit ,
+              han:BOM_ProfilePlate ,
+              han:BOM_Connectors ,
+              han:BOM_MountingSystem ,
+              han:BOM_StationLinkTransmitter ,
+              han:BOM_StationLinkReceiver ,
+              han:BOM_Holder ,
+              han:BOM_Accessories .
+
+han:BOM_Receptacle a maestro:BOMNode ;
+    rdfs:label "Holder (receptacle) module"@en ;
+    maestro:nodeFor ltu:PT_195777 ;
+    maestro:quantity 1.0 .
+
+han:BOM_DiffuseSensors a maestro:BOMNode ;
+    rdfs:label "Diffuse sensor assembly"@en ;
+    maestro:nodeFor ltu:PT_526212 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "PART_AV, 3B1" ;
+    maestro:hasPart han:BOM_FibreOpticDevices , han:BOM_FibreOpticCables .
+
+han:BOM_FibreOpticDevices a maestro:BOMNode ;
+    rdfs:label "Fibre-optic device"@en ;
+    maestro:nodeFor ltu:PT_165327 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "PART_AV, 3B1" .
+
+han:BOM_FibreOpticCables a maestro:BOMNode ;
+    rdfs:label "Fibre-optic cable, diffuse"@en ;
+    maestro:nodeFor ltu:PT_165358 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "PART_AV, 3B1" .
+
+han:BOM_PicAlfa a maestro:BOMNode ;
+    rdfs:label "PicAlfa module"@en ;
+    maestro:nodeFor ltu:PT_526215 ;
+    maestro:quantity 1.0 ;
+    maestro:hasPart han:BOM_1A1 ,
+               han:BOM_2A1 ,
+               han:BOM_3A1 ,
+               han:BOM_ProximitySensors ,
+               han:BOM_FlowControlValves ,
+               han:BOM_ShockAbsorbers .
+
+han:BOM_1A1 a maestro:BOMNode ;
+    rdfs:label "Rodless linear drive DGPL-12"@en ;
+    maestro:description "Linear axis (X)."@en ;
+    maestro:nodeFor ltu:PT_161973 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "1A1" .
+
+han:BOM_2A1 a maestro:BOMNode ;
+    rdfs:label "Flat cylinder DZF-18-80"@en ;
+    maestro:description "Lifting cylinder (Z)."@en ;
+    maestro:nodeFor ltu:PT_164019 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "2A1" .
+
+han:BOM_3A1 a maestro:BOMNode ;
+    rdfs:label "Parallel gripper HGP-10"@en ;
+    maestro:description "Parallel gripper."@en ;
+    maestro:nodeFor ltu:PT_197542 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "3A1" .
+
+han:BOM_ProximitySensors a maestro:BOMNode ;
+    rdfs:label "Proximity sensor SME-8"@en ;
+    maestro:nodeFor ltu:PT_150857 ;
+    maestro:quantity 5.0 ;
+    maestro:refDesignator "1B1, 1B2, 1B3, 2B1, 2B2" .
+
+han:BOM_FlowControlValves a maestro:BOMNode ;
+    rdfs:label "One-way flow control valve, type C"@en ;
+    maestro:description "Type C 175056; the manual also lists type B 162991. Which BMK has which type is not stated."@en ;
+    maestro:nodeFor ltu:PT_175056 ;
+    maestro:quantity 4.0 ;
+    maestro:refDesignator "1V2, 1V3, 2V2, 2V3" .
+
+han:BOM_ShockAbsorbers a maestro:BOMNode ;
+    rdfs:label "Shock absorber"@en ;
+    maestro:description "End stops 'receptacle' and 'slide 2'; quantity not stated."@en ;
+    maestro:nodeFor ltu:PT_158981 .
+
+han:BOM_Slides a maestro:BOMNode ;
+    rdfs:label "Slide module"@en ;
+    maestro:description "Parts list quantity 1; the manual and assembly instructions use 2 slide modules."@en ;
+    maestro:nodeFor ltu:PT_653393 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ValveTerminal a maestro:BOMNode ;
+    rdfs:label "CP valve terminal, Handling"@en ;
+    maestro:nodeFor ltu:PT_526872 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "0V1" ;
+    maestro:hasPart han:BOM_1M1_1M2 , han:BOM_1V1 , han:BOM_2M1_3M1 .
+
+han:BOM_1M1_1M2 a maestro:BOMNode ;
+    rdfs:label "Solenoid valve 2x 3/2-way, normally closed"@en ;
+    maestro:description "Mapping inferred."@en ;
+    maestro:nodeFor ltu:PT_161416 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "1M1, 1M2" .
+
+han:BOM_1V1 a maestro:BOMNode ;
+    rdfs:label "Valve kit 5/3-way, mid position closed"@en ;
+    maestro:description "Mapping inferred."@en ;
+    maestro:nodeFor ltu:PT_176055 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "1V1" .
+
+han:BOM_2M1_3M1 a maestro:BOMNode ;
+    rdfs:label "Solenoid valve 5/2-way, single solenoid"@en ;
+    maestro:description "Mapping inferred."@en ;
+    maestro:nodeFor ltu:PT_161414 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "2M1, 3M1" .
+
+han:BOM_IOTerminal a maestro:BOMNode ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:nodeFor ltu:PT_034035 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ServiceUnit a maestro:BOMNode ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:nodeFor ltu:PT_152894 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ProfilePlate a maestro:BOMNode ;
+    rdfs:label "Profile plate"@en ;
+    maestro:nodeFor ltu:PT_170395 ;
+    maestro:quantity 1.0 .
+
+han:BOM_Connectors a maestro:BOMNode ;
+    rdfs:label "Connector"@en ;
+    maestro:nodeFor ltu:PT_162228 ;
+    maestro:quantity 2.0 .
+
+han:BOM_MountingSystem a maestro:BOMNode ;
+    rdfs:label "Mounting system E"@en ;
+    maestro:nodeFor ltu:PT_196958 ;
+    maestro:quantity 1.0 .
+
+han:BOM_StationLinkTransmitter a maestro:BOMNode ;
+    rdfs:label "StationLink transmitter assembly"@en ;
+    maestro:nodeFor ltu:PT_196963 ;
+    maestro:quantity 1.0 ;
+    maestro:hasPart han:BOM_IP_N_FO .
+
+han:BOM_IP_N_FO a maestro:BOMNode ;
+    rdfs:label "Through-beam sensor, transmitter"@en ;
+    maestro:nodeFor ltu:PT_165353 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "IP_N_FO" .
+
+han:BOM_StationLinkReceiver a maestro:BOMNode ;
+    rdfs:label "StationLink receiver assembly"@en ;
+    maestro:nodeFor ltu:PT_196964 ;
+    maestro:quantity 1.0 ;
+    maestro:hasPart han:BOM_IP_FI .
+
+han:BOM_IP_FI a maestro:BOMNode ;
+    rdfs:label "Through-beam sensor, receiver"@en ;
+    maestro:nodeFor ltu:PT_165323 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "IP_FI" .
+
+han:BOM_Holder a maestro:BOMNode ;
+    rdfs:label "Holder TM-BG"@en ;
+    maestro:nodeFor ltu:PT_196965 ;
+    maestro:quantity 1.0 .
+
+han:BOM_Accessories a maestro:BOMNode ;
+    rdfs:label "Accessories, Handling"@en ;
+    maestro:nodeFor ltu:PT_526866 ;
+    maestro:quantity 1.0 .
+
+
+#################################################################
+# SIGNALS (DATA POINTS)
+#
+# Bits, XMA2 pins and BMKs from the electric circuit diagram, pages 4-5.
+# Sensor = maestro:Output / maestro:DtdlTelemetry; actuator command = maestro:Input /
+# maestro:DtdlProperty.
+#################################################################
+
+han:ID_DI_WorkpieceAvailable_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I0" .
+
+han:ID_DI_WorkpieceAvailable_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "13" .
+
+han:ID_DI_WorkpieceAvailable_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "PART_AV" .
+
+han:DI_WorkpieceAvailable a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Workpiece available"@en ;
+    maestro:description "Fibre-optic diffuse sensor in the receptacle; 1 = workpiece in the receptacle."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_WorkpieceAvailable_Bit ,
+                     han:ID_DI_WorkpieceAvailable_Pin ,
+                     han:ID_DI_WorkpieceAvailable_BMK .
+
+han:ID_DI_AtUpstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I1" .
+
+han:ID_DI_AtUpstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "14" .
+
+han:ID_DI_AtUpstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B1" .
+
+han:DI_AtUpstream a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Handling at upstream station"@en ;
+    maestro:description "Linear axis at the pick-up (receptacle) position."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_AtUpstream_Bit , han:ID_DI_AtUpstream_Pin , han:ID_DI_AtUpstream_BMK .
+
+han:ID_DI_AtDownstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I2" .
+
+han:ID_DI_AtDownstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "15" .
+
+han:ID_DI_AtDownstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B2" .
+
+han:DI_AtDownstream a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Handling at downstream station"@en ;
+    maestro:description "Linear axis at slide 2 (or at the downstream station after re-fitting)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_AtDownstream_Bit ,
+                     han:ID_DI_AtDownstream_Pin ,
+                     han:ID_DI_AtDownstream_BMK .
+
+han:ID_DI_AtSortingPosition_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I3" .
+
+han:ID_DI_AtSortingPosition_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "16" .
+
+han:ID_DI_AtSortingPosition_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B3" .
+
+han:DI_AtSortingPosition a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Handling at sorting position"@en ;
+    maestro:description "Linear axis at the sorting position (slide 1, inferred)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_AtSortingPosition_Bit ,
+                     han:ID_DI_AtSortingPosition_Pin ,
+                     han:ID_DI_AtSortingPosition_BMK .
+
+han:ID_DI_GripperExtended_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I4" .
+
+han:ID_DI_GripperExtended_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "17" .
+
+han:ID_DI_GripperExtended_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "2B1" .
+
+han:DI_GripperExtended a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Gripper extended"@en ;
+    maestro:description "Lifting cylinder advanced (gripper lowered)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_GripperExtended_Bit ,
+                     han:ID_DI_GripperExtended_Pin ,
+                     han:ID_DI_GripperExtended_BMK .
+
+han:ID_DI_GripperRetracted_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I5" .
+
+han:ID_DI_GripperRetracted_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "18" .
+
+han:ID_DI_GripperRetracted_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "2B2" .
+
+han:DI_GripperRetracted a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Gripper retracted"@en ;
+    maestro:description "Lifting cylinder retracted (gripper raised)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_GripperRetracted_Bit ,
+                     han:ID_DI_GripperRetracted_Pin ,
+                     han:ID_DI_GripperRetracted_BMK .
+
+han:ID_DI_NotBlack_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I6" .
+
+han:ID_DI_NotBlack_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "19" .
+
+han:ID_DI_NotBlack_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "3B1" .
+
+han:DI_NotBlack a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Workpiece is not black"@en ;
+    maestro:description "Fibre-optic diffuse sensor in the gripper jaw; 1 = red or metallic, 0 = black (or no workpiece)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_NotBlack_Bit , han:ID_DI_NotBlack_Pin , han:ID_DI_NotBlack_BMK .
+
+han:ID_DI_DownstreamFree_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I7" .
+
+han:ID_DI_DownstreamFree_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "20" .
+
+han:ID_DI_DownstreamFree_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "IP_FI" .
+
+han:DI_DownstreamFree a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Downstream station free"@en ;
+    maestro:description "StationLink receiver."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:hasIdentifier han:ID_DI_DownstreamFree_Bit ,
+                     han:ID_DI_DownstreamFree_Pin ,
+                     han:ID_DI_DownstreamFree_BMK .
+
+han:ID_DO_ToUpstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O0" .
+
+han:ID_DO_ToUpstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "1" .
+
+han:ID_DO_ToUpstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1M1" .
+
+han:DO_ToUpstream a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Handling to upstream station"@en ;
+    maestro:description "Linear axis towards the pick-up position."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:hasIdentifier han:ID_DO_ToUpstream_Bit , han:ID_DO_ToUpstream_Pin , han:ID_DO_ToUpstream_BMK .
+
+han:ID_DO_ToDownstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O1" .
+
+han:ID_DO_ToDownstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "2" .
+
+han:ID_DO_ToDownstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1M2" .
+
+han:DO_ToDownstream a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Handling to downstream station"@en ;
+    maestro:description "Linear axis towards slide 2 / downstream station."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:hasIdentifier han:ID_DO_ToDownstream_Bit ,
+                     han:ID_DO_ToDownstream_Pin ,
+                     han:ID_DO_ToDownstream_BMK .
+
+han:ID_DO_ExtendGripper_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O2" .
+
+han:ID_DO_ExtendGripper_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "3" .
+
+han:ID_DO_ExtendGripper_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "2M1" .
+
+han:DO_ExtendGripper a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Extend gripper"@en ;
+    maestro:description "Lifting cylinder extends; de-energised = retract."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:hasIdentifier han:ID_DO_ExtendGripper_Bit ,
+                     han:ID_DO_ExtendGripper_Pin ,
+                     han:ID_DO_ExtendGripper_BMK .
+
+han:ID_DO_OpenGripper_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O3" .
+
+han:ID_DO_OpenGripper_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "4" .
+
+han:ID_DO_OpenGripper_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "3M1" .
+
+han:DO_OpenGripper a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Open gripper"@en ;
+    maestro:description "De-energised = close (monostable valve, inferred)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:hasIdentifier han:ID_DO_OpenGripper_Bit ,
+                     han:ID_DO_OpenGripper_Pin ,
+                     han:ID_DO_OpenGripper_BMK .
+
+han:ID_DO_StationOccupied_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O7" .
+
+han:ID_DO_StationOccupied_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "8" .
+
+han:ID_DO_StationOccupied_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "IP_N_FO" .
+
+han:DO_StationOccupied a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Station occupied"@en ;
+    maestro:description "StationLink transmitter towards the upstream station."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:hasIdentifier han:ID_DO_StationOccupied_Bit ,
+                     han:ID_DO_StationOccupied_Pin ,
+                     han:ID_DO_StationOccupied_BMK .
+
+han:CC_Start a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "START pushbutton (illuminated)"@en ;
+    maestro:description "Starts the sequence; also acknowledges an error after the operator has removed its cause. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_Stop a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "STOP pushbutton"@en ;
+    maestro:description "Interrupts the sequence at any time. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_Reset a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "RESET pushbutton (illuminated)"@en ;
+    maestro:description "The reset sequence is prompted by the illuminated RESET pushbutton and runs when it is pressed. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_AutoMan a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Key-operated switch AUTO/MAN"@en ;
+    maestro:description "AUTO = continuous cycle, MAN = individual cycle. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_EmergencyStop a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "EMERGENCY-STOP pushbutton (if available)"@en ;
+    maestro:description "Interrupts the sequence at any time; must be released before a program is loaded. Whether it is a PLC input or a hard-wired safety circuit is not stated. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_StartLamp a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "'start' indicator light"@en ;
+    maestro:description "Lamp of the START pushbutton; on while the station waits for START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:CC_ResetLamp a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "'reset' indicator light"@en ;
+    maestro:description "Lamp of the RESET pushbutton; on while the station is not reset. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:T_PickDelay a maestro:ParameterDef ;
+    rdfs:label "Delay 3 s after 'station occupied' (3s/X8)"@en ;
+    maestro:description "The only GRAFCET timer of the station; the pick-up starts 3 s after step 8."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 3.0 ;
+    maestro:maxValue 3.0 .
+
+
+#################################################################
+# I/O PATH: SYSLINK ENDPOINTS AND DATA INTERFACES
+#
+# XMA2 digital, XMG1 console. The URNs only name the connectors.
+#################################################################
+
+han:XMA2 a maestro:Endpoint ;
+    rdfs:label "Handling station: SysLink station connector XMA2 (I/O terminal)"@en ;
+    maestro:address "urn:ltu:festo-mps:handling:XMA2" ;
+    maestro:description "24-pin SysLink plug between the station I/O terminal and the PLC board; parallel wiring, no network address. The URN only names the connector."@en ;
+    maestro:usesProtocol ltu:SysLinkDigitalIO .
+
+han:XMG1 a maestro:Endpoint ;
+    rdfs:label "Handling station: SysLink control-console connector XMG1"@en ;
+    maestro:address "urn:ltu:festo-mps:handling:XMG1" ;
+    maestro:description "SysLink plug between the control console and the PLC board. The URN only names the connector."@en ;
+    maestro:usesProtocol ltu:SysLinkDigitalIO .
+
+han:StationIO a maestro:DtdlInterface ;
+    rdfs:label "Handling station I/O image (XMA2)"@en ;
+    maestro:description "Digital inputs I0-I7 and outputs O0-O3, O7."@en ;
+    maestro:hasTelemetry han:DI_WorkpieceAvailable ,
+                    han:DI_AtUpstream ,
+                    han:DI_AtDownstream ,
+                    han:DI_AtSortingPosition ,
+                    han:DI_GripperExtended ,
+                    han:DI_GripperRetracted ,
+                    han:DI_NotBlack ,
+                    han:DI_DownstreamFree ;
+    maestro:hasProperty han:DO_ToUpstream ,
+                   han:DO_ToDownstream ,
+                   han:DO_ExtendGripper ,
+                   han:DO_OpenGripper ,
+                   han:DO_StationOccupied ;
+    maestro:exposedVia han:XMA2 .
+
+han:ConsoleIO a maestro:DtdlInterface ;
+    rdfs:label "Handling station control console (XMG1)"@en ;
+    maestro:description "Operator signals of the control console."@en ;
+    maestro:hasTelemetry han:CC_Start ,
+                    han:CC_Stop ,
+                    han:CC_Reset ,
+                    han:CC_AutoMan ,
+                    han:CC_EmergencyStop ;
+    maestro:hasProperty han:CC_StartLamp , han:CC_ResetLamp ;
+    maestro:exposedVia han:XMG1 .
+
+han:ControlService a maestro:SkillService ;
+    rdfs:label "Handling station PLC program"@en ;
+    maestro:description "The station manual offers Siemens S7-313C / 313C-2DP / 314 / 315-2DP (STEP7), Festo FEC FC640 / IPC HC02 / HC20 (FST 4.02), Allen-Bradley MicroLogix 1500 (RSLogix 500) and Mitsubishi FX1N (GX IEC Developer) controllers with a ready program. Which controller and program LTU runs is not stated. Program names on the CD: 4HA_AS / 4HA_KFA (S7), 04HA_FEC, 04_HA_K (ML1500), 04_HA_AS (FX1N)."@en ;
+    maestro:exposesInterface han:StationIO , han:ConsoleIO .
+
+
+#################################################################
+# SKILLS
+#################################################################
+
+han:ResetStation a maestro:AtomicSkill ;
+    rdfs:label "Reset to initial position"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "GRAFCET steps 3-4: move to the initial position and set flag 'reset finished'."@en ;
+    maestro:requiresCapability ltu:StationControlCapability ;
+    maestro:hasParameterDef han:CC_Reset , han:DI_AtUpstream , han:DI_GripperRetracted ;
+    maestro:hasPrecondition han:Pre_ResetStation ;
+    maestro:hasPostcondition han:Post_ResetStation .
+
+han:Pre_ResetStation a maestro:Precondition ;
+    rdfs:label "RESET pressed"@en ;
+    maestro:expression "CC_Reset == 1" .
+
+han:Post_ResetStation a maestro:Postcondition ;
+    rdfs:label "Initial position: linear axis at 'upstream station', lifting cylinder retracted, gripper open"@en ;
+    maestro:expression "DI_AtUpstream == 1 && DI_GripperRetracted == 1 && DO_OpenGripper == 1" .
+
+han:SwitchIndicatorLight a maestro:AtomicSkill ;
+    rdfs:label "Switch indicator light"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Turn the 'reset' or 'start' light on or off."@en ;
+    maestro:requiresCapability ltu:OperatorInterfaceCapability ;
+    maestro:hasParameterDef han:CC_StartLamp , han:CC_ResetLamp .
+
+han:SetStationLinkSignal a maestro:AtomicSkill ;
+    rdfs:label "Signal 'station occupied' / 'not occupied'"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Switch the StationLink transmitter towards the upstream station."@en ;
+    maestro:requiresCapability ltu:StationLinkCapability ;
+    maestro:hasParameterDef han:DO_StationOccupied , han:T_PickDelay .
+
+han:OpenGripper a maestro:AtomicSkill ;
+    rdfs:label "Open gripper"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Energise 3M1."@en ;
+    maestro:requiresCapability ltu:MechanicalGrippingCapability ;
+    maestro:hasParameterDef han:DO_OpenGripper ;
+    maestro:hasPostcondition han:Post_OpenGripper .
+
+han:Post_OpenGripper a maestro:Postcondition ;
+    rdfs:label "Gripper opened"@en ;
+    maestro:expression "DO_OpenGripper == 1 (gripper state is not sensed)" .
+
+han:CloseGripper a maestro:AtomicSkill ;
+    rdfs:label "Close gripper"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "De-energise 3M1."@en ;
+    maestro:requiresCapability ltu:MechanicalGrippingCapability ;
+    maestro:hasParameterDef han:DO_OpenGripper ;
+    maestro:hasPostcondition han:Post_CloseGripper .
+
+han:Post_CloseGripper a maestro:Postcondition ;
+    rdfs:label "Gripper closed"@en ;
+    maestro:expression "DO_OpenGripper == 0 (gripper state is not sensed)" .
+
+han:ExtendGripper a maestro:AtomicSkill ;
+    rdfs:label "Extend gripper (lower)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Energise 2M1: the lifting cylinder lowers the gripper."@en ;
+    maestro:requiresCapability ltu:LiftingCapability ;
+    maestro:hasParameterDef han:DO_ExtendGripper , han:DI_GripperExtended ;
+    maestro:hasPostcondition han:Post_ExtendGripper .
+
+han:Post_ExtendGripper a maestro:Postcondition ;
+    rdfs:label "Gripper extended"@en ;
+    maestro:expression "DI_GripperExtended == 1" .
+
+han:RetractGripper a maestro:AtomicSkill ;
+    rdfs:label "Retract gripper (raise)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "De-energise 2M1."@en ;
+    maestro:requiresCapability ltu:LiftingCapability ;
+    maestro:hasParameterDef han:DO_ExtendGripper , han:DI_GripperRetracted ;
+    maestro:hasPostcondition han:Post_RetractGripper .
+
+han:Post_RetractGripper a maestro:Postcondition ;
+    rdfs:label "Gripper retracted"@en ;
+    maestro:expression "DI_GripperRetracted == 1" .
+
+han:DetectMaterial a maestro:AtomicSkill ;
+    rdfs:label "Detect material class in the gripper"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Read 3B1 while the workpiece is held: black or red/silver."@en ;
+    maestro:requiresCapability ltu:MaterialRecognitionCapability ;
+    maestro:hasParameterDef han:DI_NotBlack ;
+    maestro:hasPostcondition han:Post_DetectMaterial .
+
+han:Post_DetectMaterial a maestro:Postcondition ;
+    rdfs:label "Material class known"@en ;
+    maestro:expression "black := !DI_NotBlack" .
+
+han:MoveToSlideBlack a maestro:AtomicSkill ;
+    rdfs:label "Move linear drive to 'slide black'"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Move the axis to the sorting position 1B3 (slide 1). That the axis stops there by de-energising both 1M1 and 1M2 (closed-centre 1V1) is inferred."@en ;
+    maestro:requiresCapability ltu:TransferCapability , ltu:SortingCapability ;
+    maestro:hasParameterDef han:DI_AtSortingPosition ;
+    maestro:hasPostcondition han:Post_MoveToSlideBlack .
+
+han:Post_MoveToSlideBlack a maestro:Postcondition ;
+    rdfs:label "Linear drive at 'slide black'"@en ;
+    maestro:expression "DI_AtSortingPosition == 1" .
+
+han:MoveToSlideRedSilver a maestro:AtomicSkill ;
+    rdfs:label "Move linear drive to 'slide red/silver' (or 'downstream station')"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Energise 1M2: the axis runs to the slide-2 end stop."@en ;
+    maestro:requiresCapability ltu:TransferCapability , ltu:SortingCapability ;
+    maestro:hasParameterDef han:DO_ToDownstream , han:DI_AtDownstream ;
+    maestro:hasPostcondition han:Post_MoveToSlideRedSilver .
+
+han:Post_MoveToSlideRedSilver a maestro:Postcondition ;
+    rdfs:label "Linear drive at 'slide red/silver' resp. 'downstream station'"@en ;
+    maestro:expression "DI_AtDownstream == 1" .
+
+han:MoveToUpstream a maestro:AtomicSkill ;
+    rdfs:label "Move linear drive to 'upstream station'"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Energise 1M1: the axis returns to the receptacle."@en ;
+    maestro:requiresCapability ltu:TransferCapability ;
+    maestro:hasParameterDef han:DO_ToUpstream , han:DI_AtUpstream ;
+    maestro:hasPostcondition han:Post_MoveToUpstream .
+
+han:Post_MoveToUpstream a maestro:Postcondition ;
+    rdfs:label "Linear drive at 'upstream station'"@en ;
+    maestro:expression "DI_AtUpstream == 1" .
+
+han:PickAndSortWorkpiece a maestro:CompositeSkill ;
+    rdfs:label "Pick and sort workpiece (station cycle)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Pick the workpiece from the receptacle, recognise black / non-black in the gripper and deposit it on slide 1 (black) or slide 2 (red/silver) (manual section 5, GRAFCET steps 7-18)."@en ;
+    maestro:hasSubSkillLink han:OpenGripper ,
+                       han:ExtendGripper ,
+                       han:CloseGripper ,
+                       han:RetractGripper ,
+                       han:DetectMaterial ,
+                       han:MoveToSlideBlack ,
+                       han:MoveToSlideRedSilver ,
+                       han:MoveToUpstream ;
+    maestro:requiresCapability ltu:TransferCapability ,
+                          ltu:LiftingCapability ,
+                          ltu:MechanicalGrippingCapability ,
+                          ltu:MaterialRecognitionCapability ,
+                          ltu:SortingCapability ;
+    maestro:hasPrecondition han:Pre_PickAndSortWorkpiece ;
+    maestro:hasPostcondition han:Post_PickAndSortWorkpiece ;
+    maestro:hasInterfaceContract han:StationIO .
+
+han:Pre_PickAndSortWorkpiece a maestro:Precondition ;
+    rdfs:label "Workpiece in the receptacle, START pressed"@en ;
+    maestro:expression "DI_WorkpieceAvailable == 1 && CC_Start == 1" .
+
+han:Post_PickAndSortWorkpiece a maestro:Postcondition ;
+    rdfs:label "Black workpiece on slide 1, red/silver workpiece on slide 2"@en ;
+    maestro:expression "DI_AtUpstream == 1 && DI_GripperRetracted == 1" .
+
+
+#################################################################
+# SAFETY
+#################################################################
+
+ltu:Perm_TraineeRunsStations maestro:target han:PickAndSortWorkpiece .
+
+han:EmergencyStop a maestro:EmergencyStop ;
+    rdfs:label "EMERGENCY-STOP pushbutton, Handling station control console"@en ;
+    maestro:description "The manual names the EMERGENCY-STOP pushbutton '(if available)'; together with STOP it interrupts the sequence at any time and must be released before a program is loaded. Safety category, performance level and wiring are not stated."@en ;
+    maestro:mitigates ltu:H_MovingStation .
+
+han:C_MaxOperatingPressure a maestro:Constraint ;
+    rdfs:label "Do not exceed the Handling station's maximum operating pressure of 4 bar (400 kPa)"@en ;
+    maestro:expression "supplyPressure <= 4 bar" ;
+    maestro:constrains han:Station .
+
+han:C_FibreOpticNotProtective a maestro:Constraint ;
+    rdfs:label "Fibre-optic devices must not be used as contactless protective devices"@en ;
+    maestro:expression "PART_AV and 3B1 are not safety devices" ;
+    maestro:constrains han:ReceptacleModule , han:PicAlfaModule .
+
+ltu:MPSSafetyRules maestro:contains han:C_MaxOperatingPressure , han:C_FibreOpticNotProtective .
+
+
+#################################################################
+# MAINTENANCE
+#
+# Plus the fibre-optic device note of operating instructions 369669.
+#################################################################
+
+han:MT_CleanFibreOptic a maestro:MaintenanceTask ;
+    rdfs:label "Clean the fibre-optic devices only with water (max. 60 degC) or isopropyl alcohol"@en .
+
+han:MaintenancePlan a maestro:MaintenancePlan ;
+    rdfs:label "Handling station care plan (manual chapter 'Maintenance')"@en ;
+    maestro:description "Only 'at regular intervals' is given; no numeric interval is stated."@en ;
+    maestro:planForAsset han:ReceptacleModule ,
+                    han:PicAlfaModule ,
+                    han:Slide1 ,
+                    han:Slide2 ,
+                    han:ValveTerminal ,
+                    han:StationLinkTransmitter ,
+                    han:StationLinkReceiver ;
+    maestro:hasTask ltu:MT_CleanOptics ,
+               ltu:MT_CleanProximitySensors ,
+               ltu:MT_CleanStation ,
+               ltu:MT_VisualCheck ,
+               han:MT_CleanFibreOptic .

@@ -1,0 +1,17 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ09 - Through which endpoint, protocol, binding and operation signature is a skill interface invoked?
+SELECT ?interface ?endpoint ?address ?protocol ?binding ?bindingKind ?signature
+WHERE {
+    ?interface a maestro:SkillInterface ;
+               maestro:exposedVia ?endpoint .
+    ?endpoint maestro:usesProtocol ?protocol .
+    OPTIONAL { ?endpoint maestro:address ?address }
+    OPTIONAL {
+        ?endpoint maestro:hasBinding ?binding .
+        OPTIONAL { ?binding maestro:hasSignature ?signature }
+        OPTIONAL { ?binding a ?bindingKind . FILTER(?bindingKind != maestro:Binding) }
+    }
+}
+ORDER BY ?interface ?endpoint

@@ -1,0 +1,220 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix dis:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing#> .
+
+#################################################################
+# LTU FESTO MPS - DISTRIBUTING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Distributing station
+# (01_Distributing_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing/product> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing/product/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - Distributing station (product: control sequence)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "GRAFCET control sequence of the Distributing station as an HHM-Core recipe."@en .
+
+
+#################################################################
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty steps (1 start, 5 cycle start, 7 'downstream
+# station free', 9 magazine status) and the flag-only step 4 are folded
+# into the transition expressions of the control-flow constraints.
+# Alternative = OR-divergence, Loop = jump back.
+#################################################################
+
+dis:ControlSequence a maestro:Recipe ;
+    rdfs:label "Distributing station control sequence (GRAFCET, 1-bit link)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Function chart according to DIN EN 60848 (IEC 60848) for the Distribution station, '1-bit-link'. No timer in the sequence."@en ;
+    maestro:hasStep dis:X2 ,
+               dis:X3 ,
+               dis:X6 ,
+               dis:X8 ,
+               dis:X10 ,
+               dis:X11 ,
+               dis:X12 ,
+               dis:X13 ,
+               dis:X14 ,
+               dis:X15 ,
+               dis:X16 .
+
+dis:X2 a maestro:PlanStep ;
+    rdfs:label "Step 2 - 'reset' indicator light"@en ;
+    maestro:description "Entered from initial step 1 when the station is not reset."@en ;
+    maestro:stepOrder 2 ;
+    maestro:realizedBy dis:SwitchIndicatorLight ;
+    maestro:hasControlFlow dis:CF_X2_X3 .
+
+dis:CF_X2_X3 a maestro:ControlFlowConstraint ;
+    rdfs:label "X2 -> X3"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X3 ;
+    maestro:expression "'reset' button pressed" .
+
+dis:X3 a maestro:PlanStep ;
+    rdfs:label "Step 3 - move station to initial position"@en ;
+    maestro:description "Step 4 (set flag 'reset finished') follows and is folded in."@en ;
+    maestro:stepOrder 3 ;
+    maestro:realizedBy dis:ResetStation ;
+    maestro:hasControlFlow dis:CF_X3_X6 , dis:CF_X3_X8 .
+
+dis:CF_X3_X6 a maestro:ControlFlowConstraint ;
+    rdfs:label "X3 -> X6"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep dis:X6 ;
+    maestro:expression "station in initial position; flag 'reset finished' set; flag 'start' not set (via steps 4, 5)" .
+
+dis:CF_X3_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X3 -> X8"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep dis:X8 ;
+    maestro:expression "station in initial position; flag 'reset finished' set; flag 'start' set; downstream station free (via steps 4, 5, 7)" .
+
+dis:X6 a maestro:PlanStep ;
+    rdfs:label "Step 6 - 'start' indicator light"@en ;
+    maestro:stepOrder 6 ;
+    maestro:realizedBy dis:SwitchIndicatorLight ;
+    maestro:hasControlFlow dis:CF_X6_X8 .
+
+dis:CF_X6_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X6 -> X8"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X8 ;
+    maestro:expression "flag 'start' is set; downstream station free (via step 7)" .
+
+dis:X8 a maestro:PlanStep ;
+    rdfs:label "Step 8 - swivel arm to position 'downstream station'"@en ;
+    maestro:stepOrder 8 ;
+    maestro:realizedBy dis:SwivelToDownstream ;
+    maestro:hasControlFlow dis:CF_X8_X11 , dis:CF_X8_X10 .
+
+dis:CF_X8_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X8 -> X11"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep dis:X11 ;
+    maestro:expression "swivel arm in 'downstream station' and workpiece in magazine (via step 9)" .
+
+dis:CF_X8_X10 a maestro:ControlFlowConstraint ;
+    rdfs:label "X8 -> X10"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep dis:X10 ;
+    maestro:expression "swivel arm in 'downstream station' and no workpiece in magazine (via step 9)" .
+
+dis:X10 a maestro:PlanStep ;
+    rdfs:label "Step 10 - 'magazine empty' indicator light"@en ;
+    maestro:description "Turns on the MAG. EMPTY and the 'start' indicator lights."@en ;
+    maestro:stepOrder 10 ;
+    maestro:realizedBy dis:SwitchIndicatorLight ;
+    maestro:hasControlFlow dis:CF_X10_X11 .
+
+dis:CF_X10_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X10 -> X11"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X11 ;
+    maestro:expression "workpiece in magazine and error acknowledged" .
+
+dis:X11 a maestro:PlanStep ;
+    rdfs:label "Step 11 - eject workpiece"@en ;
+    maestro:stepOrder 11 ;
+    maestro:realizedBy dis:EjectWorkpiece ;
+    maestro:hasControlFlow dis:CF_X11_X12 .
+
+dis:CF_X11_X12 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X12"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X12 ;
+    maestro:expression "workpiece ejected" .
+
+dis:X12 a maestro:PlanStep ;
+    rdfs:label "Step 12 - swivel arm to position 'magazine'"@en ;
+    maestro:stepOrder 12 ;
+    maestro:realizedBy dis:SwivelToMagazine ;
+    maestro:hasControlFlow dis:CF_X12_X13 .
+
+dis:CF_X12_X13 a maestro:ControlFlowConstraint ;
+    rdfs:label "X12 -> X13"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X13 ;
+    maestro:expression "swivel arm in position 'magazine' and downstream station free" .
+
+dis:X13 a maestro:PlanStep ;
+    rdfs:label "Step 13 - workpiece picked up"@en ;
+    maestro:description "Vacuum on and magazine slide retracted (ejecting cylinder extended) in the same step."@en ;
+    maestro:stepOrder 13 ;
+    maestro:realizedBy dis:PickUpWorkpiece , dis:RetractMagazineSlide ;
+    maestro:hasControlFlow dis:CF_X13_X14 .
+
+dis:CF_X13_X14 a maestro:ControlFlowConstraint ;
+    rdfs:label "X13 -> X14"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X14 ;
+    maestro:expression "workpiece picked up and magazine slide retracted and downstream station free" .
+
+dis:X14 a maestro:PlanStep ;
+    rdfs:label "Step 14 - swivel arm to position 'downstream station'"@en ;
+    maestro:stepOrder 14 ;
+    maestro:realizedBy dis:SwivelToDownstream ;
+    maestro:hasControlFlow dis:CF_X14_X15 .
+
+dis:CF_X14_X15 a maestro:ControlFlowConstraint ;
+    rdfs:label "X14 -> X15"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep dis:X15 ;
+    maestro:expression "swivel arm in position 'downstream station'" .
+
+dis:X15 a maestro:PlanStep ;
+    rdfs:label "Step 15 - drop off workpiece"@en ;
+    maestro:stepOrder 15 ;
+    maestro:realizedBy dis:ReleaseWorkpiece ;
+    maestro:hasControlFlow dis:CF_X15_X16 , dis:CF_X15_X11 , dis:CF_X15_X10 .
+
+dis:CF_X15_X16 a maestro:ControlFlowConstraint ;
+    rdfs:label "X15 -> X16"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep dis:X16 ;
+    maestro:expression "no workpiece picked up and manual mode" .
+
+dis:CF_X15_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X15 -> X11"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep dis:X11 ;
+    maestro:expression "no workpiece picked up and automatic mode; workpiece in magazine (via step 9)" .
+
+dis:CF_X15_X10 a maestro:ControlFlowConstraint ;
+    rdfs:label "X15 -> X10"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep dis:X10 ;
+    maestro:expression "no workpiece picked up and automatic mode; no workpiece in magazine (via step 9)" .
+
+dis:X16 a maestro:PlanStep ;
+    rdfs:label "Step 16 - cycle end"@en ;
+    maestro:description "Sets flag 'cycle end' and swings the arm back to 'magazine'. In AUTO the arm stays at 'downstream station' after drop-off (15 -> 9); only MAN returns it here."@en ;
+    maestro:stepOrder 16 ;
+    maestro:realizedBy dis:SwivelToMagazine ;
+    maestro:hasControlFlow dis:CF_X16_X6 , dis:CF_X16_X8 .
+
+dis:CF_X16_X6 a maestro:ControlFlowConstraint ;
+    rdfs:label "X16 -> X6"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep dis:X6 ;
+    maestro:expression "swivel arm in position 'magazine'; flag 'start' not set (via step 5)" .
+
+dis:CF_X16_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X16 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep dis:X8 ;
+    maestro:expression "swivel arm in position 'magazine'; flag 'start' set; downstream station free (via steps 5, 7)" .

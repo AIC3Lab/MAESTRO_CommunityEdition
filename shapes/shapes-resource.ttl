@@ -1,0 +1,44 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE RESOURCE CLUSTER (core/resource.ttl)
+#
+# Stations, modules and capabilities. Completeness rules are advisory
+# (sh:Warning); cardinality of identifying attributes is enforced.
+#################################################################
+
+mhsh:StationModuleShape a sh:NodeShape ;
+    sh:targetClass maestro:Station ;
+    rdfs:label "A station should be composed of at least one module."@en ;
+    sh:property [
+        sh:path maestro:hasModule ;
+        sh:minCount 1 ;
+        sh:class maestro:Module ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Station should declare at least one maestro:Module via maestro:hasModule." ;
+    ] .
+
+mhsh:ModuleCapabilityShape a sh:NodeShape ;
+    sh:targetClass maestro:Module ;
+    rdfs:label "A module should provide at least one capability."@en ;
+    sh:property [
+        sh:path maestro:providesCapability ;
+        sh:minCount 1 ;
+        sh:class maestro:Capability ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Module should provide at least one maestro:Capability via maestro:providesCapability." ;
+    ] .
+
+mhsh:ModuleSerialNumberShape a sh:NodeShape ;
+    sh:targetClass maestro:Module ;
+    rdfs:label "A module carries at most one serial number."@en ;
+    sh:property [
+        sh:path maestro:serialNumber ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:Module carries at most one maestro:serialNumber." ;
+    ] .

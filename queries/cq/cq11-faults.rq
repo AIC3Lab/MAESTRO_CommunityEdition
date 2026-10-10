@@ -1,0 +1,20 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ11 - Which executions raised which fault (code, cause), of which specified kind that the skill declares it may raise?
+SELECT ?execution ?skill ?fault ?faultCode ?faultCause ?specification ?declaredOnSkill
+WHERE {
+    ?execution a maestro:SkillExecution ;
+               maestro:executes ?skill ;
+               maestro:mayRaise ?fault .
+    OPTIONAL { ?fault maestro:faultCode ?faultCode }
+    OPTIONAL { ?fault maestro:faultCause ?faultCause }
+    OPTIONAL {
+        ?fault maestro:instanceOfFault ?specification .
+        OPTIONAL {
+            ?skill maestro:mayRaiseFault ?specification .
+            BIND(true AS ?declaredOnSkill)
+        }
+    }
+}
+ORDER BY ?execution ?fault

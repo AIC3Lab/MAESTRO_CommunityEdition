@@ -1,0 +1,68 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix lin:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line#> .
+@prefix dis:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing#> .
+@prefix tes:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing#> .
+@prefix pro:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing#> .
+@prefix han:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling#> .
+
+#################################################################
+# LTU FESTO MPS LINE - PLANT (DESIGN TIME)
+#
+# The MPS line as a production unit: the AutomationML links between
+# neighbouring stations, i.e. the material hand-over ports and the
+# optical StationLink pairs. The line itself (ltu:MPSLine, an
+# maestro:WorkCenter) is in shared/shared.ttl. Imports the four station
+# plants.
+#
+# The line order (1 Distributing, 2 Testing, 3 Processing, 4 Handling)
+# follows the Festo station numbering and the combination matrices of
+# the manuals; the LTU layout itself is not stated in the documents.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS line (plant: topology)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "Material and StationLink links between the four stations of the LTU Festo MPS line."@en .
+
+
+#################################################################
+# LINE TOPOLOGY (AutomationML internal links)
+#
+# Material: each station's output port to the next station's input port.
+# StationLink: the downstream station's transmitter (incoming side) faces
+# the upstream station's receiver (outgoing side). Assumed line order.
+#################################################################
+
+lin:Link_Material_DisTes a maestro:InternalLink ;
+    rdfs:label "Material hand-over Distributing -> Testing"@en ;
+    maestro:linksInterface dis:Port_MaterialOut , tes:Port_MaterialIn .
+
+lin:Link_Material_TesPro a maestro:InternalLink ;
+    rdfs:label "Material hand-over Testing -> Processing"@en ;
+    maestro:linksInterface tes:Port_MaterialOut , pro:Port_MaterialIn .
+
+lin:Link_Material_ProHan a maestro:InternalLink ;
+    rdfs:label "Material hand-over Processing -> Handling"@en ;
+    maestro:linksInterface pro:Port_MaterialOut , han:Port_MaterialIn .
+
+lin:Link_StationLink_TesDis a maestro:InternalLink ;
+    rdfs:label "StationLink: Testing transmitter -> Distributing receiver"@en ;
+    maestro:linksInterface tes:Port_StationLinkTx , dis:Port_StationLinkRx .
+
+lin:Link_StationLink_ProTes a maestro:InternalLink ;
+    rdfs:label "StationLink: Processing transmitter -> Testing receiver"@en ;
+    maestro:linksInterface pro:Port_StationLinkTx , tes:Port_StationLinkRx .
+
+lin:Link_StationLink_HanPro a maestro:InternalLink ;
+    rdfs:label "StationLink: Handling transmitter -> Processing receiver"@en ;
+    maestro:linksInterface han:Port_StationLinkTx , pro:Port_StationLinkRx .

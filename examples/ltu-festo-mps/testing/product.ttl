@@ -1,0 +1,259 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix tes:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing#> .
+
+#################################################################
+# LTU FESTO MPS - TESTING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Testing station
+# (02_Testing_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing/product> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing/product/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - Testing station (product: control sequence)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "GRAFCET control sequence of the Testing station as an HHM-Core recipe."@en .
+
+
+#################################################################
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty step 6 and the flag-only steps 5 and 18 are
+# folded into the transition expressions. Step 12 is drawn empty but is
+# the 2 s measuring dwell, so it is kept and realised by MeasureHeight.
+# Colour is not a reject criterion: it only switches the 'material'
+# light.
+#################################################################
+
+tes:ControlSequence a maestro:Recipe ;
+    rdfs:label "Testing station control sequence (GRAFCET, 1-bit link)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Function chart according to DIN EN 60848 (IEC 60848) for the Testing station, '1-bit-link'. Timers 3s/X9, 3s/X10, 2s/X12, 3s/X14. Accept: '2s/X12 and height ok and downstream station free'; reject: '2s/X12 and invalid height'."@en ;
+    maestro:hasStep tes:X2 ,
+               tes:X3 ,
+               tes:X4 ,
+               tes:X7 ,
+               tes:X8 ,
+               tes:X9 ,
+               tes:X10 ,
+               tes:X11 ,
+               tes:X12 ,
+               tes:X13 ,
+               tes:X14 ,
+               tes:X15 ,
+               tes:X16 ,
+               tes:X17 .
+
+tes:X2 a maestro:PlanStep ;
+    rdfs:label "Step 2 - 'reset' indicator light"@en ;
+    maestro:stepOrder 2 ;
+    maestro:realizedBy tes:SwitchIndicatorLight ;
+    maestro:hasControlFlow tes:CF_X2_X3 .
+
+tes:CF_X2_X3 a maestro:ControlFlowConstraint ;
+    rdfs:label "X2 -> X3"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X3 ;
+    maestro:expression "'reset' button pressed and safety light barrier unbroken" .
+
+tes:X3 a maestro:PlanStep ;
+    rdfs:label "Step 3 - move station to initial position"@en ;
+    maestro:stepOrder 3 ;
+    maestro:realizedBy tes:ResetStation ;
+    maestro:hasControlFlow tes:CF_X3_X4 .
+
+tes:CF_X3_X4 a maestro:ControlFlowConstraint ;
+    rdfs:label "X3 -> X4"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X4 ;
+    maestro:expression "station in initial position" .
+
+tes:X4 a maestro:PlanStep ;
+    rdfs:label "Step 4 - eject workpiece"@en ;
+    maestro:stepOrder 4 ;
+    maestro:realizedBy tes:EjectWorkpiece ;
+    maestro:hasControlFlow tes:CF_X4_X7 , tes:CF_X4_X8 .
+
+tes:CF_X4_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X4 -> X7"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep tes:X7 ;
+    maestro:expression "workpiece ejected; flag 'reset finished' set (step 5); flag 'start' not set (via step 6)" .
+
+tes:CF_X4_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X4 -> X8"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep tes:X8 ;
+    maestro:expression "workpiece ejected; flag 'reset finished' set (step 5); flag 'start' set (via step 6)" .
+
+tes:X7 a maestro:PlanStep ;
+    rdfs:label "Step 7 - 'start' indicator light"@en ;
+    maestro:stepOrder 7 ;
+    maestro:realizedBy tes:SwitchIndicatorLight ;
+    maestro:hasControlFlow tes:CF_X7_X8 .
+
+tes:CF_X7_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X7 -> X8"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X8 ;
+    maestro:expression "flag 'start' is set" .
+
+tes:X8 a maestro:PlanStep ;
+    rdfs:label "Step 8 - station not occupied"@en ;
+    maestro:stepOrder 8 ;
+    maestro:realizedBy tes:SetStationLinkSignal ;
+    maestro:hasControlFlow tes:CF_X8_X9 , tes:CF_X8_X10 .
+
+tes:CF_X8_X9 a maestro:ControlFlowConstraint ;
+    rdfs:label "X8 -> X9"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep tes:X9 ;
+    maestro:expression "workpiece available and black" .
+
+tes:CF_X8_X10 a maestro:ControlFlowConstraint ;
+    rdfs:label "X8 -> X10"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep tes:X10 ;
+    maestro:expression "workpiece available and not black" .
+
+tes:X9 a maestro:PlanStep ;
+    rdfs:label "Step 9 - 'material' indicator light on"@en ;
+    maestro:description "Turns on the 'material' light and sets 'station occupied'."@en ;
+    maestro:stepOrder 9 ;
+    maestro:realizedBy tes:SwitchIndicatorLight , tes:SetStationLinkSignal , tes:DetectMaterial ;
+    maestro:hasControlFlow tes:CF_X9_X11 .
+
+tes:CF_X9_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X9 -> X11"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X11 ;
+    maestro:expression "3s/X9 and workpiece black" .
+
+tes:X10 a maestro:PlanStep ;
+    rdfs:label "Step 10 - 'material' indicator light off"@en ;
+    maestro:description "Turns off the 'material' light and sets 'station occupied'."@en ;
+    maestro:stepOrder 10 ;
+    maestro:realizedBy tes:SwitchIndicatorLight , tes:SetStationLinkSignal , tes:DetectMaterial ;
+    maestro:hasControlFlow tes:CF_X10_X11 .
+
+tes:CF_X10_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X10 -> X11"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X11 ;
+    maestro:expression "3s/X10 and workpiece not black" .
+
+tes:X11 a maestro:PlanStep ;
+    rdfs:label "Step 11 - raise lifting cylinder"@en ;
+    maestro:stepOrder 11 ;
+    maestro:realizedBy tes:RaiseLiftingCylinder ;
+    maestro:hasControlFlow tes:CF_X11_X12 .
+
+tes:CF_X11_X12 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X12"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X12 ;
+    maestro:expression "lifting cylinder raised" .
+
+tes:X12 a maestro:PlanStep ;
+    rdfs:label "Step 12 - measure height (empty step)"@en ;
+    maestro:stepOrder 12 ;
+    maestro:realizedBy tes:MeasureHeight ;
+    maestro:hasControlFlow tes:CF_X12_X13 , tes:CF_X12_X16 .
+
+tes:CF_X12_X13 a maestro:ControlFlowConstraint ;
+    rdfs:label "X12 -> X13"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep tes:X13 ;
+    maestro:expression "2s/X12 and height ok and downstream station free" .
+
+tes:CF_X12_X16 a maestro:ControlFlowConstraint ;
+    rdfs:label "X12 -> X16"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep tes:X16 ;
+    maestro:expression "2s/X12 and invalid height" .
+
+tes:X13 a maestro:PlanStep ;
+    rdfs:label "Step 13 - eject workpiece (accepted)"@en ;
+    maestro:description "Ejects onto the air cushioned slide with the air cushion on."@en ;
+    maestro:stepOrder 13 ;
+    maestro:realizedBy tes:EjectWorkpiece , tes:SwitchAirSlide ;
+    maestro:hasControlFlow tes:CF_X13_X14 .
+
+tes:CF_X13_X14 a maestro:ControlFlowConstraint ;
+    rdfs:label "X13 -> X14"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X14 ;
+    maestro:expression "workpiece ejected" .
+
+tes:X14 a maestro:PlanStep ;
+    rdfs:label "Step 14 - turn on air slide"@en ;
+    maestro:stepOrder 14 ;
+    maestro:realizedBy tes:SwitchAirSlide ;
+    maestro:hasControlFlow tes:CF_X14_X15 .
+
+tes:CF_X14_X15 a maestro:ControlFlowConstraint ;
+    rdfs:label "X14 -> X15"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X15 ;
+    maestro:expression "3s/X14 or downstream station occupied" .
+
+tes:X15 a maestro:PlanStep ;
+    rdfs:label "Step 15 - lower lifting cylinder"@en ;
+    maestro:stepOrder 15 ;
+    maestro:realizedBy tes:LowerLiftingCylinder ;
+    maestro:hasControlFlow tes:CF_X15_X7 , tes:CF_X15_X8 .
+
+tes:CF_X15_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X15 -> X7"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep tes:X7 ;
+    maestro:expression "lifting cylinder lowered; flag 'cycle end' set (step 18); flag 'start' not set (via step 6)" .
+
+tes:CF_X15_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X15 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep tes:X8 ;
+    maestro:expression "lifting cylinder lowered; flag 'cycle end' set (step 18); flag 'start' set (via step 6)" .
+
+tes:X16 a maestro:PlanStep ;
+    rdfs:label "Step 16 - lower lifting cylinder (rejected)"@en ;
+    maestro:stepOrder 16 ;
+    maestro:realizedBy tes:LowerLiftingCylinder ;
+    maestro:hasControlFlow tes:CF_X16_X17 .
+
+tes:CF_X16_X17 a maestro:ControlFlowConstraint ;
+    rdfs:label "X16 -> X17"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep tes:X17 ;
+    maestro:expression "lifting cylinder lowered" .
+
+tes:X17 a maestro:PlanStep ;
+    rdfs:label "Step 17 - eject workpiece (rejected)"@en ;
+    maestro:description "Ejects onto the lower slide."@en ;
+    maestro:stepOrder 17 ;
+    maestro:realizedBy tes:EjectWorkpiece ;
+    maestro:hasControlFlow tes:CF_X17_X7 , tes:CF_X17_X8 .
+
+tes:CF_X17_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X17 -> X7"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep tes:X7 ;
+    maestro:expression "workpiece ejected; flag 'cycle end' set (step 18); flag 'start' not set (via step 6)" .
+
+tes:CF_X17_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X17 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep tes:X8 ;
+    maestro:expression "workpiece ejected; flag 'cycle end' set (step 18); flag 'start' set (via step 6)" .

@@ -1,0 +1,361 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core module : Telemetry
+#
+# Not an HHM-Core cluster. Carries the live state model of the
+# MAESTRO 1.0 runtime module that the HHM Minimal Execution cluster
+# does not cover: state values and dimensions, qualified state
+# assertions, telemetry events and transitions, fault specifications,
+# execution records and snapshots.
+#
+# maestro:ExecutionStatus (core) becomes a subclass of maestro:State here, so
+# the shared values Idle, Executing, Held and Aborted are declared
+# once, in core/execution.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/telemetry> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/telemetry/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Telemetry" ;
+    rdfs:label "MAESTRO HHM-Core: Telemetry"@en ;
+    dct:description "Live operational state of stations and modules: state values in independent dimensions, qualified state assertions with validity and evidence, state transitions, fault specifications, execution records and snapshots."@en ;
+    rdfs:comment "Telemetry lives in runtime snapshot graphs, separate from design-time data. MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. Definitions are reused from the MAESTRO 1.0 runtime module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/runtime> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/execution> , <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# STATE VALUES AND DIMENSIONS
+#################################################################
+
+maestro:State a owl:Class ;
+    rdfs:label "State"@en ;
+    skos:definition "A discrete operational condition value that a station, module or execution can be in."@en ;
+    rdfs:comment "State values are individuals. The assertion that a subject is in a state at a time is an maestro:StateAssertion; maestro:hasState is the shortcut for the one current operational state."@en ;
+    dct:source <https://w3id.org/maestro/core#State> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:ExecutionStatus rdfs:subClassOf maestro:State .
+
+maestro:Available a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Available"@en ;
+    skos:definition "The resource is ready to accept work."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Available> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Busy a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Busy"@en ;
+    skos:definition "The resource is currently executing a skill."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Busy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:FaultState a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Fault"@en ;
+    skos:definition "The resource is in a faulted or error state."@en ;
+    rdfs:comment "Named FaultState because maestro:Fault is the fault occurrence class. MAESTRO-local: the HSU PackML ODP has no Fault state; there a machine fault leads to Aborting and Aborted."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Fault> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Alarm a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Alarm"@en ;
+    skos:definition "The resource raises an alarm that needs attention but has not stopped."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Alarm> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Healthy a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Healthy"@en ;
+    skos:definition "Diagnostic condition: the resource operates within its normal condition band."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Healthy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Degraded a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Degraded"@en ;
+    skos:definition "Diagnostic condition: the resource still operates but outside its normal condition band."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Degraded> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Failed a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Failed"@en ;
+    skos:definition "Diagnostic condition: the resource can no longer perform its function."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Failed> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Reserved a owl:NamedIndividual , maestro:State ;
+    rdfs:label "Reserved"@en ;
+    skos:definition "Allocated to an order or request; independent of the operational state."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Reserved> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:StateDimension a owl:Class ;
+    rdfs:label "State dimension"@en ;
+    skos:definition "An independent aspect along which a subject has a state value at a time."@en ;
+    rdfs:comment "Controlled vocabulary: Operational, Health, Reservation, Mode."@en ;
+    dct:source <https://w3id.org/maestro/runtime#StateDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:OperationalDimension a owl:NamedIndividual , maestro:StateDimension ;
+    rdfs:label "Operational"@en ;
+    skos:definition "Operational state: Available, Busy, Idle, Executing, Held, Aborted, Fault, Alarm."@en ;
+    dct:source <https://w3id.org/maestro/runtime#OperationalDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:HealthDimension a owl:NamedIndividual , maestro:StateDimension ;
+    rdfs:label "Health"@en ;
+    skos:definition "Diagnostic condition: Healthy, Degraded, Failed."@en ;
+    dct:source <https://w3id.org/maestro/runtime#HealthDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:ReservationDimension a owl:NamedIndividual , maestro:StateDimension ;
+    rdfs:label "Reservation"@en ;
+    skos:definition "Allocation to orders or requests: Reserved."@en ;
+    dct:source <https://w3id.org/maestro/runtime#ReservationDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:ModeDimension a owl:NamedIndividual , maestro:StateDimension ;
+    rdfs:label "Mode"@en ;
+    skos:definition "Operating mode; values are the maestro:Mode individuals of the policy cluster."@en ;
+    dct:source <https://w3id.org/maestro/runtime#ModeDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+#################################################################
+# QUALIFIED STATE ASSERTIONS
+#################################################################
+
+maestro:StateAssertion a owl:Class ;
+    rdfs:label "State assertion"@en ;
+    skos:definition "The qualified assertion that a subject was in a state value, in one dimension, over a validity period, observed at a time and on stated evidence."@en ;
+    rdfs:comment "History, independent dimensions and evidence need a qualified assertion; maestro:hasState is only the shortcut for the open operational assertion."@en ;
+    dct:source <https://w3id.org/maestro/runtime#StateAssertion> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:hasState a owl:ObjectProperty ;
+    schema:domainIncludes maestro:Module , maestro:Station ;
+    rdfs:label "has state"@en ;
+    skos:definition "The current operational state of a station or module."@en ;
+    rdfs:comment "Shortcut for the open (no validTo) operational maestro:StateAssertion. Domain left open for stations and modules. Use only inside a runtime snapshot graph."@en ;
+    rdfs:range  maestro:State ;
+    dct:source <https://w3id.org/maestro/core#hasState> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:inDimension a owl:ObjectProperty ;
+    rdfs:label "in dimension"@en ;
+    skos:definition "Relates a state value to the dimension it belongs to."@en ;
+    rdfs:domain maestro:State ;
+    rdfs:range  maestro:StateDimension ;
+    dct:source <https://w3id.org/maestro/runtime#inDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Available maestro:inDimension maestro:OperationalDimension .
+maestro:Busy      maestro:inDimension maestro:OperationalDimension .
+maestro:Idle      maestro:inDimension maestro:OperationalDimension .
+maestro:Executing maestro:inDimension maestro:OperationalDimension .
+maestro:Held      maestro:inDimension maestro:OperationalDimension .
+maestro:Aborted   maestro:inDimension maestro:OperationalDimension .
+maestro:FaultState   maestro:inDimension maestro:OperationalDimension .
+maestro:Alarm     maestro:inDimension maestro:OperationalDimension .
+maestro:Healthy   maestro:inDimension maestro:HealthDimension .
+maestro:Degraded  maestro:inDimension maestro:HealthDimension .
+maestro:Failed    maestro:inDimension maestro:HealthDimension .
+maestro:Reserved  maestro:inDimension maestro:ReservationDimension .
+
+maestro:stateSubject a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:Module , maestro:Station ;
+    rdfs:label "state subject"@en ;
+    skos:definition "Relates a state assertion to the station or module whose state is asserted."@en ;
+    rdfs:comment "Range left open for stations and modules."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    dct:source <https://w3id.org/maestro/runtime#stateSubject> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:stateDimension a owl:ObjectProperty ;
+    rdfs:label "state dimension"@en ;
+    skos:definition "Relates a state assertion to the dimension the state belongs to."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    rdfs:range  maestro:StateDimension ;
+    dct:source <https://w3id.org/maestro/runtime#stateDimension> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:stateValue a owl:ObjectProperty ;
+    rdfs:label "state value"@en ;
+    skos:definition "Relates a state assertion to the state value asserted."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    rdfs:range  maestro:State ;
+    dct:source <https://w3id.org/maestro/runtime#stateValue> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:stateEvidence a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:SkillExecution , maestro:Fault , maestro:Evidence ;
+    rdfs:label "state evidence"@en ;
+    skos:definition "Relates a state assertion to the execution, event or evidence record it rests on."@en ;
+    rdfs:comment "Range left open."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    dct:source <https://w3id.org/maestro/runtime#stateEvidence> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:validFrom a owl:DatatypeProperty ;
+    rdfs:label "valid from"@en ;
+    skos:definition "The instant from which a state assertion holds."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#validFrom> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:validTo a owl:DatatypeProperty ;
+    rdfs:label "valid to"@en ;
+    skos:definition "The instant until which a state assertion held. Absent while the assertion is current."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#validTo> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:observedAt a owl:DatatypeProperty ;
+    rdfs:label "observed at"@en ;
+    skos:definition "When the state was observed, which may differ from when it began."@en ;
+    rdfs:domain maestro:StateAssertion ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#observedAt> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+#################################################################
+# RUNTIME EVENTS AND TRANSITIONS
+#################################################################
+
+maestro:TelemetryEvent a owl:Class ;
+    rdfs:label "Telemetry event"@en ;
+    skos:definition "An occurrence recorded at runtime, such as a state transition or a fault."@en ;
+    dct:source <https://w3id.org/maestro/runtime#RuntimeEvent> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Fault rdfs:subClassOf maestro:TelemetryEvent .
+
+maestro:StateTransition a owl:Class ;
+    rdfs:label "State transition"@en ;
+    skos:definition "A telemetry event in which a subject leaves one state and enters another."@en ;
+    rdfs:subClassOf maestro:TelemetryEvent ;
+    dct:source <https://w3id.org/maestro/runtime#StateTransition> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:eventSubject a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:Module , maestro:Station , maestro:SkillExecution ;
+    rdfs:label "event subject"@en ;
+    skos:definition "Relates a telemetry event to the station, module or execution it concerns."@en ;
+    rdfs:comment "Range left open."@en ;
+    rdfs:domain maestro:TelemetryEvent ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:fromState a owl:ObjectProperty ;
+    rdfs:label "from state"@en ;
+    skos:definition "Relates a state transition to the state left."@en ;
+    rdfs:domain maestro:StateTransition ;
+    rdfs:range  maestro:State ;
+    dct:source <https://w3id.org/maestro/runtime#fromState> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:enteredState a owl:ObjectProperty ;
+    rdfs:label "entered state"@en ;
+    skos:definition "Relates a state transition to the state entered."@en ;
+    rdfs:domain maestro:StateTransition ;
+    rdfs:range  maestro:State ;
+    dct:source <https://w3id.org/maestro/runtime#enteredState> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+#################################################################
+# POTENTIAL FAULTS
+#################################################################
+
+maestro:FaultSpecification a owl:Class ;
+    rdfs:label "Fault specification"@en ;
+    skos:definition "A kind of fault a skill or resource can raise: its code, meaning and severity."@en ;
+    rdfs:comment "A specification, not an occurrence. The occurrence is maestro:Fault, linked to its kind with maestro:instanceOfFault."@en ;
+    dct:source <https://w3id.org/maestro/runtime#FaultSpecification> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:mayRaiseFault a owl:ObjectProperty ;
+    rdfs:label "may raise fault"@en ;
+    skos:definition "Relates a skill to a kind of fault it can raise."@en ;
+    rdfs:comment "The potential fault on the specification; the fault that did occur is maestro:mayRaise on the execution."@en ;
+    rdfs:domain maestro:Skill ;
+    rdfs:range  maestro:FaultSpecification ;
+    dct:source <https://w3id.org/maestro/runtime#mayRaiseFault> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:instanceOfFault a owl:ObjectProperty ;
+    rdfs:label "instance of fault"@en ;
+    skos:definition "Relates a fault occurrence to the kind of fault it is."@en ;
+    rdfs:domain maestro:Fault ;
+    rdfs:range  maestro:FaultSpecification ;
+    dct:source <https://w3id.org/maestro/runtime#instanceOfFault> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+#################################################################
+# EXECUTION RECORDS AND SNAPSHOTS
+#################################################################
+
+maestro:ExecutionRecord a owl:Class ;
+    rdfs:label "Execution record"@en ;
+    skos:definition "An information entity describing an execution occurrence, as logged by a controller, an MES or an operator."@en ;
+    rdfs:comment "Separate from the execution so a record can be corrected, duplicated or retracted without pretending the execution happened twice."@en ;
+    dct:source <https://w3id.org/maestro/runtime#ExecutionRecord> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:describesExecution a owl:ObjectProperty ;
+    rdfs:label "describes execution"@en ;
+    skos:definition "Relates an execution record to the execution it describes."@en ;
+    rdfs:domain maestro:ExecutionRecord ;
+    rdfs:range  maestro:SkillExecution ;
+    dct:source <https://w3id.org/maestro/runtime#describesExecution> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:recordedAt a owl:DatatypeProperty ;
+    rdfs:label "recorded at"@en ;
+    skos:definition "When a record or assertion was written."@en ;
+    rdfs:domain maestro:ExecutionRecord ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#recordedAt> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:Snapshot a owl:Class ;
+    rdfs:label "Snapshot"@en ;
+    skos:definition "Marker class for a graph that carries runtime triples captured at one instant."@en ;
+    rdfs:comment "Shapes that require every resource to have a state target the resources referenced from a snapshot, so design-time loads do not falsely fail."@en ;
+    dct:source <https://w3id.org/maestro/runtime#Snapshot> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:snapshotTaken a owl:DatatypeProperty ;
+    rdfs:label "snapshot taken"@en ;
+    skos:definition "Wall-clock instant at which the snapshot was captured."@en ;
+    rdfs:domain maestro:Snapshot ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#snapshotTaken> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/telemetry> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# State values, including the execution statuses of core/execution.ttl
+[] a owl:AllDifferent ;
+    owl:members ( maestro:Available maestro:Busy maestro:FaultState maestro:Alarm maestro:Healthy maestro:Degraded maestro:Failed maestro:Reserved maestro:Idle maestro:Executing maestro:Held maestro:Completed maestro:Aborted ) .
+
+# State dimensions
+[] a owl:AllDifferent ;
+    owl:members ( maestro:OperationalDimension maestro:HealthDimension maestro:ReservationDimension maestro:ModeDimension ) .

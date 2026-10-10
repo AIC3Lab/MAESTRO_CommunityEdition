@@ -1,0 +1,26 @@
+# LQ03 - The GRAFCET control sequence of each LTU station: every step with an
+# action, the skills that realise it, and each outgoing transition with its
+# flow type (Precedes, Alternative, Parallel, Loop) and condition.
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?station ?order ?step ?skills ?flow ?toStep ?condition
+WHERE {
+    {
+        SELECT ?seq ?s ?order ?step (GROUP_CONCAT(DISTINCT ?skillLabel; separator=" + ") AS ?skills)
+        WHERE {
+            ?seq a maestro:Recipe ; maestro:hasStep ?s .
+            ?s rdfs:label ?step ; maestro:stepOrder ?order ; maestro:realizedBy/rdfs:label ?skillLabel .
+            FILTER(STRENDS(STR(?seq), "#ControlSequence"))
+            FILTER(STRSTARTS(STR(?seq), "https://w3id.org/maestro/hhm/examples/ltu-festo-mps/"))
+        }
+        GROUP BY ?seq ?s ?order ?step
+    }
+    ?s maestro:hasControlFlow ?cf .
+    ?cf maestro:flowType ?ft ;
+        maestro:relatedStep/maestro:stepOrder ?toStep ;
+        maestro:expression ?condition .
+    BIND(REPLACE(STR(?seq), "^.*/ltu-festo-mps/([a-z]+)#.*$", "$1") AS ?station)
+    BIND(REPLACE(STR(?ft), "^.*#", "") AS ?flow)
+}
+ORDER BY ?station ?order ?toStep

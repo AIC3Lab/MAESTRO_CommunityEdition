@@ -1,0 +1,93 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE RECIPE / PLANNING CLUSTER (core/recipe.ttl)
+#
+# Recipes made of plan steps realised by skills, control-flow
+# constraints between steps and data bindings from an output
+# parameter to an input parameter.
+#################################################################
+
+mhsh:RecipeStepShape a sh:NodeShape ;
+    sh:targetClass maestro:Recipe ;
+    rdfs:label "Every recipe contains at least one plan step."@en ;
+    sh:property [
+        sh:path maestro:hasStep ;
+        sh:minCount 1 ;
+        sh:class maestro:PlanStep ;
+        sh:message "A maestro:Recipe must declare at least one maestro:PlanStep via maestro:hasStep." ;
+    ] .
+
+mhsh:PlanStepRealizationShape a sh:NodeShape ;
+    sh:targetClass maestro:PlanStep ;
+    rdfs:label "Every plan step is realised by a skill and has at most one positive step order."@en ;
+    sh:property [
+        sh:path maestro:realizedBy ;
+        sh:minCount 1 ;
+        sh:class maestro:Skill ;
+        sh:message "A maestro:PlanStep must be realised by at least one maestro:Skill via maestro:realizedBy." ;
+    ] ;
+    sh:property [
+        sh:path maestro:stepOrder ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:message "maestro:stepOrder on a maestro:PlanStep is at most one xsd:integer literal >= 1." ;
+    ] .
+
+mhsh:ControlFlowConstraintStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:ControlFlowConstraint ;
+    rdfs:label "A control-flow constraint has exactly one flow type and relates plan steps."@en ;
+    sh:property [
+        sh:path maestro:flowType ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ControlFlowType ;
+        sh:message "A maestro:ControlFlowConstraint must carry exactly one maestro:flowType naming a maestro:ControlFlowType." ;
+    ] ;
+    sh:property [
+        sh:path maestro:relatedStep ;
+        sh:class maestro:PlanStep ;
+        sh:message "maestro:relatedStep on a maestro:ControlFlowConstraint must point to a maestro:PlanStep." ;
+    ] .
+
+mhsh:DataBindingStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:DataBinding ;
+    rdfs:label "A data binding connects exactly one source parameter to exactly one target parameter."@en ;
+    sh:property [
+        sh:path maestro:bindsFrom ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ParameterDef ;
+        sh:message "A maestro:DataBinding must have exactly one maestro:bindsFrom naming a maestro:ParameterDef." ;
+    ] ;
+    sh:property [
+        sh:path maestro:bindsTo ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ParameterDef ;
+        sh:message "A maestro:DataBinding must have exactly one maestro:bindsTo naming a maestro:ParameterDef." ;
+    ] .
+
+mhsh:DataBindingDirectionShape a sh:NodeShape ;
+    sh:targetClass maestro:DataBinding ;
+    rdfs:label "A data binding flows from an output parameter to an input parameter."@en ;
+    sh:sparql [
+        a sh:SPARQLConstraint ;
+        sh:message "Data binding {$this} must flow from an maestro:Output parameter to an maestro:Input parameter: maestro:bindsFrom {?from} must have maestro:parameterDirection maestro:Output and maestro:bindsTo {?to} must have maestro:parameterDirection maestro:Input." ;
+        sh:select """
+            PREFIX maestro: <https://w3id.org/maestro#>
+            SELECT $this ?from ?to
+            WHERE {
+                $this maestro:bindsFrom ?from ;
+                      maestro:bindsTo   ?to .
+                FILTER ( NOT EXISTS { ?from maestro:parameterDirection maestro:Output }
+                      || NOT EXISTS { ?to   maestro:parameterDirection maestro:Input } )
+            }
+        """ ;
+    ] .

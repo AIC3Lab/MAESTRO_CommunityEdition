@@ -1,0 +1,20 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ13 - How much energy did a subject consume over which interval, and from which source with what carbon intensity?
+SELECT ?measurement ?subject ?energyKwh ?start ?end ?source ?carbonIntensity
+WHERE {
+    ?measurement a maestro:EnergyMeasurement ;
+                 maestro:measuredSubject ?subject ;
+                 maestro:energyKwh ?energyKwh .
+    OPTIONAL {
+        ?measurement maestro:overInterval ?interval .
+        ?interval maestro:startTime ?start .
+        OPTIONAL { ?interval maestro:endTime ?end }
+    }
+    OPTIONAL {
+        ?subject maestro:suppliedBy ?source .
+        OPTIONAL { ?source maestro:carbonGCO2eqPerKwh ?carbonIntensity }
+    }
+}
+ORDER BY ?start ?measurement

@@ -1,0 +1,80 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - MAINTENANCE MODULE (modules/maintenance.ttl)
+#
+# Maintenance plans for modules with their tasks, maintenance
+# actions (preventive, corrective, inspection, ...) on modules,
+# findings and return-to-service assessments. The numeric datatype
+# of maestro:mtbfHours and maestro:remainingUsefulLifeHours is enforced by
+# mhsh:NumericLiteralShape (shapes-skill.ttl).
+#################################################################
+
+mhsh:MaintenancePlanStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:MaintenancePlan ;
+    rdfs:label "A maintenance plan is for at least one module and lists at least one task."@en ;
+    sh:property [
+        sh:path maestro:planForAsset ;
+        sh:minCount 1 ;
+        sh:class maestro:Module ;
+        sh:message "A maestro:MaintenancePlan must be for at least one maestro:Module via maestro:planForAsset." ;
+    ] ;
+    sh:property [
+        sh:path maestro:hasTask ;
+        sh:minCount 1 ;
+        sh:class maestro:MaintenanceTask ;
+        sh:message "A maestro:MaintenancePlan must list at least one maestro:MaintenanceTask via maestro:hasTask." ;
+    ] .
+
+mhsh:MaintenanceActionStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:MaintenanceAction ;
+    rdfs:label "A maintenance action affects at least one module; its tasks and findings are typed."@en ;
+    sh:property [
+        sh:path maestro:affectsAsset ;
+        sh:minCount 1 ;
+        sh:class maestro:Module ;
+        sh:message "A maestro:MaintenanceAction must affect at least one maestro:Module via maestro:affectsAsset." ;
+    ] ;
+    sh:property [
+        sh:path maestro:performsTask ;
+        sh:class maestro:MaintenanceTask ;
+        sh:message "maestro:performsTask on a maestro:MaintenanceAction must point to a maestro:MaintenanceTask." ;
+    ] ;
+    sh:property [
+        sh:path maestro:hasFinding ;
+        sh:class maestro:Finding ;
+        sh:message "maestro:hasFinding on a maestro:MaintenanceAction must point to a maestro:Finding." ;
+    ] .
+
+mhsh:ReturnToServiceAssessmentStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:ReturnToServiceAssessment ;
+    rdfs:label "A return-to-service assessment assesses exactly one piece of work and states exactly one outcome."@en ;
+    sh:property [
+        sh:path maestro:assessesWork ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:MaintenanceAction ;
+        sh:message "A maestro:ReturnToServiceAssessment must assess exactly one maestro:MaintenanceAction via maestro:assessesWork." ;
+    ] ;
+    sh:property [
+        sh:path maestro:rtsOutcome ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ReturnToServiceOutcome ;
+        sh:message "A maestro:ReturnToServiceAssessment must state exactly one maestro:ReturnToServiceOutcome via maestro:rtsOutcome." ;
+    ] .
+
+mhsh:FindingDescriptionShape a sh:NodeShape ;
+    sh:targetClass maestro:Finding ;
+    rdfs:label "A finding should be described."@en ;
+    sh:property [
+        sh:path maestro:findingDescription ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Finding should carry a maestro:findingDescription." ;
+    ] .

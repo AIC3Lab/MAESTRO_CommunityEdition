@@ -1,0 +1,244 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix han:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling#> .
+
+#################################################################
+# LTU FESTO MPS - HANDLING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Handling station
+# (04_Handling_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling/product> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling/product/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - Handling station (product: control sequence)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "GRAFCET control sequence of the Handling station as an HHM-Core recipe."@en .
+
+
+#################################################################
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty steps (1, 5, 14) and the flag-only step 4
+# are
+# folded into the transition expressions. Both branches wait in step 14
+# for 'downstream station free' before depositing.
+#################################################################
+
+han:ControlSequence a maestro:Recipe ;
+    rdfs:label "Handling station control sequence (GRAFCET, 1-bit link)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Function chart according to DIN EN 60848 (IEC 60848) for the Handling station, '1-bit-link'. One timer: 3s/X8. Branch at step 11: black -> step 12 (slide black), not black -> step 13 (slide red/silver resp. downstream station)."@en ;
+    maestro:hasStep han:X2 ,
+               han:X3 ,
+               han:X6 ,
+               han:X7 ,
+               han:X8 ,
+               han:X9 ,
+               han:X10 ,
+               han:X11 ,
+               han:X12 ,
+               han:X13 ,
+               han:X15 ,
+               han:X16 ,
+               han:X17 ,
+               han:X18 .
+
+han:X2 a maestro:PlanStep ;
+    rdfs:label "Step 2 - 'reset' indicator light"@en ;
+    maestro:stepOrder 2 ;
+    maestro:realizedBy han:SwitchIndicatorLight ;
+    maestro:hasControlFlow han:CF_X2_X3 .
+
+han:CF_X2_X3 a maestro:ControlFlowConstraint ;
+    rdfs:label "X2 -> X3"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X3 ;
+    maestro:expression "'reset' button pressed" .
+
+han:X3 a maestro:PlanStep ;
+    rdfs:label "Step 3 - move station to initial position"@en ;
+    maestro:stepOrder 3 ;
+    maestro:realizedBy han:ResetStation ;
+    maestro:hasControlFlow han:CF_X3_X6 , han:CF_X3_X7 .
+
+han:CF_X3_X6 a maestro:ControlFlowConstraint ;
+    rdfs:label "X3 -> X6"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep han:X6 ;
+    maestro:expression "station in initial position; flag 'reset finished' set (step 4); flag 'start' not set (via step 5)" .
+
+han:CF_X3_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X3 -> X7"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep han:X7 ;
+    maestro:expression "station in initial position; flag 'reset finished' set (step 4); flag 'start' set (via step 5)" .
+
+han:X6 a maestro:PlanStep ;
+    rdfs:label "Step 6 - 'start' indicator light"@en ;
+    maestro:stepOrder 6 ;
+    maestro:realizedBy han:SwitchIndicatorLight ;
+    maestro:hasControlFlow han:CF_X6_X7 .
+
+han:CF_X6_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X6 -> X7"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X7 ;
+    maestro:expression "flag 'start' is set" .
+
+han:X7 a maestro:PlanStep ;
+    rdfs:label "Step 7 - station not occupied"@en ;
+    maestro:stepOrder 7 ;
+    maestro:realizedBy han:SetStationLinkSignal ;
+    maestro:hasControlFlow han:CF_X7_X8 .
+
+han:CF_X7_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X7 -> X8"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X8 ;
+    maestro:expression "workpiece available" .
+
+han:X8 a maestro:PlanStep ;
+    rdfs:label "Step 8 - station occupied"@en ;
+    maestro:stepOrder 8 ;
+    maestro:realizedBy han:SetStationLinkSignal ;
+    maestro:hasControlFlow han:CF_X8_X9 .
+
+han:CF_X8_X9 a maestro:ControlFlowConstraint ;
+    rdfs:label "X8 -> X9"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X9 ;
+    maestro:expression "3s/X8 'delay'" .
+
+han:X9 a maestro:PlanStep ;
+    rdfs:label "Step 9 - pick up workpiece"@en ;
+    maestro:description "Opens and extends the gripper."@en ;
+    maestro:stepOrder 9 ;
+    maestro:realizedBy han:OpenGripper , han:ExtendGripper ;
+    maestro:hasControlFlow han:CF_X9_X10 .
+
+han:CF_X9_X10 a maestro:ControlFlowConstraint ;
+    rdfs:label "X9 -> X10"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X10 ;
+    maestro:expression "gripper opened and extended" .
+
+han:X10 a maestro:PlanStep ;
+    rdfs:label "Step 10 - close gripper"@en ;
+    maestro:stepOrder 10 ;
+    maestro:realizedBy han:CloseGripper ;
+    maestro:hasControlFlow han:CF_X10_X11 .
+
+han:CF_X10_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X10 -> X11"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X11 ;
+    maestro:expression "gripper closed" .
+
+han:X11 a maestro:PlanStep ;
+    rdfs:label "Step 11 - retract gripper"@en ;
+    maestro:stepOrder 11 ;
+    maestro:realizedBy han:RetractGripper , han:DetectMaterial ;
+    maestro:hasControlFlow han:CF_X11_X12 , han:CF_X11_X13 .
+
+han:CF_X11_X12 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X12"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep han:X12 ;
+    maestro:expression "gripper retracted and workpiece is black" .
+
+han:CF_X11_X13 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X13"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep han:X13 ;
+    maestro:expression "gripper retracted and workpiece is not black" .
+
+han:X12 a maestro:PlanStep ;
+    rdfs:label "Step 12 - workpiece black"@en ;
+    maestro:stepOrder 12 ;
+    maestro:realizedBy han:MoveToSlideBlack ;
+    maestro:hasControlFlow han:CF_X12_X15 .
+
+han:CF_X12_X15 a maestro:ControlFlowConstraint ;
+    rdfs:label "X12 -> X15"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X15 ;
+    maestro:expression "linear drive at position 'slide black'; downstream station is free (via step 14)" .
+
+han:X13 a maestro:PlanStep ;
+    rdfs:label "Step 13 - workpiece red/silver"@en ;
+    maestro:stepOrder 13 ;
+    maestro:realizedBy han:MoveToSlideRedSilver ;
+    maestro:hasControlFlow han:CF_X13_X15 .
+
+han:CF_X13_X15 a maestro:ControlFlowConstraint ;
+    rdfs:label "X13 -> X15"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X15 ;
+    maestro:expression "linear drive at position 'slide red/silver' resp. 'downstream station'; downstream station is free (via step 14)" .
+
+han:X15 a maestro:PlanStep ;
+    rdfs:label "Step 15 - extend gripper"@en ;
+    maestro:stepOrder 15 ;
+    maestro:realizedBy han:ExtendGripper ;
+    maestro:hasControlFlow han:CF_X15_X16 .
+
+han:CF_X15_X16 a maestro:ControlFlowConstraint ;
+    rdfs:label "X15 -> X16"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X16 ;
+    maestro:expression "gripper extended" .
+
+han:X16 a maestro:PlanStep ;
+    rdfs:label "Step 16 - open gripper"@en ;
+    maestro:stepOrder 16 ;
+    maestro:realizedBy han:OpenGripper ;
+    maestro:hasControlFlow han:CF_X16_X17 .
+
+han:CF_X16_X17 a maestro:ControlFlowConstraint ;
+    rdfs:label "X16 -> X17"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X17 ;
+    maestro:expression "gripper opened" .
+
+han:X17 a maestro:PlanStep ;
+    rdfs:label "Step 17 - retract gripper"@en ;
+    maestro:stepOrder 17 ;
+    maestro:realizedBy han:RetractGripper ;
+    maestro:hasControlFlow han:CF_X17_X18 .
+
+han:CF_X17_X18 a maestro:ControlFlowConstraint ;
+    rdfs:label "X17 -> X18"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep han:X18 ;
+    maestro:expression "gripper retracted" .
+
+han:X18 a maestro:PlanStep ;
+    rdfs:label "Step 18 - cycle end"@en ;
+    maestro:description "Moves the linear drive to 'upstream station' and sets flag 'cycle end'."@en ;
+    maestro:stepOrder 18 ;
+    maestro:realizedBy han:MoveToUpstream ;
+    maestro:hasControlFlow han:CF_X18_X6 , han:CF_X18_X7 .
+
+han:CF_X18_X6 a maestro:ControlFlowConstraint ;
+    rdfs:label "X18 -> X6"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep han:X6 ;
+    maestro:expression "linear drive at position 'upstream station'; flag 'start' not set (via step 5)" .
+
+han:CF_X18_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X18 -> X7"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep han:X7 ;
+    maestro:expression "linear drive at position 'upstream station'; flag 'start' set (via step 5)" .

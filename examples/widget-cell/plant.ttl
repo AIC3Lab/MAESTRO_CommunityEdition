@@ -1,0 +1,428 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ex:   <https://w3id.org/maestro/hhm/examples/widget-cell#> .
+
+#################################################################
+# EXAMPLE - WIDGET CELL (DESIGN TIME)
+#
+# A reconfigurable station with one module that provides a transport
+# capability, a composite Transfer skill built from an atomic
+# MoveLinear skill, a three-step widget recipe with a data binding
+# and control-flow constraints, the widget product type with variant,
+# feature, requirement, identifier and bill of materials, an
+# operating policy with permission, role, mode and evidence, a
+# hazard / risk / mitigation triple with a risk assessment and an
+# emergency stop, the invocation path through an OPC UA endpoint and
+# binding, a REST endpoint, a DTDL interface, an AutomationML port,
+# the ISA-95 hierarchy above the station, a maintenance plan and a
+# digital twin. Port of the MAESTRO 1.0 example hhm-bridge/plant.ttl.
+# Runtime data (executions, states, measurements, maintenance work)
+# is in runtime.ttl; the market data in market.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/widget-cell> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/widget-cell/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: widget cell (design time)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# PHYSICAL RESOURCES + AutomationML topology + ISA-95 hierarchy
+#################################################################
+
+ex:Station1 a maestro:Station ;
+    rdfs:label "Reconfigurable Station 1" ;
+    maestro:location "Hall 2, cell 4" ;
+    maestro:hasModule ex:Module1 ;
+    maestro:hasIdentifier ex:Station1Id ;
+    maestro:partOfWorkCenter ex:Cell4 .
+
+ex:Station1Id a maestro:Identifier ;
+    maestro:identifierScheme "UUID" ;
+    maestro:identifierValue "3f9d2c1a-7b4e-4e0b-9d2a-1c5e8f0a6b21" .
+
+ex:Module1 a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "Linear transfer module" ;
+    maestro:manufacturer "Example Automation GmbH" ;
+    maestro:model "LTM-200" ;
+    maestro:serialNumber "LTM-200-000417" ;
+    maestro:providesCapability ex:TransportCapability ;
+    maestro:hasInterface ex:Port1 ;
+    maestro:suppliedBy maestro:ElectricalGrid ;
+    maestro:mtbfHours 12000 ;
+    maestro:remainingUsefulLifeHours 8500.5 .
+
+ex:TransportCapability a maestro:Capability ;
+    rdfs:label "Transport capability" ;
+    maestro:description "Move a workpiece between two positions along a linear axis." .
+
+ex:Port1 a maestro:ExternalInterface ;
+    rdfs:label "Station 1 material port" .
+
+ex:Port2 a maestro:ExternalInterface ;
+    rdfs:label "Downstream conveyor port" .
+
+ex:Link1 a maestro:InternalLink ;
+    rdfs:label "material handover" ;
+    maestro:linksInterface ex:Port1 , ex:Port2 .
+
+ex:ExampleEnterprise a maestro:Enterprise ; rdfs:label "Example Manufacturing" .
+ex:SiteA a maestro:Site ; rdfs:label "Site A" ; maestro:partOfEnterprise ex:ExampleEnterprise .
+ex:AreaAssembly a maestro:Area ; rdfs:label "Assembly area" ; maestro:partOfSite ex:SiteA .
+ex:Cell4 a maestro:WorkCenter ; rdfs:label "Cell 4" ; maestro:partOfArea ex:AreaAssembly .
+
+#################################################################
+# SKILLS - typed parameters, pre/postconditions, interface
+#################################################################
+
+ex:Transfer a maestro:CompositeSkill ;
+    rdfs:label "Transfer" ;
+    maestro:version "1.2.0" ;
+    maestro:description "Pick a widget at the infeed, move it and place it at the outfeed." ;
+    maestro:hasSubSkillLink ex:MoveLinear ;
+    maestro:hasParameterDef ex:Param1 ;
+    maestro:hasPrecondition ex:Pre1 ;
+    maestro:hasPostcondition ex:Post1 ;
+    maestro:requiresCapability ex:TransportCapability ;
+    maestro:hasInterfaceContract ex:TransferIface ;
+    maestro:mayRaiseFault ex:FS_Overload .
+
+ex:MoveLinear a maestro:AtomicSkill ;
+    rdfs:label "MoveLinear" ;
+    maestro:version "1.0.0" ;
+    maestro:hasParameterDef ex:Param1 , ex:Param2 ;
+    maestro:requiresCapability ex:TransportCapability .
+
+ex:Param1 a maestro:ParameterDef ;
+    rdfs:label "target position" ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/MilliM"^^xsd:anyURI ;
+    maestro:minValue 0.0 ;
+    maestro:maxValue 100.0 .
+
+ex:Param2 a maestro:ParameterDef ;
+    rdfs:label "achieved position" ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/MilliM"^^xsd:anyURI .
+
+ex:Pre1 a maestro:Precondition ;
+    rdfs:label "gripper empty" ;
+    maestro:expression "gripper.state == 'open' && !gripper.partPresent" .
+
+ex:Post1 a maestro:Postcondition ;
+    rdfs:label "widget at outfeed" ;
+    maestro:expression "outfeed.partPresent" .
+
+ex:TransferIface a maestro:SkillInterface ;
+    rdfs:label "neutral Transfer interface" ;
+    maestro:describedIn maestro:OpcUaNodeSetIDL ;
+    maestro:exposedVia ex:Endpoint1 .
+
+ex:TransferService a maestro:SkillService ;
+    rdfs:label "Transfer service" ;
+    maestro:exposesInterface ex:TransferIface ;
+    maestro:exposedVia ex:Endpoint1 .
+
+ex:FS_Overload a maestro:FaultSpecification ;
+    rdfs:label "axis overload" ;
+    maestro:faultCode "E42" ;
+    maestro:faultSeverity "error" .
+
+#################################################################
+# RECIPE - steps, control flow, data binding
+#################################################################
+
+ex:WidgetRecipe a maestro:Recipe ;
+    rdfs:label "Widget assembly recipe" ;
+    maestro:version "3" ;
+    maestro:hasStep ex:Step1 , ex:Step2 , ex:Step3 .
+
+ex:Step1 a maestro:PlanStep ;
+    rdfs:label "Step 1 - position" ;
+    maestro:stepOrder 1 ;
+    maestro:realizedBy ex:MoveLinear ;
+    maestro:hasControlFlow ex:CF1 .
+
+ex:Step2 a maestro:PlanStep ;
+    rdfs:label "Step 2 - re-position (second use of MoveLinear)" ;
+    maestro:stepOrder 2 ;
+    maestro:realizedBy ex:MoveLinear ;
+    maestro:hasControlFlow ex:CF2 .
+
+ex:Step3 a maestro:PlanStep ;
+    rdfs:label "Step 3 - transfer" ;
+    maestro:stepOrder 3 ;
+    maestro:realizedBy ex:Transfer ;
+    maestro:hasDataBinding ex:DB1 , ex:DB2 .
+
+ex:CF1 a maestro:ControlFlowConstraint ;
+    rdfs:label "Step 1 precedes Step 2" ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep ex:Step2 .
+
+ex:CF2 a maestro:ControlFlowConstraint ;
+    rdfs:label "Step 2 precedes Step 3" ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep ex:Step3 .
+
+ex:DB1 a maestro:DataBinding ;
+    rdfs:label "MoveLinear.achieved -> Transfer.target" ;
+    maestro:bindsFrom ex:Param2 ;
+    maestro:bindsTo ex:Param1 .
+
+ex:DB2 a maestro:DataBinding ;
+    rdfs:label "MoveLinear.achieved (re-position) -> Transfer.target" ;
+    maestro:bindsFrom ex:Param2 ;
+    maestro:bindsTo ex:Param1 .
+
+#################################################################
+# PRODUCT - type, instance, variant, feature, requirement, BOM
+#################################################################
+
+ex:WidgetType a maestro:ProductType ;
+    rdfs:label "Widget (type)" ;
+    maestro:hasIdentifier ex:WidgetGTIN ;
+    maestro:hasVariant ex:WidgetDeluxe ;
+    maestro:hasFeature ex:Hole1 ;
+    maestro:hasBOM ex:Bom1 ;
+    maestro:hasRequirement ex:ReqBaseEnvelope ;
+    maestro:hasInstance ex:Widget1 .
+
+ex:WidgetGTIN a maestro:Identifier ;
+    maestro:identifierScheme "GTIN" ;
+    maestro:identifierValue "01234567890128" .
+
+ex:WidgetDeluxe a maestro:Variant ;
+    rdfs:label "Widget Deluxe variant" ;
+    maestro:hasRequirement ex:ReqDeluxeEnvelope .
+
+ex:Hole1 a maestro:Feature ;
+    rdfs:label "mounting hole" ;
+    maestro:description "4 mm through hole in the top plate" ;
+    maestro:requiresOperation ex:Step1 .
+
+ex:Req1 a maestro:Requirement ;
+    rdfs:label "hole diameter requirement" ;
+    maestro:appliesTo ex:Hole1 ;
+    maestro:requiredValue "4.0 mm H7" ;
+    maestro:mandatory true .
+
+ex:ReqBaseEnvelope a maestro:Requirement ;
+    rdfs:label "Widget envelope 100 mm" ;
+    maestro:requiredValue "100 mm" .
+
+ex:ReqDeluxeEnvelope a maestro:Requirement ;
+    rdfs:label "Widget Deluxe envelope 120 mm" ;
+    maestro:requiredValue "120 mm" .
+
+ex:Bom1 a maestro:BOMNode ;
+    rdfs:label "top plate" ;
+    maestro:nodeFor ex:PlateType ;
+    maestro:quantity 1 ;
+    maestro:refDesignator "P1" ;
+    maestro:madeOf ex:Aluminium ;
+    maestro:hasPart ex:Bom2 .
+
+ex:Bom2 a maestro:BOMNode ;
+    rdfs:label "M4 bolts" ;
+    maestro:nodeFor ex:BoltType ;
+    maestro:quantity 4 ;
+    maestro:refDesignator "B1" ;
+    maestro:madeOf ex:Steel .
+
+ex:PlateType a maestro:ProductType ; rdfs:label "Top plate (type)" .
+ex:BoltType  a maestro:ProductType ; rdfs:label "M4 bolt (type)" .
+ex:Aluminium a maestro:Material ; rdfs:label "Aluminium EN AW-6060" .
+ex:Steel     a maestro:Material ; rdfs:label "Steel 8.8" .
+
+ex:Widget1 a maestro:ProductInstance ;
+    rdfs:label "Widget serial #1" ;
+    maestro:serialNumber "W-2026-000001" ;
+    maestro:hasIdentifier ex:Widget1Id .
+
+ex:Widget1Id a maestro:Identifier ;
+    maestro:identifierScheme "UUID" ;
+    maestro:identifierValue "8c2a6d5e-0f3b-4a71-b6c9-2e4d7f1a9b03" .
+
+#################################################################
+# POLICY / SAFETY
+#################################################################
+
+ex:OpPolicy a maestro:Policy ;
+    rdfs:label "Transfer operating policy" ;
+    maestro:version "2" ;
+    maestro:contains ex:Constraint1 ;
+    maestro:hasPermission ex:Perm1 ;
+    maestro:requiresPermission ex:Perm1 ;
+    maestro:requiresMode maestro:AutomaticMode ;
+    maestro:hasEvidence ex:Ev1 .
+
+ex:Constraint1 a maestro:Constraint ;
+    rdfs:label "auto-mode-only constraint" ;
+    maestro:expression "mode == Automatic" ;
+    maestro:constrains ex:Transfer , ex:Step3 , ex:Module1 , ex:Endpoint1 .
+
+ex:Perm1 a maestro:Permission ;
+    rdfs:label "may run Transfer" ;
+    maestro:grantedTo ex:OperatorRole ;
+    maestro:action maestro:Invoke ;
+    maestro:target ex:Transfer .
+
+ex:OperatorRole a maestro:Role ;
+    rdfs:label "Operator" .
+
+ex:Ev1 a maestro:Evidence ;
+    rdfs:label "training record #42" ;
+    maestro:evidenceRef "https://example.org/records/training/42"^^xsd:anyURI .
+
+ex:Hazard1 a maestro:Hazard ;
+    rdfs:label "pinch point" ;
+    maestro:description "Pinch point between carriage and end stop." ;
+    maestro:increases ex:Risk1 .
+
+ex:Risk1 a maestro:Risk ;
+    rdfs:label "operator hand injury" .
+
+ex:Mitigation1 a maestro:Mitigation ;
+    rdfs:label "light curtain" ;
+    maestro:description "Light curtain stops the axis when the infeed is entered." ;
+    maestro:reduces ex:Risk1 .
+
+ex:EStop1 a maestro:EmergencyStop ;
+    rdfs:label "cell emergency stop" ;
+    maestro:mitigates ex:Hazard1 ;
+    maestro:requiredPerformanceLevel maestro:PLd ;
+    maestro:achievedPerformanceLevel maestro:PLd .
+
+ex:RA1 a maestro:RiskAssessment ;
+    rdfs:label "Station 1 risk assessment 2026-03" ;
+    maestro:assessedSubject ex:Module1 ;
+    maestro:assessesRisk ex:Risk1 ;
+    maestro:identifiesHazard ex:Hazard1 ;
+    maestro:reliesOnMitigation ex:Mitigation1 ;
+    maestro:riskLevel maestro:MediumRisk ;
+    maestro:riskEvidence ex:Ev2 ;
+    maestro:riskAssessmentMethod "Risk matrix (severity x probability), company procedure RA-07 rev. 3" ;
+    maestro:assumption "Automatic mode; operator outside the light curtain." .
+
+ex:Ev2 a maestro:Evidence ;
+    rdfs:label "light-curtain acceptance test report" ;
+    maestro:evidenceRef "https://example.org/records/tests/lc-2026-03"^^xsd:anyURI .
+
+#################################################################
+# INVOCATION - OPC UA endpoint, binding, signature; REST endpoint; DTDL
+#################################################################
+
+ex:Endpoint1 a maestro:Endpoint ;
+    rdfs:label "Station 1 OPC UA endpoint" ;
+    maestro:address "opc.tcp://station1:4840" ;
+    maestro:port 4840 ;
+    maestro:usesProtocol maestro:OpcUaProtocol ;
+    maestro:hasBinding ex:Binding1 ;
+    maestro:emits ex:PosStream .
+
+ex:Binding1 a maestro:OpcUaBinding ;
+    rdfs:label "OPC UA binding of the Transfer interface" ;
+    maestro:specializesAs maestro:OpcUaProtocol ;
+    maestro:usesDataFormat maestro:OpcUaBinaryFormat ;
+    maestro:hasSignature ex:Sig1 ;
+    maestro:bindsMethod ex:StartMethod .
+
+ex:Sig1 a maestro:OperationSignature ;
+    rdfs:label "Transfer(targetPosition) -> achievedPosition" ;
+    maestro:hasParameterDef ex:Param1 ;
+    maestro:returns ex:Param2 .
+
+ex:PosStream a maestro:EventStream ;
+    rdfs:label "carriage position telemetry" .
+
+ex:Server1 a maestro:OpcUaServer ;
+    rdfs:label "Station 1 OPC UA server" ;
+    maestro:hostedOn ex:Module1 ;
+    maestro:hostsInterface ex:OpcIface .
+
+ex:OpcIface a maestro:OpcUaSkillInterface ;
+    rdfs:label "Transfer OPC UA skill interface" ;
+    maestro:nodeId "ns=2;s=Transfer" ;
+    maestro:browseName "Transfer" ;
+    maestro:exposes ex:Transfer ;
+    maestro:exposedVia ex:Endpoint1 .
+
+ex:StartMethod a maestro:OpcUaMethod ;
+    rdfs:label "Start" ;
+    maestro:nodeId "ns=2;s=Transfer.Start" ;
+    maestro:browseName "Start" ;
+    maestro:implementsSkill ex:Transfer .
+
+ex:PosVar a maestro:OpcUaVariable ;
+    rdfs:label "Position" ;
+    maestro:nodeId "ns=2;s=Transfer.Position" ;
+    maestro:browseName "Position" .
+
+ex:Endpoint2 a maestro:Endpoint ;
+    rdfs:label "Station 1 REST endpoint" ;
+    maestro:address "https://station1.example.org/api" ;
+    maestro:port 443 ;
+    maestro:usesProtocol maestro:HttpProtocol ;
+    maestro:hasBinding ex:Binding2 .
+
+ex:Binding2 a maestro:RestBinding ;
+    rdfs:label "REST binding of the Transfer interface" ;
+    maestro:specializesAs maestro:HttpProtocol ;
+    maestro:usesDataFormat maestro:JsonFormat ;
+    maestro:httpMethod "POST" ;
+    maestro:urlTemplate "/skills/transfer/start" ;
+    maestro:hasSignature ex:Sig1 .
+
+ex:RestIface a maestro:RestInterface ;
+    rdfs:label "Transfer REST interface" ;
+    maestro:describedIn maestro:OpenApiIDL ;
+    maestro:exposedVia ex:Endpoint2 .
+
+ex:TransferTwinModel a maestro:DtdlInterface ;
+    rdfs:label "Transfer DTDL interface" ;
+    maestro:describedIn maestro:DtdlIDL ;
+    maestro:hasCommand ex:StartCmd ;
+    maestro:hasTelemetry ex:PosTelemetry ;
+    maestro:hasProperty ex:ModeProperty .
+
+ex:StartCmd a maestro:DtdlCommand ; rdfs:label "Start" .
+ex:PosTelemetry a maestro:DtdlTelemetry ; rdfs:label "position telemetry" .
+ex:ModeProperty a maestro:DtdlProperty ; rdfs:label "operating mode" .
+
+#################################################################
+# MAINTENANCE PLAN (design time; the work done is in runtime.ttl)
+#################################################################
+
+ex:MPlan1 a maestro:MaintenancePlan ;
+    rdfs:label "LTM-200 maintenance plan" ;
+    maestro:planForAsset ex:Module1 ;
+    maestro:hasTask ex:Task1 .
+
+ex:Task1 a maestro:MaintenanceTask ;
+    rdfs:label "Lubricate linear guide every 2000 h" .
+
+#################################################################
+# DIGITAL TWIN
+#################################################################
+
+ex:Station1Twin a maestro:DigitalTwin ;
+    rdfs:label "Station 1 digital twin" ;
+    maestro:represents ex:Station1 ;
+    maestro:exposesService ex:TransferService ;
+    maestro:usesEventStream ex:PosStream ;
+    maestro:hasTwinBinding ex:TB1 .
+
+ex:Module1Twin a maestro:DigitalTwin ;
+    rdfs:label "Linear transfer module twin" ;
+    maestro:represents ex:Module1 .
+
+ex:TB1 a maestro:TwinBinding ;
+    rdfs:label "DTDL binding of the Station 1 twin" ;
+    maestro:platform "DTDL v3 twin service" ;
+    maestro:mapsTo "dtmi:example:widgetcell:TransferModule;1"^^xsd:anyURI .

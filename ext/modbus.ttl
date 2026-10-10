@@ -1,0 +1,130 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : Modbus
+#
+# Realises an extension point on Binding for Modbus: the Modbus protocol
+# individual, a Modbus binding that names the unit, the data table and
+# the address range read or written, and the four Modbus data tables
+# as a controlled vocabulary. Modbus TCP and Modbus RTU are both
+# maestro:ModbusProtocol; the endpoint address tells them apart.
+#################################################################
+
+<https://w3id.org/maestro/hhm/modbus> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/modbus/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Modbus" ;
+    rdfs:label "MAESTRO HHM-Core: Modbus"@en ;
+    dct:description "Modbus realisation of the invocation hooks: the Modbus protocol individual, a Modbus binding carrying unit id, data table, start address and count, and the four Modbus data tables."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The protocol individual reuses its definition from the MAESTRO 1.0 communication module (dct:source); the binding and its properties have no MAESTRO 1.0 counterpart."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-10-02"^^xsd:date ;
+    dct:modified "2026-10-02"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/communication> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/addressing> .
+
+#################################################################
+# INDIVIDUALS
+#################################################################
+
+maestro:ModbusProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "Modbus"@en ;
+    skos:definition "The Modbus protocol."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each protocol individual is declared in the extension module of its protocol. An maestro:ModbusBinding names it with maestro:specializesAs."@en ;
+    dct:source <https://w3id.org/maestro/communication#ModbusProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:ModbusCoil a owl:NamedIndividual , maestro:ModbusDataTable ;
+    rdfs:label "Coil"@en ;
+    skos:definition "The Modbus data table of single-bit values a client can read and write."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:ModbusDiscreteInput a owl:NamedIndividual , maestro:ModbusDataTable ;
+    rdfs:label "Discrete input"@en ;
+    skos:definition "The Modbus data table of single-bit values a client can only read."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:ModbusInputRegister a owl:NamedIndividual , maestro:ModbusDataTable ;
+    rdfs:label "Input register"@en ;
+    skos:definition "The Modbus data table of 16-bit registers a client can only read."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:ModbusHoldingRegister a owl:NamedIndividual , maestro:ModbusDataTable ;
+    rdfs:label "Holding register"@en ;
+    skos:definition "The Modbus data table of 16-bit registers a client can read and write."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:ModbusBinding a owl:Class ;
+    rdfs:label "Modbus binding"@en ;
+    skos:definition "A binding that maps an endpoint onto Modbus: the unit addressed, the data table and the range of addresses read or written."@en ;
+    rdfs:comment "Specialises maestro:Binding, realising the HHM extension point on Binding."@en ;
+    rdfs:subClassOf maestro:Binding ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:ModbusDataTable a owl:Class ;
+    rdfs:label "Modbus data table"@en ;
+    skos:definition "One of the four Modbus data tables: coils, discrete inputs, input registers and holding registers."@en ;
+    rdfs:comment "A controlled vocabulary of individuals."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:modbusDataTable a owl:ObjectProperty ;
+    rdfs:label "Modbus data table"@en ;
+    skos:definition "Relates a Modbus binding to the data table its addresses refer to."@en ;
+    rdfs:domain maestro:ModbusBinding ;
+    rdfs:range  maestro:ModbusDataTable ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:modbusUnitId a owl:DatatypeProperty ;
+    rdfs:label "Modbus unit id"@en ;
+    skos:definition "The unit identifier of the device a Modbus binding addresses."@en ;
+    rdfs:comment "Called the slave address in older Modbus documents."@en ;
+    rdfs:domain maestro:ModbusBinding ;
+    rdfs:range  xsd:integer ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:modbusAddress a owl:DatatypeProperty ;
+    rdfs:label "Modbus address"@en ;
+    skos:definition "The zero-based start address, within its data table, of the values a Modbus binding reads or writes."@en ;
+    rdfs:comment "Zero-based protocol address; device manuals often print one-based register numbers such as 40001."@en ;
+    rdfs:domain maestro:ModbusBinding ;
+    rdfs:range  xsd:integer ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+maestro:modbusCount a owl:DatatypeProperty ;
+    rdfs:label "Modbus count"@en ;
+    skos:definition "The number of consecutive coils or registers, from the start address, a Modbus binding reads or writes."@en ;
+    rdfs:domain maestro:ModbusBinding ;
+    rdfs:range  xsd:integer ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/modbus> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#################################################################
+
+[] a owl:AllDifferent ;
+    owl:members ( maestro:ModbusCoil maestro:ModbusDiscreteInput maestro:ModbusInputRegister maestro:ModbusHoldingRegister ) .

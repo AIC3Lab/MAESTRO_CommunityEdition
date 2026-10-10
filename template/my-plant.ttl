@@ -1,0 +1,62 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix my:   <https://example.org/my-project#> .
+
+#################################################################
+# STARTER TEMPLATE - copy this file and rename it for your project.
+#
+# Replace the "my:" namespace with your own IRI, then add your
+# stations, modules, skills, recipes and products. Use only maestro:
+# classes and properties; look terms up in docs/terms.md or open
+# docs/graph.html. examples/widget-cell/ shows every cluster in use.
+#
+# Check it with:  python tools/check.py template/my-plant.ttl
+#################################################################
+
+<https://example.org/my-project> a owl:Ontology ;
+    rdfs:label "My project knowledge graph"@en ;
+    owl:imports <https://w3id.org/maestro/hhm> .
+
+# --- Physical resources: station, module, capability -------------
+
+my:Station1 a maestro:Station ;
+    rdfs:label "Station 1" ;
+    maestro:hasModule my:Gripper1 .
+
+my:Gripper1 a maestro:Module ;
+    rdfs:label "Pneumatic gripper" ;
+    maestro:providesCapability my:Grasping .
+
+my:Grasping a maestro:Capability ;
+    rdfs:label "Grasping" ;
+    maestro:description "Close a gripper on a workpiece and hold it." .
+
+# --- Skill: what the module can do --------------------------------
+
+my:PickSkill a maestro:AtomicSkill ;
+    rdfs:label "Pick workpiece" ;
+    maestro:requiresCapability my:Grasping .
+
+# --- Recipe: how a product is made --------------------------------
+
+my:AssemblyRecipe a maestro:Recipe ;
+    rdfs:label "Assembly recipe" ;
+    maestro:hasStep my:Step1 .
+
+my:Step1 a maestro:PlanStep ;
+    rdfs:label "Pick the base part" ;
+    maestro:stepOrder 1 ;
+    maestro:realizedBy my:PickSkill .
+
+# --- Product -------------------------------------------------------
+
+my:Widget a maestro:ProductType ;
+    rdfs:label "Widget" ;
+    maestro:hasIdentifier my:WidgetId .
+
+my:WidgetId a maestro:Identifier ;
+    maestro:identifierScheme "Article number" ;
+    maestro:identifierValue "W-0001" .

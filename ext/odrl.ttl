@@ -1,0 +1,46 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : ODRL 2.2 core-profile bridge
+#
+# Realises the HHM extension point "Rules / Validation (SHACL / ODRL
+# / XACML-style)" on Policy with logical bridge axioms to the ODRL
+# 2.2 core profile, as MAESTRO 1.0 does. SHACL shapes live in
+# shapes/. XACML is not in the listed standards basis: named here
+# only, no IRIs, no mapping.
+#################################################################
+
+<https://w3id.org/maestro/hhm/odrl> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/odrl/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: ODRL bridge" ;
+    rdfs:label "MAESTRO HHM-Core: ODRL bridge"@en ;
+    dct:description "Aligns policies and permissions to the ODRL 2.2 core profile."@en ;
+    rdfs:comment "Logical bridge axioms to the W3C ODRL 2.2 core profile (references/odrl-core-profile-22.ttl). The ODRL common-vocabulary actions are not part of the core profile, so the maestro:Action individuals carry no external mapping."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/policy> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Policy     rdfs:subClassOf odrl:Policy .
+maestro:Permission rdfs:subClassOf odrl:Permission .
+maestro:Action     skos:closeMatch odrl:Action .
+
+maestro:hasPermission rdfs:subPropertyOf odrl:permission .
+maestro:action        rdfs:subPropertyOf odrl:action .
+maestro:target        rdfs:subPropertyOf odrl:target .

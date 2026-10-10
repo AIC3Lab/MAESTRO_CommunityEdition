@@ -1,0 +1,93 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE PRODUCT CLUSTER (core/product.ttl)
+#
+# Product types and their scheme-qualified identifiers, variants,
+# features, requirements and bill-of-materials nodes. Advisory rules
+# (sh:Warning) flag incomplete but not malformed data.
+#################################################################
+
+mhsh:ProductTypeIdentifierShape a sh:NodeShape ;
+    sh:targetClass maestro:ProductType ;
+    rdfs:label "A product type should carry at least one identifier."@en ;
+    sh:property [
+        sh:path maestro:hasIdentifier ;
+        sh:minCount 1 ;
+        sh:class maestro:Identifier ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:ProductType should carry at least one maestro:Identifier via maestro:hasIdentifier." ;
+    ] .
+
+mhsh:IdentifierStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Identifier ;
+    rdfs:label "An identifier carries exactly one scheme and exactly one value."@en ;
+    sh:property [
+        sh:path maestro:identifierScheme ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:Identifier must carry exactly one maestro:identifierScheme (xsd:string)." ;
+    ] ;
+    sh:property [
+        sh:path maestro:identifierValue ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:Identifier must carry exactly one maestro:identifierValue." ;
+    ] .
+
+mhsh:VariantOwnershipShape a sh:NodeShape ;
+    sh:targetClass maestro:Variant ;
+    rdfs:label "A variant should be reached from a product type via maestro:hasVariant."@en ;
+    sh:property [
+        sh:path [ sh:inversePath maestro:hasVariant ] ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Variant should be the object of maestro:hasVariant on some maestro:ProductType." ;
+    ] .
+
+mhsh:BOMNodeStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:BOMNode ;
+    rdfs:label "A BOM node refers to exactly one product type and carries at most one numeric quantity."@en ;
+    sh:property [
+        sh:path maestro:nodeFor ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ProductType ;
+        sh:message "A maestro:BOMNode must refer to exactly one maestro:ProductType via maestro:nodeFor." ;
+    ] ;
+    sh:property [
+        sh:path maestro:quantity ;
+        sh:maxCount 1 ;
+        sh:or ( [ sh:datatype xsd:decimal ] [ sh:datatype xsd:integer ] ) ;
+        sh:message "maestro:quantity on a maestro:BOMNode is at most one xsd:decimal or xsd:integer literal." ;
+    ] .
+
+mhsh:RequirementStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Requirement ;
+    rdfs:label "A requirement applies to features and has at most one boolean mandatory flag."@en ;
+    sh:property [
+        sh:path maestro:appliesTo ;
+        sh:class maestro:Feature ;
+        sh:message "maestro:appliesTo on a maestro:Requirement must point to a maestro:Feature." ;
+    ] ;
+    sh:property [
+        sh:path maestro:mandatory ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:boolean ;
+        sh:message "maestro:mandatory on a maestro:Requirement is at most one xsd:boolean literal." ;
+    ] .
+
+mhsh:FeatureOperationShape a sh:NodeShape ;
+    sh:targetClass maestro:Feature ;
+    rdfs:label "A feature's required operations are plan steps."@en ;
+    sh:property [
+        sh:path maestro:requiresOperation ;
+        sh:class maestro:PlanStep ;
+        sh:message "maestro:requiresOperation on a maestro:Feature must point to a maestro:PlanStep." ;
+    ] .

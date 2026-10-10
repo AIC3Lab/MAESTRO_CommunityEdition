@@ -1,0 +1,20 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ14 - Which maintenance plan and tasks apply to an asset, which action performed a task, what did it find, and may the asset return to service?
+SELECT ?asset ?plan ?task ?action ?performedAt ?finding ?outcome
+WHERE {
+    ?plan a maestro:MaintenancePlan ;
+          maestro:planForAsset ?asset ;
+          maestro:hasTask ?task .
+    OPTIONAL {
+        ?action maestro:performsTask ?task .
+        OPTIONAL { ?action maestro:performedAt ?performedAt }
+        OPTIONAL { ?action maestro:hasFinding ?finding }
+        OPTIONAL {
+            ?rts maestro:assessesWork ?action ;
+                 maestro:rtsOutcome ?outcome .
+        }
+    }
+}
+ORDER BY ?asset ?plan ?task ?performedAt

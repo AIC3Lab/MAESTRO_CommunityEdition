@@ -1,0 +1,77 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix AML:  <https://w3id.org/hsu-aut/AutomationML#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : AutomationML / CAEX (HSU AutomationML ODP)
+#
+# Realises the HHM extension point "AutomationML / CAEX" on Module:
+# the plant topology of internal elements, external interfaces
+# (ports) and internal links (connections). A module is an internal
+# element of the topology.
+#################################################################
+
+<https://w3id.org/maestro/hhm/automationml> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/automationml/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: AutomationML topology" ;
+    rdfs:label "MAESTRO HHM-Core: AutomationML topology"@en ;
+    dct:description "Plant topology in AutomationML terms: internal elements, external interfaces and internal links, anchored on the HHM-Core module."@en ;
+    rdfs:comment "Apart from documentary links to the HSU AutomationML ontology design pattern (references/hsu-automationml.ttl), this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 automationml module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/automationml> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/resource> .
+
+maestro:InternalElement a owl:Class ;
+    rdfs:label "Internal element"@en ;
+    skos:definition "A physical element of the plant topology that carries external interfaces and is connected by internal links."@en ;
+    rdfs:comment "Related to AML:InternalElement of the HSU AutomationML ODP, which is the model element of an AutomationML document that describes the physical element; hence skos:relatedMatch, not closeMatch."@en ;
+    skos:relatedMatch AML:InternalElement ;
+    dct:source <https://w3id.org/maestro/automationml#InternalElement> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/automationml> .
+
+maestro:Module rdfs:subClassOf maestro:InternalElement .
+
+maestro:ExternalInterface a owl:Class ;
+    rdfs:label "External interface"@en ;
+    skos:definition "A port of an internal element through which it connects to other elements, such as a material, energy or signal port."@en ;
+    skos:closeMatch AML:ExternalInterface ;
+    dct:source <https://w3id.org/maestro/automationml#ExternalInterface> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/automationml> .
+
+maestro:InternalLink a owl:Class ;
+    rdfs:label "Internal link"@en ;
+    skos:definition "A connection between two external interfaces."@en ;
+    skos:closeMatch AML:InternalLink ;
+    dct:source <https://w3id.org/maestro/automationml#InternalLink> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/automationml> .
+
+maestro:hasInterface a owl:ObjectProperty ;
+    rdfs:label "has interface"@en ;
+    skos:definition "Relates an internal element to an external interface it carries."@en ;
+    rdfs:domain maestro:InternalElement ;
+    rdfs:range  maestro:ExternalInterface ;
+    dct:source <https://w3id.org/maestro/automationml#hasInterface> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/automationml> .
+
+maestro:linksInterface a owl:ObjectProperty ;
+    rdfs:label "links interface"@en ;
+    skos:definition "Relates an internal link to an external interface it connects."@en ;
+    rdfs:domain maestro:InternalLink ;
+    rdfs:range  maestro:ExternalInterface ;
+    dct:source <https://w3id.org/maestro/automationml#linksInterface> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/automationml> .

@@ -1,0 +1,701 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix dis:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing#> .
+
+#################################################################
+# LTU FESTO MPS - DISTRIBUTING STATION - PLANT (DESIGN TIME)
+#
+# Sources: 648811_Manual_Distributing (DE/EN 04/06 R2.2),
+# 01_Distributing_
+# GRAFCET.pdf (DE 01/04), Function.pdf, Function0.pdf and Changer.pdf in
+# 'Distributing Station design documents'.
+#
+# The circuit diagrams and parts list of this station are only on the
+# Festo CD-ROM 665871, which is not among the documents. So the signals
+# below have no PLC address, terminal bit or BMK; they are named after
+# the
+# GRAFCET transitions and actions. Part numbers come from the manual's
+# data-sheet list; quantities are not stated.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - Distributing station (plant)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "The Festo MPS Distributing station of the LTU line: modules, components, signals, skills, safety and care. The GRAFCET control sequence is in product.ttl. Built from the station manual 648811, its GRAFCET and the Function / Changer sheets."@en .
+
+
+#################################################################
+# STATION
+#
+# Station 1 of the MPS numbering. Order number 648811 is that of the
+# manual; the station material number is not stated.
+#################################################################
+
+dis:ID_ManualOrderNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo order number (technical documentation)" ;
+    maestro:identifierValue "648811" .
+
+dis:Station a maestro:Station , maestro:WorkUnit ;
+    rdfs:label "Distributing station"@en ;
+    maestro:description "Station 1 (VE) of the MPS. Separates workpieces from the Stack magazine module (up to 8 workpieces, filling level monitored by a through-beam sensor, a double-acting cylinder pushes them out one at a time); the Changer module picks the workpiece up with a suction cup, a vacuum switch confirms the hold, and a rotary drive swings the arm to the transfer point of the downstream station. A feed device in the sense of VDI 3240."@en ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Distributing station (VE)" ;
+    maestro:hasIdentifier dis:ID_ManualOrderNo ;
+    maestro:partOfWorkCenter ltu:MPSLine ;
+    maestro:hasModule dis:StackMagazineModule ,
+                 dis:ChangerModule ,
+                 dis:ValveTerminal ,
+                 dis:ServiceUnit ,
+                 dis:IOTerminal ,
+                 dis:PLCBoard ,
+                 dis:ControlConsole ,
+                 dis:StationLinkReceiver ;
+    maestro:hasParameterDef dis:TD_OperatingPressure ,
+                       dis:TD_MaxPressure ,
+                       dis:TD_AirConsumption ,
+                       dis:TD_SupplyVoltage ,
+                       dis:TD_SupplyCurrent ,
+                       dis:TD_DigitalInputs ,
+                       dis:TD_DigitalOutputs ,
+                       dis:TD_MagazineCapacity ,
+                       dis:TD_SwivelRange .
+
+ltu:LTU maestro:operates dis:Station .
+
+dis:PSU a maestro:EnergySource ;
+    rdfs:label "24 V DC power supply unit, Distributing station"@en ;
+    maestro:description "Power supply unit 24 V DC, 4.5 A; feeds the whole station through the PLC board."@en .
+
+
+#################################################################
+# TECHNICAL DATA
+#
+# Static values from the manual's technical-data table and commissioning
+# section.
+#################################################################
+
+dis:TD_OperatingPressure a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Operating pressure 6 bar"@en ;
+    maestro:description "Service unit setting. Operating pressure 6 bar (600 kPa)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 6.0 ;
+    maestro:maxValue 6.0 .
+
+dis:TD_MaxPressure a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Maximum permissible pressure 8 bar"@en ;
+    maestro:description "'Do not exceed' limit of the safety chapter."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 8.0 .
+
+dis:TD_AirConsumption a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Compressed-air supply, suction capacity approx. 50 l/min"@en ;
+    maestro:description "Compressed-air supply named for commissioning (approximate value)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/L-PER-MIN"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 50.0 .
+
+dis:TD_SupplyVoltage a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Supply voltage 24 V DC"@en ;
+    maestro:description "Power supply unit 24 V DC; the whole station is supplied through the PLC board."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 24.0 ;
+    maestro:maxValue 24.0 .
+
+dis:TD_SupplyCurrent a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Supply current 4.5 A"@en ;
+    maestro:description "Technical data 4.5 A; section 'voltage supply' says max. 5 A."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/A"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 4.5 .
+
+dis:TD_DigitalInputs a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Digital inputs: 7"@en ;
+    maestro:description "Number of digital inputs in the technical-data table."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 7.0 ;
+    maestro:maxValue 7.0 .
+
+dis:TD_DigitalOutputs a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Digital outputs: 7"@en ;
+    maestro:description "Number of digital outputs in the technical-data table."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 7.0 ;
+    maestro:maxValue 7.0 .
+
+dis:TD_MagazineCapacity a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Stack magazine capacity: 8 workpieces"@en ;
+    maestro:description "Workpieces stacked in any order, opening facing upwards."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:maxValue 8.0 .
+
+dis:TD_SwivelRange a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Rotary drive swivel range 0-180 degrees"@en ;
+    maestro:description "Adjustable with mechanical end stops; the end positions depend on the downstream station."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:unitRef "http://qudt.org/vocab/unit/DEG"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 0.0 ;
+    maestro:maxValue 180.0 .
+
+
+#################################################################
+# MODULES
+#################################################################
+
+dis:StackMagazineModule a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "Stack magazine module"@en ;
+    maestro:description "Gravity magazine barrel for up to 8 workpieces. A double-acting ejecting cylinder pushes the lowest workpiece out to a mechanical stop, the transfer point to the Changer module. Through-beam fibre-optic sensor for the filling level; SME-8 proximity sensors for the cylinder end positions; one-way flow control valves set the piston speed."@en ;
+    maestro:providesCapability ltu:FeedingCapability , ltu:PresenceSensingCapability ;
+    maestro:suppliedBy maestro:CompressedAir .
+
+dis:ChangerModule a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "Changer module"@en ;
+    maestro:description "Pneumatic handling device: semi-rotary drive DSR-16-180 swings an arm with a vacuum suction cup between the magazine and the downstream station. Micro switches S-3-E sense the swivel end positions; vacuum switch VPEV confirms that a workpiece is held."@en ;
+    maestro:providesCapability ltu:TransferCapability , ltu:VacuumGrippingCapability ;
+    maestro:suppliedBy maestro:CompressedAir ;
+    maestro:hasInterface dis:Port_MaterialOut .
+
+dis:Port_MaterialOut a maestro:ExternalInterface ;
+    rdfs:label "Material output: transfer point of the downstream station"@en ;
+    maestro:description "The arm releases the workpiece here by switching the vacuum off."@en .
+
+dis:ValveTerminal a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "CPV valve terminal"@en ;
+    maestro:description "Valve terminal with manual overrides; the data-sheet list names a 3/2-way normally open (161417) and a 5/2-way (161414) solenoid valve. Which valve drives which actuator is not stated."@en ;
+    maestro:model "CPV" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability ;
+    maestro:suppliedBy maestro:CompressedAir , dis:PSU .
+
+dis:ServiceUnit a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:description "Compressed-air inlet, set to 6 bar."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:S-PVW-LFR" ;
+    maestro:hasIdentifier ltu:PN_152894 ;
+    maestro:providesCapability ltu:PneumaticActuationCapability ;
+    maestro:suppliedBy maestro:CompressedAir .
+
+dis:IOTerminal a maestro:Module ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:description "Station side of the SysLink connection XMA2 (7 inputs and 7 outputs used per the technical data)."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:hasIdentifier ltu:PN_034035 ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+dis:PLCBoard a maestro:Module , maestro:EnergyConsumer ;
+    rdfs:label "PLC board"@en ;
+    maestro:description "Holds the controller; connects to the I/O terminal (XMA2), the control console (XMG1), the power supply (4 mm safety plugs) and the PC."@en ;
+    maestro:model "PLC board (controller not stated)" ;
+    maestro:providesCapability ltu:StationControlCapability ;
+    maestro:suppliedBy dis:PSU .
+
+dis:ControlConsole a maestro:Module ;
+    rdfs:label "Control console"@en ;
+    maestro:description "START, STOP and RESET pushbuttons, AUTO/MAN key switch, EMERGENCY-STOP (if available) and the MAG. EMPTY warning light; connected via XMG1."@en ;
+    maestro:providesCapability ltu:OperatorInterfaceCapability .
+
+dis:StationLinkReceiver a maestro:Module ;
+    rdfs:label "StationLink receiver"@en ;
+    maestro:description "Only the receiver is mounted on the Distributing station (outgoing-material side); it reads 'downstream station free'. That data sheet 165323 is this receiver is inferred."@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-E-Q30-PS-S-2L" ;
+    maestro:hasIdentifier ltu:PN_165323 ;
+    maestro:providesCapability ltu:StationLinkCapability ;
+    maestro:hasInterface dis:Port_StationLinkRx .
+
+dis:Port_StationLinkRx a maestro:ExternalInterface ;
+    rdfs:label "StationLink receiver (outgoing-material side)"@en .
+
+
+#################################################################
+# BILL OF MATERIALS
+#
+# No parts list for this station is among the documents: the nodes are
+# the data-sheet list of the manual, quantities not stated.
+#################################################################
+
+dis:StationType a maestro:ProductType ;
+    rdfs:label "Festo MPS Distributing station (equipment type)"@en ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Distributing station (VE)" ;
+    maestro:description "The station as a Festo product; its bill of materials follows the parts list and the component tables of the documents."@en ;
+    maestro:hasIdentifier dis:ID_ManualOrderNo ;
+    maestro:hasBOM dis:BOM_EjectingCylinder ,
+              dis:BOM_ProximitySensors ,
+              dis:BOM_FibreOpticDevice ,
+              dis:BOM_FibreOpticCable ,
+              dis:BOM_FlowControlValves ,
+              dis:BOM_RotaryDrive ,
+              dis:BOM_MicroSwitches ,
+              dis:BOM_SuctionCup ,
+              dis:BOM_VacuumGenerator ,
+              dis:BOM_VacuumSwitch ,
+              dis:BOM_VacuumFilter ,
+              dis:BOM_NonReturnValve ,
+              dis:BOM_Valve3_2NO ,
+              dis:BOM_Valve5_2 ,
+              dis:BOM_IOTerminal ,
+              dis:BOM_StationLinkReceiver ,
+              dis:BOM_ServiceUnit ,
+              dis:BOM_Silencer .
+
+dis:BOM_EjectingCylinder a maestro:BOMNode ;
+    rdfs:label "Round cylinder DSNU-8-80"@en ;
+    maestro:description "Stack magazine module; ejecting cylinder by inference (the only cylinder on the list)."@en ;
+    maestro:nodeFor ltu:PT_019181 ;
+    maestro:refDesignator "ejecting cylinder" .
+
+dis:BOM_ProximitySensors a maestro:BOMNode ;
+    rdfs:label "Proximity sensor SME-8"@en ;
+    maestro:description "Stack magazine module, ejecting-cylinder end positions; number not stated."@en ;
+    maestro:nodeFor ltu:PT_150857 .
+
+dis:BOM_FibreOpticDevice a maestro:BOMNode ;
+    rdfs:label "Fibre-optic device"@en ;
+    maestro:description "Stack magazine module, filling-level sensor."@en ;
+    maestro:nodeFor ltu:PT_165327 ;
+    maestro:refDesignator "filling level" .
+
+dis:BOM_FibreOpticCable a maestro:BOMNode ;
+    rdfs:label "Fibre-optic cable, through-beam"@en ;
+    maestro:description "Stack magazine module, through-beam heads on the magazine barrel."@en ;
+    maestro:nodeFor ltu:PT_165360 .
+
+dis:BOM_FlowControlValves a maestro:BOMNode ;
+    rdfs:label "One-way flow control valve, type C"@en ;
+    maestro:description "Stack magazine module, ejecting-cylinder speed."@en ;
+    maestro:nodeFor ltu:PT_175056 .
+
+dis:BOM_RotaryDrive a maestro:BOMNode ;
+    rdfs:label "Semi-rotary drive DSR-16-180"@en ;
+    maestro:description "Changer module."@en ;
+    maestro:nodeFor ltu:PT_011910 .
+
+dis:BOM_MicroSwitches a maestro:BOMNode ;
+    rdfs:label "Micro switch"@en ;
+    maestro:description "Changer module, swivel end positions; number not stated."@en ;
+    maestro:nodeFor ltu:PT_007347 .
+
+dis:BOM_SuctionCup a maestro:BOMNode ;
+    rdfs:label "Vacuum suction cup"@en ;
+    maestro:description "Changer module (inferred)."@en ;
+    maestro:nodeFor ltu:PT_036135 .
+
+dis:BOM_VacuumGenerator a maestro:BOMNode ;
+    rdfs:label "Vacuum generator"@en ;
+    maestro:description "Changer module."@en ;
+    maestro:nodeFor ltu:PT_185865 .
+
+dis:BOM_VacuumSwitch a maestro:BOMNode ;
+    rdfs:label "Vacuum switch VPEV"@en ;
+    maestro:description "Changer module."@en ;
+    maestro:nodeFor ltu:PT_152629 .
+
+dis:BOM_VacuumFilter a maestro:BOMNode ;
+    rdfs:label "Vacuum filter"@en ;
+    maestro:description "Changer module (inferred)."@en ;
+    maestro:nodeFor ltu:PT_015889 .
+
+dis:BOM_NonReturnValve a maestro:BOMNode ;
+    rdfs:label "Non-return valve H-QS-4"@en ;
+    maestro:nodeFor ltu:PT_153462 .
+
+dis:BOM_Valve3_2NO a maestro:BOMNode ;
+    rdfs:label "Solenoid valve 3/2-way, normally open"@en ;
+    maestro:description "Valve terminal (inferred)."@en ;
+    maestro:nodeFor ltu:PT_161417 .
+
+dis:BOM_Valve5_2 a maestro:BOMNode ;
+    rdfs:label "Solenoid valve 5/2-way, single solenoid"@en ;
+    maestro:description "Valve terminal (inferred)."@en ;
+    maestro:nodeFor ltu:PT_161414 .
+
+dis:BOM_IOTerminal a maestro:BOMNode ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:nodeFor ltu:PT_034035 .
+
+dis:BOM_StationLinkReceiver a maestro:BOMNode ;
+    rdfs:label "Through-beam sensor, receiver"@en ;
+    maestro:description "StationLink receiver (inferred)."@en ;
+    maestro:nodeFor ltu:PT_165323 .
+
+dis:BOM_ServiceUnit a maestro:BOMNode ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:nodeFor ltu:PT_152894 .
+
+dis:BOM_Silencer a maestro:BOMNode ;
+    rdfs:label "Silencer"@en ;
+    maestro:nodeFor ltu:PT_004645 .
+
+
+#################################################################
+# SIGNALS (DATA POINTS)
+#
+# Direction is from the PLC's view in the 'dir' sense of the manual: a
+# sensor
+# signal is an maestro:Output of the station (maestro:DtdlTelemetry), an actuator
+# command an maestro:Input (maestro:DtdlProperty). Ten station signals for the 7 +
+# 7
+# I/O of the technical data; how the commands map onto outputs is not
+# stated.
+#################################################################
+
+dis:DI_WorkpieceInMagazine a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Workpiece in magazine (filling level)"@en ;
+    maestro:description "Through-beam fibre-optic sensor on the magazine barrel; the workpiece interrupts the beam. The sensor LED is on with an empty magazine and off with workpieces. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DI_WorkpieceEjected a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Workpiece ejected (ejecting cylinder retracted)"@en ;
+    maestro:description "SME-8 end-position sensor of the ejecting cylinder; GRAFCET transition 11 -> 12. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DI_MagazineSlideRetracted a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Magazine slide retracted (ejecting cylinder extended)"@en ;
+    maestro:description "SME-8 end-position sensor of the ejecting cylinder; GRAFCET transition 13 -> 14. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DI_ArmAtMagazine a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Swivel arm in position 'magazine'"@en ;
+    maestro:description "Micro switch S-3-E on the rotary drive. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DI_ArmAtDownstream a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Swivel arm in position 'downstream station'"@en ;
+    maestro:description "Micro switch S-3-E on the rotary drive. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DI_WorkpiecePickedUp a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Workpiece picked up (vacuum switch)"@en ;
+    maestro:description "Vacuum switch VPEV switches when the workpiece is securely held. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DI_DownstreamFree a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Downstream station free (StationLink receiver)"@en ;
+    maestro:description "Optical 1-bit link from the downstream station's transmitter: ready to receive / busy. Polarity not stated. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:DO_EjectingCylinder a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Ejecting cylinder (magazine slide) command"@en ;
+    maestro:description "GRAFCET: 'extend magazine slide (retract ejecting cylinder)' and 'retract magazine slide (extend ejecting cylinder)'. Single or double solenoid not stated. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+dis:DO_SwivelToMagazine a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Swivel arm to position 'magazine'"@en ;
+    maestro:description "Rotary drive command. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+dis:DO_SwivelToDownstream a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Swivel arm to position 'downstream station'"@en ;
+    maestro:description "Rotary drive command. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+dis:DO_Vacuum a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Vacuum on / off"@en ;
+    maestro:description "GRAFCET steps 13 (on) and 15 (off); whether there is a separate ejector-pulse output is not stated. PLC address and BMK not stated: the circuit diagram of this station is not among the documents."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+dis:CC_Start a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "START pushbutton (illuminated)"@en ;
+    maestro:description "Starts the sequence; also acknowledges an error after the operator has removed its cause. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:CC_Stop a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "STOP pushbutton"@en ;
+    maestro:description "Interrupts the sequence at any time. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:CC_Reset a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "RESET pushbutton (illuminated)"@en ;
+    maestro:description "The reset sequence is prompted by the illuminated RESET pushbutton and runs when it is pressed. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:CC_AutoMan a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "Key-operated switch AUTO/MAN"@en ;
+    maestro:description "AUTO = continuous cycle, MAN = individual cycle. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:CC_EmergencyStop a maestro:ParameterDef , maestro:DtdlTelemetry ;
+    rdfs:label "EMERGENCY-STOP pushbutton (if available)"@en ;
+    maestro:description "Interrupts the sequence at any time; must be released before a program is loaded. Whether it is a PLC input or a hard-wired safety circuit is not stated. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+dis:CC_StartLamp a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "'start' indicator light"@en ;
+    maestro:description "Lamp of the START pushbutton; on while the station waits for START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+dis:CC_ResetLamp a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "'reset' indicator light"@en ;
+    maestro:description "Lamp of the RESET pushbutton; on while the station is not reset. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+dis:CC_MagEmptyLamp a maestro:ParameterDef , maestro:DtdlProperty ;
+    rdfs:label "Warning light MAG. EMPTY"@en ;
+    maestro:description "Lit when the stack magazine holds no workpiece; refill and acknowledge with START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+
+#################################################################
+# I/O PATH: SYSLINK ENDPOINTS AND DATA INTERFACES
+#
+# The URNs name the SysLink connectors; there is no network address in
+# the documents.
+#################################################################
+
+dis:XMA2 a maestro:Endpoint ;
+    rdfs:label "Distributing station: SysLink station connector XMA2 (I/O terminal)"@en ;
+    maestro:address "urn:ltu:festo-mps:distributing:XMA2" ;
+    maestro:description "24-pin SysLink plug between the station I/O terminal and the PLC board; parallel wiring, no network address. The URN only names the connector."@en ;
+    maestro:usesProtocol ltu:SysLinkDigitalIO .
+
+dis:XMG1 a maestro:Endpoint ;
+    rdfs:label "Distributing station: SysLink control-console connector XMG1"@en ;
+    maestro:address "urn:ltu:festo-mps:distributing:XMG1" ;
+    maestro:description "SysLink plug between the control console and the PLC board. The URN only names the connector."@en ;
+    maestro:usesProtocol ltu:SysLinkDigitalIO .
+
+dis:StationIO a maestro:DtdlInterface ;
+    rdfs:label "Distributing station I/O image (XMA2)"@en ;
+    maestro:description "Sensor and actuator signals between the station and the PLC board."@en ;
+    maestro:hasTelemetry dis:DI_WorkpieceInMagazine ,
+                    dis:DI_WorkpieceEjected ,
+                    dis:DI_MagazineSlideRetracted ,
+                    dis:DI_ArmAtMagazine ,
+                    dis:DI_ArmAtDownstream ,
+                    dis:DI_WorkpiecePickedUp ,
+                    dis:DI_DownstreamFree ;
+    maestro:hasProperty dis:DO_EjectingCylinder ,
+                   dis:DO_SwivelToMagazine ,
+                   dis:DO_SwivelToDownstream ,
+                   dis:DO_Vacuum ;
+    maestro:exposedVia dis:XMA2 .
+
+dis:ConsoleIO a maestro:DtdlInterface ;
+    rdfs:label "Distributing station control console (XMG1)"@en ;
+    maestro:description "Operator signals of the control console."@en ;
+    maestro:hasTelemetry dis:CC_Start ,
+                    dis:CC_Stop ,
+                    dis:CC_Reset ,
+                    dis:CC_AutoMan ,
+                    dis:CC_EmergencyStop ;
+    maestro:hasProperty dis:CC_StartLamp , dis:CC_ResetLamp , dis:CC_MagEmptyLamp ;
+    maestro:exposedVia dis:XMG1 .
+
+dis:ControlService a maestro:SkillService ;
+    rdfs:label "Distributing station PLC program"@en ;
+    maestro:description "The station manual offers Siemens S7-313C / 313C-2DP / 314 / 315-2DP (STEP7), Festo FEC FC640 / IPC HC02 / HC20 (FST 4.02), Allen-Bradley MicroLogix 1500 (RSLogix 500) and Mitsubishi FX1N (GX IEC Developer) controllers with a ready program. Which controller and program LTU runs is not stated. Program names on the CD: 01VE_AS / 01VE_KFA (S7), 01VE_FEC, 01_VE_K (ML1500), 01_VE_AS / 01_VE_FUP (FX1N)."@en ;
+    maestro:exposesInterface dis:StationIO , dis:ConsoleIO .
+
+
+#################################################################
+# SKILLS
+#
+# One atomic skill per GRAFCET action; DistributeWorkpiece is the cycle.
+#################################################################
+
+dis:ResetStation a maestro:AtomicSkill ;
+    rdfs:label "Reset to initial position"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "GRAFCET steps 3-4: move the station to its initial position and set the flag 'reset finished'."@en ;
+    maestro:requiresCapability ltu:StationControlCapability ;
+    maestro:hasParameterDef dis:CC_Reset ,
+                       dis:DI_MagazineSlideRetracted ,
+                       dis:DI_ArmAtMagazine ,
+                       dis:DI_WorkpiecePickedUp ;
+    maestro:hasPrecondition dis:Pre_ResetStation ;
+    maestro:hasPostcondition dis:Post_ResetStation .
+
+dis:Pre_ResetStation a maestro:Precondition ;
+    rdfs:label "RESET pressed"@en ;
+    maestro:expression "CC_Reset == 1" .
+
+dis:Post_ResetStation a maestro:Postcondition ;
+    rdfs:label "Initial position: ejecting cylinder extended, rotary drive at 'magazine', vacuum off"@en ;
+    maestro:expression "DI_MagazineSlideRetracted == 1 && DI_ArmAtMagazine == 1 && DO_Vacuum == 0" .
+
+dis:SwitchIndicatorLight a maestro:AtomicSkill ;
+    rdfs:label "Switch indicator light"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Turn the 'reset', 'start' or MAG. EMPTY light on or off."@en ;
+    maestro:requiresCapability ltu:OperatorInterfaceCapability ;
+    maestro:hasParameterDef dis:CC_StartLamp , dis:CC_ResetLamp , dis:CC_MagEmptyLamp .
+
+dis:EjectWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Eject workpiece from the magazine"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Extend the magazine slide (retract the ejecting cylinder): the lowest workpiece is pushed out to the transfer point."@en ;
+    maestro:requiresCapability ltu:FeedingCapability ;
+    maestro:hasParameterDef dis:DO_EjectingCylinder ,
+                       dis:DI_WorkpieceEjected ,
+                       dis:DI_WorkpieceInMagazine ;
+    maestro:hasPrecondition dis:Pre_EjectWorkpiece ;
+    maestro:hasPostcondition dis:Post_EjectWorkpiece .
+
+dis:Pre_EjectWorkpiece a maestro:Precondition ;
+    rdfs:label "Workpiece in magazine"@en ;
+    maestro:expression "DI_WorkpieceInMagazine == 1" .
+
+dis:Post_EjectWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece ejected"@en ;
+    maestro:expression "DI_WorkpieceEjected == 1" .
+
+dis:RetractMagazineSlide a maestro:AtomicSkill ;
+    rdfs:label "Retract magazine slide"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Extend the ejecting cylinder again so the magazine is closed."@en ;
+    maestro:requiresCapability ltu:FeedingCapability ;
+    maestro:hasParameterDef dis:DO_EjectingCylinder , dis:DI_MagazineSlideRetracted ;
+    maestro:hasPostcondition dis:Post_RetractMagazineSlide .
+
+dis:Post_RetractMagazineSlide a maestro:Postcondition ;
+    rdfs:label "Magazine slide retracted"@en ;
+    maestro:expression "DI_MagazineSlideRetracted == 1" .
+
+dis:SwivelToMagazine a maestro:AtomicSkill ;
+    rdfs:label "Swivel arm to 'magazine'"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Rotary drive moves the arm to the magazine transfer point."@en ;
+    maestro:requiresCapability ltu:TransferCapability ;
+    maestro:hasParameterDef dis:DO_SwivelToMagazine , dis:DI_ArmAtMagazine ;
+    maestro:hasPostcondition dis:Post_SwivelToMagazine .
+
+dis:Post_SwivelToMagazine a maestro:Postcondition ;
+    rdfs:label "Swivel arm in position 'magazine'"@en ;
+    maestro:expression "DI_ArmAtMagazine == 1" .
+
+dis:SwivelToDownstream a maestro:AtomicSkill ;
+    rdfs:label "Swivel arm to 'downstream station'"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Rotary drive moves the arm to the transfer point of the downstream station."@en ;
+    maestro:requiresCapability ltu:TransferCapability ;
+    maestro:hasParameterDef dis:DO_SwivelToDownstream , dis:DI_ArmAtDownstream , dis:DI_DownstreamFree ;
+    maestro:hasPrecondition dis:Pre_SwivelToDownstream ;
+    maestro:hasPostcondition dis:Post_SwivelToDownstream .
+
+dis:Pre_SwivelToDownstream a maestro:Precondition ;
+    rdfs:label "Downstream station free"@en ;
+    maestro:expression "DI_DownstreamFree == 1" .
+
+dis:Post_SwivelToDownstream a maestro:Postcondition ;
+    rdfs:label "Swivel arm in position 'downstream station'"@en ;
+    maestro:expression "DI_ArmAtDownstream == 1" .
+
+dis:PickUpWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Pick up workpiece (vacuum on)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Switch the vacuum on; the vacuum switch confirms the hold."@en ;
+    maestro:requiresCapability ltu:VacuumGrippingCapability ;
+    maestro:hasParameterDef dis:DO_Vacuum , dis:DI_WorkpiecePickedUp ;
+    maestro:hasPostcondition dis:Post_PickUpWorkpiece .
+
+dis:Post_PickUpWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece picked up"@en ;
+    maestro:expression "DI_WorkpiecePickedUp == 1" .
+
+dis:ReleaseWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Drop off workpiece (vacuum off)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Switch the vacuum off at the downstream transfer point."@en ;
+    maestro:requiresCapability ltu:VacuumGrippingCapability ;
+    maestro:hasParameterDef dis:DO_Vacuum , dis:DI_WorkpiecePickedUp ;
+    maestro:hasPostcondition dis:Post_ReleaseWorkpiece .
+
+dis:Post_ReleaseWorkpiece a maestro:Postcondition ;
+    rdfs:label "No workpiece picked up"@en ;
+    maestro:expression "DI_WorkpiecePickedUp == 0" .
+
+dis:DistributeWorkpiece a maestro:CompositeSkill ;
+    rdfs:label "Distribute workpiece (station cycle)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Separate one workpiece from the magazine and place it at the transfer point of the downstream station (manual section 5.3, GRAFCET steps 8-16)."@en ;
+    maestro:hasSubSkillLink dis:EjectWorkpiece ,
+                       dis:SwivelToMagazine ,
+                       dis:PickUpWorkpiece ,
+                       dis:RetractMagazineSlide ,
+                       dis:SwivelToDownstream ,
+                       dis:ReleaseWorkpiece ;
+    maestro:requiresCapability ltu:FeedingCapability ,
+                          ltu:TransferCapability ,
+                          ltu:VacuumGrippingCapability ;
+    maestro:hasPrecondition dis:Pre_DistributeWorkpiece ;
+    maestro:hasPostcondition dis:Post_DistributeWorkpiece ;
+    maestro:hasInterfaceContract dis:StationIO ;
+    maestro:mayRaiseFault dis:FS_MagazineEmpty .
+
+dis:Pre_DistributeWorkpiece a maestro:Precondition ;
+    rdfs:label "Magazine filled, START pressed, downstream station free"@en ;
+    maestro:expression "DI_WorkpieceInMagazine == 1 && CC_Start == 1 && DI_DownstreamFree == 1" .
+
+dis:Post_DistributeWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece at the transfer point of the downstream station"@en ;
+    maestro:expression "DI_WorkpiecePickedUp == 0 && DI_ArmAtDownstream == 1" .
+
+dis:FS_MagazineEmpty a maestro:FaultSpecification ;
+    rdfs:label "Magazine empty"@en ;
+    maestro:faultCode "MAG. EMPTY" ;
+    maestro:faultSeverity "operator acknowledgement" ;
+    maestro:description "GRAFCET step 10: no workpiece in the magazine; the MAG. EMPTY and 'start' lights go on. Refill the magazine and acknowledge with START."@en .
+
+
+#################################################################
+# SAFETY
+#################################################################
+
+ltu:Perm_TraineeRunsStations maestro:target dis:DistributeWorkpiece .
+
+dis:EmergencyStop a maestro:EmergencyStop ;
+    rdfs:label "EMERGENCY-STOP pushbutton, Distributing station control console"@en ;
+    maestro:description "The manual names the EMERGENCY-STOP pushbutton '(if available)'; together with STOP it interrupts the sequence at any time and must be released before a program is loaded. Safety category, performance level and wiring are not stated."@en ;
+    maestro:mitigates ltu:H_MovingStation .
+
+
+#################################################################
+# MAINTENANCE
+#################################################################
+
+dis:MaintenancePlan a maestro:MaintenancePlan ;
+    rdfs:label "Distributing station care plan (manual chapter 'Maintenance')"@en ;
+    maestro:description "Only 'at regular intervals' is given; no numeric interval is stated."@en ;
+    maestro:planForAsset dis:StackMagazineModule , dis:ChangerModule , dis:StationLinkReceiver ;
+    maestro:hasTask ltu:MT_CleanOptics ,
+               ltu:MT_CleanProximitySensors ,
+               ltu:MT_CleanStation ,
+               ltu:MT_VisualCheck .

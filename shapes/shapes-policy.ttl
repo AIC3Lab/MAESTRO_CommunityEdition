@@ -1,0 +1,128 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE POLICY / SAFETY CLUSTER (core/policy.ttl)
+#
+# Policies with constraints and permissions, roles and actions,
+# hazards, risks, mitigations, safety functions with their achieved
+# levels, risk assessments and evidence.
+#################################################################
+
+mhsh:PolicyContentShape a sh:NodeShape ;
+    sh:targetClass maestro:Policy ;
+    rdfs:label "A policy should contain a constraint or grant a permission."@en ;
+    sh:severity sh:Warning ;
+    sh:or (
+        [ sh:path maestro:contains      ; sh:minCount 1 ]
+        [ sh:path maestro:hasPermission ; sh:minCount 1 ]
+    ) ;
+    sh:message "A maestro:Policy should either maestro:contains at least one maestro:Constraint or grant at least one maestro:Permission via maestro:hasPermission." .
+
+mhsh:PermissionStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Permission ;
+    rdfs:label "A permission is granted to a role, names an action and has a target."@en ;
+    sh:property [
+        sh:path maestro:grantedTo ;
+        sh:minCount 1 ;
+        sh:class maestro:Role ;
+        sh:message "A maestro:Permission must be granted to at least one maestro:Role via maestro:grantedTo." ;
+    ] ;
+    sh:property [
+        sh:path maestro:action ;
+        sh:minCount 1 ;
+        sh:class maestro:Action ;
+        sh:message "A maestro:Permission must name at least one maestro:Action via maestro:action." ;
+    ] ;
+    sh:property [
+        sh:path maestro:target ;
+        sh:minCount 1 ;
+        sh:message "A maestro:Permission must name at least one maestro:target." ;
+    ] .
+
+mhsh:ConstraintTargetShape a sh:NodeShape ;
+    sh:targetClass maestro:Constraint ;
+    rdfs:label "A constraint constrains at least one thing."@en ;
+    sh:property [
+        sh:path maestro:constrains ;
+        sh:minCount 1 ;
+        sh:message "A maestro:Constraint must name at least one subject via maestro:constrains." ;
+    ] .
+
+mhsh:HazardRiskShape a sh:NodeShape ;
+    sh:targetClass maestro:Hazard ;
+    rdfs:label "A hazard increases risks."@en ;
+    sh:property [
+        sh:path maestro:increases ;
+        sh:class maestro:Risk ;
+        sh:message "maestro:increases on a maestro:Hazard must point to a maestro:Risk." ;
+    ] .
+
+mhsh:MitigationRiskShape a sh:NodeShape ;
+    sh:targetClass maestro:Mitigation ;
+    rdfs:label "A mitigation reduces at least one risk."@en ;
+    sh:property [
+        sh:path maestro:reduces ;
+        sh:minCount 1 ;
+        sh:class maestro:Risk ;
+        sh:message "A maestro:Mitigation must reduce at least one maestro:Risk via maestro:reduces." ;
+    ] .
+
+mhsh:RiskHazardShape a sh:NodeShape ;
+    sh:targetClass maestro:Risk ;
+    rdfs:label "A risk should be increased by at least one hazard."@en ;
+    sh:property [
+        sh:path [ sh:inversePath maestro:increases ] ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Risk should be the object of maestro:increases on at least one maestro:Hazard." ;
+    ] .
+
+mhsh:SafetyFunctionLevelShape a sh:NodeShape ;
+    sh:targetClass maestro:SafetyFunction ;
+    rdfs:label "A safety function achieves at most one SIL and at most one performance level."@en ;
+    sh:property [
+        sh:path maestro:achievedSIL ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:SafetyFunction carries at most one maestro:achievedSIL." ;
+    ] ;
+    sh:property [
+        sh:path maestro:achievedPerformanceLevel ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:SafetyFunction carries at most one maestro:achievedPerformanceLevel." ;
+    ] .
+
+mhsh:RiskAssessmentStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:RiskAssessment ;
+    rdfs:label "A risk assessment assesses at least one risk, rates it at most once and cites evidence."@en ;
+    sh:property [
+        sh:path maestro:assessesRisk ;
+        sh:minCount 1 ;
+        sh:class maestro:Risk ;
+        sh:message "A maestro:RiskAssessment must assess at least one maestro:Risk via maestro:assessesRisk." ;
+    ] ;
+    sh:property [
+        sh:path maestro:riskLevel ;
+        sh:maxCount 1 ;
+        sh:class maestro:RiskLevel ;
+        sh:message "maestro:riskLevel on a maestro:RiskAssessment is at most one maestro:RiskLevel." ;
+    ] ;
+    sh:property [
+        sh:path maestro:riskEvidence ;
+        sh:class maestro:Evidence ;
+        sh:message "maestro:riskEvidence on a maestro:RiskAssessment must point to a maestro:Evidence." ;
+    ] .
+
+mhsh:EvidenceRefShape a sh:NodeShape ;
+    sh:targetClass maestro:Evidence ;
+    rdfs:label "An evidence reference is at most one IRI literal."@en ;
+    sh:property [
+        sh:path maestro:evidenceRef ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:anyURI ;
+        sh:message "maestro:evidenceRef on a maestro:Evidence is at most one xsd:anyURI literal." ;
+    ] .

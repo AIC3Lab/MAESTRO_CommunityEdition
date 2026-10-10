@@ -1,0 +1,20 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ08 - Which hazards raise which risks, which mitigations reduce them, which safety function covers the hazard, and what level does it achieve?
+SELECT ?hazard ?risk ?mitigation ?safetyFunction ?achievedPL ?achievedSIL ?riskLevel
+WHERE {
+    ?hazard a maestro:Hazard ;
+            maestro:increases ?risk .
+    OPTIONAL { ?mitigation maestro:reduces ?risk }
+    OPTIONAL {
+        ?safetyFunction maestro:mitigates ?hazard .
+        OPTIONAL { ?safetyFunction maestro:achievedPerformanceLevel ?achievedPL }
+        OPTIONAL { ?safetyFunction maestro:achievedSIL ?achievedSIL }
+    }
+    OPTIONAL {
+        ?assessment maestro:assessesRisk ?risk ;
+                    maestro:riskLevel ?riskLevel .
+    }
+}
+ORDER BY ?hazard ?risk

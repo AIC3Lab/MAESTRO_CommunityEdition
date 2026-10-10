@@ -1,0 +1,70 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : Addressing
+#
+# The addressing properties shared by the protocol extension modules:
+# the address and transport port of an endpoint, and the topic of a
+# binding. The core invocation cluster stays protocol-neutral; each
+# protocol module (ext/opcua.ttl, ext/rest.ttl, ext/mqtt.ttl,
+# ext/dds.ttl, ext/modbus.ttl, ext/profinet.ttl, ext/ethercat.ttl)
+# imports this module and uses these properties. Protocol-specific
+# topic properties specialise maestro:topic (maestro:mqttTopic,
+# maestro:ddsTopic).
+#################################################################
+
+<https://w3id.org/maestro/hhm/addressing> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/addressing/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Addressing" ;
+    rdfs:label "MAESTRO HHM-Core: Addressing"@en ;
+    dct:description "Addressing properties shared by the protocol extensions: the address and port of an endpoint and the topic of a binding."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. address and port reuse their definitions from the MAESTRO 1.0 communication module (dct:source); topic has no MAESTRO 1.0 counterpart."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-10-02"^^xsd:date ;
+    dct:modified "2026-10-02"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/communication> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/invocation> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:address a owl:DatatypeProperty ;
+    rdfs:label "address"@en ;
+    skos:definition "URI or URL of the endpoint, for example opc.tcp://plc1:4840."@en ;
+    rdfs:comment "Moved from core/invocation.ttl. Where an endpoint has no network address (parallel wiring, for example), a URN names it."@en ;
+    rdfs:domain maestro:Endpoint ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/communication#address> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/addressing> .
+
+maestro:port a owl:DatatypeProperty ;
+    rdfs:label "port"@en ;
+    skos:definition "The transport port number of an endpoint."@en ;
+    rdfs:comment "Moved from core/invocation.ttl. Used by endpoints of protocols that run over TCP or UDP; when the address is a URI that names the port, the two agree."@en ;
+    rdfs:domain maestro:Endpoint ;
+    rdfs:range  xsd:integer ;
+    dct:source <https://w3id.org/maestro/communication#port> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/addressing> .
+
+maestro:topic a owl:DatatypeProperty ;
+    rdfs:label "topic"@en ;
+    skos:definition "The topic, channel or other named destination a binding publishes to or subscribes from."@en ;
+    rdfs:comment "Moved from core/invocation.ttl, where it sat on maestro:EventStream; a topic is protocol-level, so it now sits on the binding. Protocol modules specialise it: maestro:mqttTopic, maestro:ddsTopic."@en ;
+    rdfs:domain maestro:Binding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/addressing> .

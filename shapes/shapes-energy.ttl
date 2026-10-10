@@ -1,0 +1,63 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - ENERGY MODULE (modules/energy.ttl)
+#
+# Energy measurements over an interval, instantaneous power
+# measurements and the energy source of a consumer. The numeric
+# datatype of maestro:energyKwh, maestro:powerWatts and maestro:carbonGCO2eqPerKwh
+# is enforced by mhsh:NumericLiteralShape (shapes-skill.ttl).
+#################################################################
+
+mhsh:EnergyMeasurementStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:EnergyMeasurement ;
+    rdfs:label "An energy measurement names its subject, carries exactly one energy value and spans a time interval."@en ;
+    sh:property [
+        sh:path maestro:measuredSubject ;
+        sh:minCount 1 ;
+        sh:message "A maestro:EnergyMeasurement must name at least one maestro:measuredSubject." ;
+    ] ;
+    sh:property [
+        sh:path maestro:energyKwh ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:EnergyMeasurement must carry exactly one maestro:energyKwh." ;
+    ] ;
+    sh:property [
+        sh:path maestro:overInterval ;
+        sh:minCount 1 ;
+        sh:class maestro:TimeInterval ;
+        sh:message "A maestro:EnergyMeasurement must span at least one maestro:TimeInterval via maestro:overInterval." ;
+    ] .
+
+mhsh:PowerMeasurementStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:PowerMeasurement ;
+    rdfs:label "A power measurement carries exactly one power value and should be timestamped."@en ;
+    sh:property [
+        sh:path maestro:powerWatts ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:PowerMeasurement must carry exactly one maestro:powerWatts." ;
+    ] ;
+    sh:property [
+        sh:path maestro:timestamp ;
+        sh:minCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:PowerMeasurement should carry a maestro:timestamp." ;
+    ] .
+
+mhsh:EnergyConsumerSourceShape a sh:NodeShape ;
+    sh:targetClass maestro:EnergyConsumer ;
+    rdfs:label "An energy consumer should name its energy source."@en ;
+    sh:property [
+        sh:path maestro:suppliedBy ;
+        sh:minCount 1 ;
+        sh:class maestro:EnergySource ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:EnergyConsumer should be supplied by at least one maestro:EnergySource (maestro:suppliedBy)." ;
+    ] .

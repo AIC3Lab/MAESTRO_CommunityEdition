@@ -1,0 +1,23 @@
+# LQ04 - Bill of materials of each LTU station: every assembly and component
+# with its circuit-diagram designation, quantity and Festo part number.
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?station ?assembly ?component ?designation ?quantity ?partNumber ?typeCode
+WHERE {
+    ?stype a maestro:ProductType ;
+           rdfs:label ?station ;
+           maestro:hasBOM ?top .
+    ?top rdfs:label ?assembly .
+    ?top maestro:hasPart? ?node .
+    ?node rdfs:label ?component ;
+          maestro:nodeFor ?pt .
+    ?pt maestro:model ?typeCode ;
+        maestro:hasIdentifier/maestro:identifierValue ?partNumber .
+    OPTIONAL { ?node maestro:refDesignator ?ref }
+    OPTIONAL { ?node maestro:quantity ?qty }
+    BIND(COALESCE(?ref, "") AS ?designation)
+    BIND(COALESCE(STR(?qty), "(not stated)") AS ?quantity)
+    FILTER(STRSTARTS(STR(?stype), "https://w3id.org/maestro/hhm/examples/ltu-festo-mps/"))
+}
+ORDER BY ?station ?assembly ?component

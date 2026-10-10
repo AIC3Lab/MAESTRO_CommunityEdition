@@ -1,0 +1,246 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix PackML: <http://www.w3id.org/hsu-aut/PackML#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core : Minimal Execution cluster (core-optional)
+#
+# HHM-Core v1 cluster "Minimal Execution": SkillExecution,
+# ExecutionStatus, Fault and TimeInterval with the seven edges the
+# diagram draws. The live state model of a resource (state
+# dimensions, assertions, transitions, snapshots) is a separate
+# module, modules/telemetry.ttl.
+#
+# Extension points: PROV-O provenance (ext/prov.ttl). SAREF4INMA
+# traceability is named by the HHM diagram but not in the listed
+# standards basis: hook only, no IRIs, no mapping.
+#################################################################
+
+<https://w3id.org/maestro/hhm/execution> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/execution/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Minimal Execution" ;
+    rdfs:label "MAESTRO HHM-Core: Minimal Execution"@en ;
+    dct:description "HHM-Core v1 Minimal Execution cluster: one execution of a skill on a module, its inputs, status, faults, invocation endpoint and time interval."@en ;
+    rdfs:comment "Execution status values Idle, Executing, Held and Aborted carry documentary skos:closeMatch links to the states of the HSU PackML ontology design pattern; Completed is close to PackML Complete. Apart from these, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 runtime module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/runtime> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/skill> , <https://w3id.org/maestro/hhm/invocation> .
+
+#################################################################
+# CLASSES
+#################################################################
+
+maestro:SkillExecution a owl:Class ;
+    rdfs:label "Skill execution"@en ;
+    skos:definition "One execution of a skill on a resource: an occurrence with inputs, status, invocation endpoint, faults and time interval."@en ;
+    rdfs:comment "HHM-Core Minimal Execution cluster. The occurrence itself; a record describing it is an maestro:ExecutionRecord (modules/telemetry.ttl). Aligned to prov:Activity in ext/prov.ttl."@en ;
+    dct:source <https://w3id.org/maestro/runtime#SkillExecution> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:ExecutionStatus a owl:Class ;
+    rdfs:label "Execution status"@en ;
+    skos:definition "A discrete condition value that an execution can be in."@en ;
+    rdfs:comment "HHM-Core Minimal Execution cluster, a controlled vocabulary of individuals. modules/telemetry.ttl declares it a subclass of maestro:State, the live state of a resource, so the shared values Idle, Executing, Held and Aborted exist once."@en ;
+    dct:references <https://w3id.org/maestro/core#State> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:Idle a owl:NamedIndividual , maestro:ExecutionStatus ;
+    rdfs:label "Idle"@en ;
+    skos:definition "Not executing and waiting for a start."@en ;
+    rdfs:comment "Close match to PackML:Idle, which the HSU PackML ODP describes as the wait state indicating that resetting is complete."@en ;
+    skos:closeMatch PackML:Idle ;
+    dct:source <https://w3id.org/maestro/runtime#Idle> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:Executing a owl:NamedIndividual , maestro:ExecutionStatus ;
+    rdfs:label "Executing"@en ;
+    skos:definition "The skill is running."@en ;
+    rdfs:comment "Close match to PackML:Execute, the acting state the machine is in once it is processing."@en ;
+    skos:closeMatch PackML:Execute ;
+    dct:source <https://w3id.org/maestro/runtime#Executing> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:Held a owl:NamedIndividual , maestro:ExecutionStatus ;
+    rdfs:label "Held"@en ;
+    skos:definition "Paused because internal conditions of the resource do not allow it to continue; waits to be resumed."@en ;
+    rdfs:comment "Close match to PackML:Held of the HSU PackML ODP."@en ;
+    skos:closeMatch PackML:Held ;
+    dct:source <https://w3id.org/maestro/runtime#Held> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:Completed a owl:NamedIndividual , maestro:ExecutionStatus ;
+    rdfs:label "Completed"@en ;
+    skos:definition "The execution finished successfully."@en ;
+    rdfs:comment "Close match to PackML:Complete of the HSU PackML ODP."@en ;
+    skos:closeMatch PackML:Complete ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:Aborted a owl:NamedIndividual , maestro:ExecutionStatus ;
+    rdfs:label "Aborted"@en ;
+    skos:definition "The execution was ended abnormally, typically after a fault or an emergency stop."@en ;
+    rdfs:comment "Close match to PackML:Aborted, in which the machine keeps status information about the abort condition and leaves the state only after an explicit Clear command."@en ;
+    skos:closeMatch PackML:Aborted ;
+    dct:source <https://w3id.org/maestro/runtime#Aborted> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:Fault a owl:Class ;
+    rdfs:label "Fault"@en ;
+    skos:definition "A fault occurrence raised during an execution, carrying a code, a cause and a severity."@en ;
+    rdfs:comment "HHM-Core Fault. MAESTRO 1.0 calls the occurrence runtime:FaultEvent and keeps runtime:Fault for the faulted state value; this package follows the HHM name for the occurrence and calls the state value maestro:FaultState. The kind of fault is an maestro:FaultSpecification (modules/telemetry.ttl)."@en ;
+    dct:references <https://w3id.org/maestro/runtime#FaultEvent> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:TimeInterval a owl:Class ;
+    rdfs:label "Time interval"@en ;
+    skos:definition "A start and end time interval."@en ;
+    rdfs:comment "HHM-Core Minimal Execution cluster. Complements the instant-only maestro:timestamp."@en ;
+    dct:source <https://w3id.org/maestro/runtime#TimeInterval> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+#################################################################
+# OBJECT PROPERTIES
+#################################################################
+
+maestro:executes a owl:ObjectProperty ;
+    rdfs:label "executes"@en ;
+    skos:definition "Relates an execution to the skill that ran."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution executes Skill."@en ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  maestro:Skill ;
+    dct:source <https://w3id.org/maestro/runtime#executes> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:executedOn a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:Module , maestro:Station ;
+    rdfs:label "executed on"@en ;
+    skos:definition "Relates an execution to the module, or station, the skill ran on."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution executedOn Module. Range left open so a whole station may be named as executor."@en ;
+    rdfs:domain maestro:SkillExecution ;
+    dct:source <https://w3id.org/maestro/runtime#executedOn> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:invokedVia a owl:ObjectProperty ;
+    rdfs:label "invoked via"@en ;
+    skos:definition "Relates an execution to the endpoint through which it was invoked."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution invokedVia Endpoint."@en ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  maestro:Endpoint ;
+    dct:source <https://w3id.org/maestro/runtime#invokedVia> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:hasInput a owl:ObjectProperty ;
+    rdfs:label "has input"@en ;
+    skos:definition "Relates an execution to a parameter value supplied to it."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution hasInput ParameterValue."@en ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  maestro:ParameterValue ;
+    dct:source <https://w3id.org/maestro/runtime#hasInput> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:hasStatus a owl:ObjectProperty ;
+    rdfs:label "has status"@en ;
+    skos:definition "Relates an execution to the status it reached."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution hasStatus ExecutionStatus."@en ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  maestro:ExecutionStatus ;
+    dct:source <https://w3id.org/maestro/runtime#hasStatus> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:mayRaise a owl:ObjectProperty ;
+    rdfs:label "may raise"@en ;
+    skos:definition "Relates an execution to a fault occurrence raised during it."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution mayRaise Fault, kept under the HHM name. It records the fault that did occur; what a skill can raise in principle is maestro:mayRaiseFault on the skill (modules/telemetry.ttl)."@en ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  maestro:Fault ;
+    dct:references <https://w3id.org/maestro/runtime#raisedFault> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:hasTime a owl:ObjectProperty ;
+    schema:domainIncludes maestro:SkillExecution , maestro:MaintenanceAction ;
+    rdfs:label "has time"@en ;
+    skos:definition "Relates an execution, or another occurrence, to the time interval over which it ran."@en ;
+    rdfs:comment "HHM-Core edge SkillExecution hasTime TimeInterval. Domain left open so maintenance actions and measurements can carry an interval too."@en ;
+    rdfs:range  maestro:TimeInterval ;
+    dct:source <https://w3id.org/maestro/runtime#hasTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:startTime a owl:DatatypeProperty ;
+    rdfs:label "start time"@en ;
+    skos:definition "The instant at which an interval started."@en ;
+    rdfs:domain maestro:TimeInterval ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#startTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:endTime a owl:DatatypeProperty ;
+    rdfs:label "end time"@en ;
+    skos:definition "The instant at which an interval ended."@en ;
+    rdfs:domain maestro:TimeInterval ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#endTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:faultCode a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Fault , maestro:FaultSpecification ;
+    rdfs:label "fault code"@en ;
+    skos:definition "Vendor or controller fault code, as reported by the execution technology."@en ;
+    rdfs:comment "Domain left open: describes both a fault occurrence (maestro:Fault) and a fault specification (maestro:FaultSpecification)."@en ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/runtime#faultCode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:faultCause a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Fault ;
+    rdfs:label "fault cause"@en ;
+    skos:definition "Human-readable cause of the fault."@en ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/runtime#faultCause> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:faultSeverity a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Fault , maestro:FaultSpecification ;
+    rdfs:label "fault severity"@en ;
+    skos:definition "Severity label of the fault, for example warning, error or critical."@en ;
+    rdfs:comment "Domain left open, as for maestro:faultCode."@en ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/runtime#faultSeverity> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+maestro:timestamp a owl:DatatypeProperty ;
+    schema:domainIncludes maestro:Fault , maestro:TelemetryEvent , maestro:PowerMeasurement ;
+    rdfs:label "timestamp"@en ;
+    skos:definition "The instant at which an event or an instantaneous measurement occurred."@en ;
+    rdfs:comment "Domain left open: used by maestro:Fault, maestro:TelemetryEvent and maestro:PowerMeasurement."@en ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/runtime#timestamp> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/execution> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# Execution statuses
+[] a owl:AllDifferent ;
+    owl:members ( maestro:Idle maestro:Executing maestro:Held maestro:Completed maestro:Aborted ) .

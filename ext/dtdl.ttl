@@ -1,0 +1,114 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : DTDL (Digital Twins Definition Language v3)
+#
+# Realises the HHM extension point "DTDL" on Binding: the DTDL
+# interface-language individual (maestro:DtdlIDL), a DTDL
+# interface with commands, telemetry and properties, and a DTDL
+# binding that specialises the protocol-neutral maestro:Binding. DTDL is
+# a JSON-LD vocabulary with dtmi: identifiers, not an OWL ontology;
+# each class carries a documentary match to the DTDL v3 metamodel
+# class identifier.
+#################################################################
+
+<https://w3id.org/maestro/hhm/dtdl> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/dtdl/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: DTDL" ;
+    rdfs:label "MAESTRO HHM-Core: DTDL"@en ;
+    dct:description "DTDL interfaces, commands, telemetry and properties as a realisation of the invocation hooks and of digital-twin bindings."@en ;
+    rdfs:comment "Apart from documentary skos:closeMatch links to the DTDL v3 metamodel class identifiers (references/dtdl-v3-classes.ttl), this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 dtdl module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/dtdl> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/invocation> .
+
+maestro:DtdlIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "DTDL"@en ;
+    skos:definition "An interface described in the Digital Twins Definition Language."@en ;
+    rdfs:comment "Moved from core/invocation.ttl: each interface description language is declared in the extension module of its technology. A DTDL interface names it with maestro:describedIn."@en ;
+    dct:source <https://w3id.org/maestro/communication#DtdlIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:DtdlInterface a owl:Class ;
+    rdfs:label "DTDL interface"@en ;
+    skos:definition "A DTDL interface: the model of a twin's commands, telemetry and properties."@en ;
+    rdfs:comment "Close match to the DTDL v3 metamodel class Interface. A DTDL interface may serve as an maestro:SkillInterface described in DTDL."@en ;
+    rdfs:subClassOf maestro:SkillInterface ;
+    skos:closeMatch <dtmi:dtdl:class:Interface;3> ;
+    dct:source <https://w3id.org/maestro/dtdl#Interface> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:DtdlCommand a owl:Class ;
+    rdfs:label "DTDL command"@en ;
+    skos:definition "A DTDL command: an operation a client can invoke on the twin."@en ;
+    skos:closeMatch <dtmi:dtdl:class:Command;3> ;
+    dct:source <https://w3id.org/maestro/dtdl#Command> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:DtdlTelemetry a owl:Class ;
+    rdfs:label "DTDL telemetry"@en ;
+    skos:definition "A DTDL telemetry: a stream of values the twin emits."@en ;
+    skos:closeMatch <dtmi:dtdl:class:Telemetry;3> ;
+    dct:source <https://w3id.org/maestro/dtdl#Telemetry> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:DtdlProperty a owl:Class ;
+    rdfs:label "DTDL property"@en ;
+    skos:definition "A DTDL property: a readable, optionally writable, state value of the twin."@en ;
+    skos:closeMatch <dtmi:dtdl:class:Property;3> ;
+    dct:source <https://w3id.org/maestro/dtdl#Property> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:DtdlBinding a owl:Class ;
+    rdfs:label "DTDL binding"@en ;
+    skos:definition "A binding that maps an endpoint onto a DTDL interface."@en ;
+    rdfs:comment "Specialises maestro:Binding, realising the HHM extension point on Binding."@en ;
+    rdfs:subClassOf maestro:Binding ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:hasCommand a owl:ObjectProperty ;
+    rdfs:label "has command"@en ;
+    skos:definition "Relates a DTDL interface to a command it declares."@en ;
+    rdfs:domain maestro:DtdlInterface ;
+    rdfs:range  maestro:DtdlCommand ;
+    dct:source <https://w3id.org/maestro/dtdl#hasCommand> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:hasTelemetry a owl:ObjectProperty ;
+    rdfs:label "has telemetry"@en ;
+    skos:definition "Relates a DTDL interface to a telemetry it declares."@en ;
+    rdfs:domain maestro:DtdlInterface ;
+    rdfs:range  maestro:DtdlTelemetry ;
+    dct:source <https://w3id.org/maestro/dtdl#hasTelemetry> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:hasProperty a owl:ObjectProperty ;
+    rdfs:label "has property"@en ;
+    skos:definition "Relates a DTDL interface to a property it declares."@en ;
+    rdfs:domain maestro:DtdlInterface ;
+    rdfs:range  maestro:DtdlProperty ;
+    dct:source <https://w3id.org/maestro/dtdl#hasProperty> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .
+
+maestro:bindsInterface a owl:ObjectProperty ;
+    rdfs:label "binds interface"@en ;
+    skos:definition "Relates a DTDL binding to the DTDL interface it maps the endpoint onto."@en ;
+    rdfs:domain maestro:DtdlBinding ;
+    rdfs:range  maestro:DtdlInterface ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/dtdl> .

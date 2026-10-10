@@ -1,0 +1,17 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ03 - Which plan steps make up a recipe, in what order, realised by which skill, under which control-flow constraint?
+SELECT ?recipe ?stepOrder ?step ?skill ?flowType ?relatedStep
+WHERE {
+    ?recipe a maestro:Recipe ;
+            maestro:hasStep ?step .
+    ?step maestro:realizedBy ?skill .
+    OPTIONAL { ?step maestro:stepOrder ?stepOrder }
+    OPTIONAL {
+        ?step maestro:hasControlFlow ?cf .
+        ?cf maestro:flowType ?flowType .
+        OPTIONAL { ?cf maestro:relatedStep ?relatedStep }
+    }
+}
+ORDER BY ?recipe ?stepOrder ?step

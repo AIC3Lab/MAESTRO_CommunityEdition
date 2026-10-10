@@ -1,0 +1,317 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - EXTENSIONS (ext/addressing.ttl, ext/digital-twin.ttl, ext/opcua.ttl,
+# ext/isa95.ttl, ext/automationml.ttl, ext/dtdl.ttl, ext/rest.ttl,
+# ext/mqtt.ttl, ext/dds.ttl, ext/modbus.ttl, ext/profinet.ttl,
+# ext/ethercat.ttl)
+#
+# Endpoint addresses and ports, binding topics, digital twins and twin bindings, OPC UA nodes, skill interfaces
+# and bindings, REST bindings, MQTT, DDS, Modbus, PROFINET and
+# EtherCAT bindings, DTDL interfaces, the ISA-95 site / enterprise
+# link and AutomationML internal links.
+#################################################################
+
+# ---- Addressing ---------------------------------------------------
+
+mhsh:EndpointAddressShape a sh:NodeShape ;
+    sh:targetClass maestro:Endpoint ;
+    rdfs:label "An endpoint has an address and at most one integer port."@en ;
+    sh:property [
+        sh:path maestro:address ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:Endpoint must carry at least one maestro:address as an xsd:string literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:port ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:message "maestro:port on a maestro:Endpoint is at most one xsd:integer literal." ;
+    ] .
+
+mhsh:BindingTopicShape a sh:NodeShape ;
+    sh:targetClass maestro:Binding ;
+    rdfs:label "A binding names at most one topic."@en ;
+    sh:property [
+        sh:path maestro:topic ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "maestro:topic on a maestro:Binding is at most one xsd:string literal." ;
+    ] .
+
+# ---- Digital twin ------------------------------------------------
+
+mhsh:DigitalTwinSubjectShape a sh:NodeShape ;
+    sh:targetClass maestro:DigitalTwin ;
+    rdfs:label "A digital twin represents at least one core entity."@en ;
+    sh:property [
+        sh:path maestro:represents ;
+        sh:minCount 1 ;
+        sh:message "A maestro:DigitalTwin must represent at least one entity via maestro:represents." ;
+    ] .
+
+mhsh:TwinBindingTargetShape a sh:NodeShape ;
+    sh:targetClass maestro:TwinBinding ;
+    rdfs:label "A twin binding maps to at most one IRI."@en ;
+    sh:property [
+        sh:path maestro:mapsTo ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:anyURI ;
+        sh:message "maestro:mapsTo on a maestro:TwinBinding is at most one xsd:anyURI literal." ;
+    ] .
+
+# ---- OPC UA -------------------------------------------------------
+
+mhsh:OpcUaNodeIdShape a sh:NodeShape ;
+    sh:targetClass maestro:OpcUaNode ;
+    rdfs:label "An OPC UA node has exactly one node id."@en ;
+    sh:property [
+        sh:path maestro:nodeId ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:OpcUaNode must carry exactly one maestro:nodeId as an xsd:string literal." ;
+    ] .
+
+mhsh:OpcUaSkillInterfaceExposureShape a sh:NodeShape ;
+    sh:targetClass maestro:OpcUaSkillInterface ;
+    rdfs:label "An OPC UA skill interface exposes at least one skill."@en ;
+    sh:property [
+        sh:path maestro:exposes ;
+        sh:minCount 1 ;
+        sh:class maestro:Skill ;
+        sh:message "A maestro:OpcUaSkillInterface must expose at least one maestro:Skill via maestro:exposes." ;
+    ] .
+
+mhsh:OpcUaBindingMethodShape a sh:NodeShape ;
+    sh:targetClass maestro:OpcUaBinding ;
+    rdfs:label "An OPC UA binding binds OPC UA methods."@en ;
+    sh:property [
+        sh:path maestro:bindsMethod ;
+        sh:class maestro:OpcUaMethod ;
+        sh:message "maestro:bindsMethod on a maestro:OpcUaBinding must point to a maestro:OpcUaMethod." ;
+    ] .
+
+# ---- REST ---------------------------------------------------------
+
+mhsh:RestBindingMethodShape a sh:NodeShape ;
+    sh:targetClass maestro:RestBinding ;
+    rdfs:label "A REST binding names exactly one HTTP method."@en ;
+    sh:property [
+        sh:path maestro:httpMethod ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "GET" "POST" "PUT" "PATCH" "DELETE" ) ;
+        sh:message "A maestro:RestBinding must carry exactly one maestro:httpMethod, one of GET, POST, PUT, PATCH or DELETE." ;
+    ] .
+
+# ---- MQTT ---------------------------------------------------------
+
+mhsh:MqttBindingShape a sh:NodeShape ;
+    sh:targetClass maestro:MqttBinding ;
+    rdfs:label "An MQTT binding names one topic, at most one QoS level of 0, 1 or 2 and at most one retain flag."@en ;
+    sh:property [
+        sh:path maestro:mqttTopic ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:MqttBinding must carry exactly one maestro:mqttTopic as an xsd:string literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:mqttQos ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:in ( 0 1 2 ) ;
+        sh:message "maestro:mqttQos on a maestro:MqttBinding is at most one xsd:integer, 0, 1 or 2." ;
+    ] ;
+    sh:property [
+        sh:path maestro:mqttRetain ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:boolean ;
+        sh:message "maestro:mqttRetain on a maestro:MqttBinding is at most one xsd:boolean literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializesAs ;
+        sh:in ( maestro:MqttProtocol ) ;
+        sh:message "maestro:specializesAs on a maestro:MqttBinding must name maestro:MqttProtocol." ;
+    ] .
+
+# ---- DDS ----------------------------------------------------------
+
+mhsh:DdsBindingShape a sh:NodeShape ;
+    sh:targetClass maestro:DdsBinding ;
+    rdfs:label "A DDS binding names one topic and at most one non-negative domain id and one type name."@en ;
+    sh:property [
+        sh:path maestro:ddsTopic ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:DdsBinding must carry exactly one maestro:ddsTopic as an xsd:string literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:ddsDomainId ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:message "maestro:ddsDomainId on a maestro:DdsBinding is at most one non-negative xsd:integer." ;
+    ] ;
+    sh:property [
+        sh:path maestro:ddsTypeName ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "maestro:ddsTypeName on a maestro:DdsBinding is at most one xsd:string literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializesAs ;
+        sh:in ( maestro:DdsProtocol ) ;
+        sh:message "maestro:specializesAs on a maestro:DdsBinding must name maestro:DdsProtocol." ;
+    ] .
+
+# ---- Modbus -------------------------------------------------------
+
+mhsh:ModbusBindingShape a sh:NodeShape ;
+    sh:targetClass maestro:ModbusBinding ;
+    rdfs:label "A Modbus binding names one data table and one start address, and at most one unit id and one count."@en ;
+    sh:property [
+        sh:path maestro:modbusDataTable ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ModbusDataTable ;
+        sh:message "A maestro:ModbusBinding must name exactly one maestro:ModbusDataTable via maestro:modbusDataTable." ;
+    ] ;
+    sh:property [
+        sh:path maestro:modbusAddress ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 65535 ;
+        sh:message "A maestro:ModbusBinding must carry exactly one maestro:modbusAddress, an xsd:integer from 0 to 65535." ;
+    ] ;
+    sh:property [
+        sh:path maestro:modbusCount ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:message "maestro:modbusCount on a maestro:ModbusBinding is at most one positive xsd:integer." ;
+    ] ;
+    sh:property [
+        sh:path maestro:modbusUnitId ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 255 ;
+        sh:message "maestro:modbusUnitId on a maestro:ModbusBinding is at most one xsd:integer from 0 to 255." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializesAs ;
+        sh:in ( maestro:ModbusProtocol ) ;
+        sh:message "maestro:specializesAs on a maestro:ModbusBinding must name maestro:ModbusProtocol." ;
+    ] .
+
+# ---- PROFINET -----------------------------------------------------
+
+mhsh:ProfinetBindingShape a sh:NodeShape ;
+    sh:targetClass maestro:ProfinetBinding ;
+    rdfs:label "A PROFINET binding names one station name and at most one slot and one subslot."@en ;
+    sh:property [
+        sh:path maestro:profinetStationName ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:ProfinetBinding must carry exactly one maestro:profinetStationName as an xsd:string literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:profinetSlot ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:message "maestro:profinetSlot on a maestro:ProfinetBinding is at most one non-negative xsd:integer." ;
+    ] ;
+    sh:property [
+        sh:path maestro:profinetSubslot ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:message "maestro:profinetSubslot on a maestro:ProfinetBinding is at most one non-negative xsd:integer." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializesAs ;
+        sh:in ( maestro:ProfinetProtocol ) ;
+        sh:message "maestro:specializesAs on a maestro:ProfinetBinding must name maestro:ProfinetProtocol." ;
+    ] .
+
+# ---- EtherCAT -----------------------------------------------------
+
+mhsh:EthercatBindingShape a sh:NodeShape ;
+    sh:targetClass maestro:EthercatBinding ;
+    rdfs:label "An EtherCAT binding names one SubDevice position and at most one object index and one subindex."@en ;
+    sh:property [
+        sh:path maestro:ethercatPosition ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:message "A maestro:EthercatBinding must carry exactly one maestro:ethercatPosition, a non-negative xsd:integer." ;
+    ] ;
+    sh:property [
+        sh:path maestro:ethercatIndex ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 65535 ;
+        sh:message "maestro:ethercatIndex on a maestro:EthercatBinding is at most one xsd:integer from 0 to 65535." ;
+    ] ;
+    sh:property [
+        sh:path maestro:ethercatSubindex ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxInclusive 255 ;
+        sh:message "maestro:ethercatSubindex on a maestro:EthercatBinding is at most one xsd:integer from 0 to 255." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializesAs ;
+        sh:in ( maestro:EthercatProtocol ) ;
+        sh:message "maestro:specializesAs on a maestro:EthercatBinding must name maestro:EthercatProtocol." ;
+    ] .
+
+# ---- DTDL ---------------------------------------------------------
+
+mhsh:DtdlInterfaceCommandShape a sh:NodeShape ;
+    sh:targetClass maestro:DtdlInterface ;
+    rdfs:label "A DTDL interface's commands are DTDL commands."@en ;
+    sh:property [
+        sh:path maestro:hasCommand ;
+        sh:class maestro:DtdlCommand ;
+        sh:message "maestro:hasCommand on a maestro:DtdlInterface must point to a maestro:DtdlCommand." ;
+    ] .
+
+# ---- ISA-95 -------------------------------------------------------
+
+mhsh:SiteEnterpriseShape a sh:NodeShape ;
+    sh:targetClass maestro:Site ;
+    rdfs:label "A site belongs to an enterprise."@en ;
+    sh:property [
+        sh:path maestro:partOfEnterprise ;
+        sh:class maestro:Enterprise ;
+        sh:message "maestro:partOfEnterprise on a maestro:Site must point to a maestro:Enterprise." ;
+    ] .
+
+# ---- AutomationML -------------------------------------------------
+
+mhsh:InternalLinkInterfacesShape a sh:NodeShape ;
+    sh:targetClass maestro:InternalLink ;
+    rdfs:label "An internal link connects at least two external interfaces."@en ;
+    sh:property [
+        sh:path maestro:linksInterface ;
+        sh:minCount 2 ;
+        sh:class maestro:ExternalInterface ;
+        sh:message "A maestro:InternalLink must connect at least two maestro:ExternalInterface nodes via maestro:linksInterface." ;
+    ] .

@@ -1,0 +1,73 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE INVOCATION CLUSTER (core/invocation.ttl)
+#
+# Endpoints with their protocol (address and port: shapes-ext.ttl), protocol bindings with their
+# operation signatures, skill interfaces and skill services.
+#################################################################
+
+mhsh:EndpointStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Endpoint ;
+    rdfs:label "An endpoint uses a protocol."@en ;
+    sh:property [
+        sh:path maestro:usesProtocol ;
+        sh:minCount 1 ;
+        sh:class maestro:Protocol ;
+        sh:message "A maestro:Endpoint must use at least one maestro:Protocol via maestro:usesProtocol." ;
+    ] .
+
+mhsh:BindingStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Binding ;
+    rdfs:label "A binding's signatures are operation signatures and it specialises a protocol."@en ;
+    sh:property [
+        sh:path maestro:hasSignature ;
+        sh:class maestro:OperationSignature ;
+        sh:message "maestro:hasSignature on a maestro:Binding must point to a maestro:OperationSignature." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializesAs ;
+        sh:class maestro:Protocol ;
+        sh:message "maestro:specializesAs on a maestro:Binding must name a maestro:Protocol." ;
+    ] .
+
+mhsh:SkillInterfaceExposureShape a sh:NodeShape ;
+    sh:targetClass maestro:SkillInterface ;
+    rdfs:label "A skill interface should be exposed via at least one endpoint."@en ;
+    sh:property [
+        sh:path maestro:exposedVia ;
+        sh:minCount 1 ;
+        sh:class maestro:Endpoint ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:SkillInterface should be exposed via at least one maestro:Endpoint (maestro:exposedVia)." ;
+    ] .
+
+mhsh:SkillServiceInterfaceShape a sh:NodeShape ;
+    sh:targetClass maestro:SkillService ;
+    rdfs:label "A skill service should expose at least one skill interface."@en ;
+    sh:property [
+        sh:path maestro:exposesInterface ;
+        sh:minCount 1 ;
+        sh:class maestro:SkillInterface ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:SkillService should expose at least one maestro:SkillInterface via maestro:exposesInterface." ;
+    ] .
+
+mhsh:OperationSignatureParameterShape a sh:NodeShape ;
+    sh:targetClass maestro:OperationSignature ;
+    rdfs:label "An operation signature's parameters and returns are parameter definitions."@en ;
+    sh:property [
+        sh:path maestro:hasParameterDef ;
+        sh:class maestro:ParameterDef ;
+        sh:message "maestro:hasParameterDef on a maestro:OperationSignature must point to a maestro:ParameterDef." ;
+    ] ;
+    sh:property [
+        sh:path maestro:returns ;
+        sh:class maestro:ParameterDef ;
+        sh:message "maestro:returns on a maestro:OperationSignature must point to a maestro:ParameterDef." ;
+    ] .

@@ -1,0 +1,33 @@
+# LQ01 - I/O allocation of the LTU Festo MPS stations.
+# For every signal of every station: the SysLink connector, terminal bit,
+# connector pin and circuit-diagram designation (BMK), the signal name, its
+# direction (maestro:Output = sensor towards the PLC, maestro:Input = command from the
+# PLC) and data type. "(not stated)" where the documents give no address:
+# the whole Distributing station and every control-console signal.
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+SELECT ?station ?connector ?bit ?pin ?bmk ?signal ?direction ?datatype
+WHERE {
+    ?iface a maestro:DtdlInterface ;
+           maestro:exposedVia/maestro:address ?addr ;
+           (maestro:hasTelemetry|maestro:hasProperty) ?dp .
+    ?dp rdfs:label ?signal ;
+        maestro:parameterDirection ?dir ;
+        maestro:paramType ?dt .
+    OPTIONAL { ?dp maestro:hasIdentifier ?bi . ?bi maestro:identifierScheme ?bs ; maestro:identifierValue ?bitValue .
+               FILTER(STRENDS(?bs, " bit")) }
+    OPTIONAL { ?dp maestro:hasIdentifier ?pi . ?pi maestro:identifierScheme ?ps ; maestro:identifierValue ?pinValue .
+               FILTER(STRENDS(?ps, " pin")) }
+    OPTIONAL { ?dp maestro:hasIdentifier ?ki . ?ki maestro:identifierScheme ?ks ; maestro:identifierValue ?bmkValue .
+               FILTER(STRSTARTS(?ks, "Festo circuit-diagram")) }
+    BIND(REPLACE(STR(?iface), "^.*/ltu-festo-mps/([a-z]+)#.*$", "$1") AS ?station)
+    BIND(REPLACE(STR(?addr), "^.*:", "") AS ?connector)
+    BIND(COALESCE(?bitValue, "(not stated)") AS ?bit)
+    BIND(COALESCE(?pinValue, "(not stated)") AS ?pin)
+    BIND(COALESCE(?bmkValue, "(not stated)") AS ?bmk)
+    BIND(REPLACE(STR(?dir), "^.*#", "") AS ?direction)
+    BIND(REPLACE(STR(?dt), "^.*#", "") AS ?datatype)
+    FILTER(STRSTARTS(STR(?iface), "https://w3id.org/maestro/hhm/examples/ltu-festo-mps/"))
+}
+ORDER BY ?station ?connector ?bit ?signal

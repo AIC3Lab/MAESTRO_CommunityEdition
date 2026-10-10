@@ -1,0 +1,15 @@
+PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# CQ12 - What is the current state of each resource in each state dimension (open assertions, no validTo)?
+SELECT ?subject ?dimension ?state ?validFrom ?evidence
+WHERE {
+    ?assertion a maestro:StateAssertion ;
+               maestro:stateSubject ?subject ;
+               maestro:stateDimension ?dimension ;
+               maestro:stateValue ?state ;
+               maestro:validFrom ?validFrom .
+    FILTER NOT EXISTS { ?assertion maestro:validTo ?closed }
+    OPTIONAL { ?assertion maestro:stateEvidence ?evidence }
+}
+ORDER BY ?subject ?dimension

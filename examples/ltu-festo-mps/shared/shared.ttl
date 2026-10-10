@@ -1,0 +1,1099 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+
+#################################################################
+# LTU FESTO MPS (HHM-CORE) - SHARED REFERENCE DATA
+#
+# Source: the LTU use-case documents for the Festo Didactic Modular
+# Production System (MPS) - the manuals, circuit diagrams, parts lists,
+# data sheets and GRAFCET function charts of the Distributing (648811),
+# Testing (648812), Processing (648813) and Handling (655633) stations.
+#
+# This file holds what the station and line graphs share: LTU and the MPS
+# line, capabilities, the SysLink / StationLink protocols, the roles and
+# safety rules every manual repeats, the cleaning tasks of the
+# maintenance chapters and the Festo component catalogue used by the
+# stations' bills of materials. Individuals of HHM-Core classes only;
+# no class or property is declared here.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - shared reference data"@en ;
+    owl:imports <https://w3id.org/maestro/hhm> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "LTU, the four-station Festo MPS line, shared capabilities, protocols, roles, safety rules, maintenance tasks and the Festo component catalogue of the LTU use case. Individuals of HHM-Core classes only."@en .
+
+
+#################################################################
+# LTU AND THE MPS LINE (ISA-95 hierarchy)
+#
+# The documents are Festo manuals and do not name LTU, a room or a line
+# layout. The line is the four stations in the Festo station numbering
+# (1 Distributing, 2 Testing, 3 Processing, 4 Handling); each manual's
+# combination matrix allows exactly these neighbours.
+#################################################################
+
+ltu:LTU a maestro:Enterprise , maestro:Actor ;
+    rdfs:label "Luleå University of Technology (LTU)"@en ;
+    maestro:description "Owner and operator of the Festo MPS stations of the use case. Named by the use case, not by the Festo documents."@en .
+
+ltu:LTUSite a maestro:Site ;
+    rdfs:label "LTU, Luleå"@en ;
+    maestro:partOfEnterprise ltu:LTU .
+
+ltu:MPSLab a maestro:Area ;
+    rdfs:label "MPS laboratory (room not stated)"@en ;
+    maestro:partOfSite ltu:LTUSite .
+
+ltu:MPSLine a maestro:WorkCenter ;
+    rdfs:label "Festo MPS line: Distributing - Testing - Processing - Handling"@en ;
+    maestro:description "Line of four Festo Didactic MPS stations linked by optical StationLink (1-bit link). Order assumed from the Festo station numbering 1-4; the LTU layout itself is not stated in the documents."@en ;
+    maestro:partOfArea ltu:MPSLab .
+
+
+#################################################################
+# CAPABILITIES
+#
+# What the station modules can do, named after the function texts of
+# the four manuals. Every maestro:Module of a station provides at least one.
+#################################################################
+
+ltu:FeedingCapability a maestro:Capability ;
+    rdfs:label "Feeding"@en ;
+    maestro:description "Separate workpieces one at a time from a stack magazine and make them available at a transfer point (feed device in the sense of VDI 3240, as the Distributing manual calls it)."@en .
+
+ltu:TransferCapability a maestro:Capability ;
+    rdfs:label "Workpiece transfer"@en ;
+    maestro:description "Move a workpiece from one position to another: swivel arm, linear axis or rotary indexing table."@en .
+
+ltu:VacuumGrippingCapability a maestro:Capability ;
+    rdfs:label "Vacuum gripping"@en ;
+    maestro:description "Hold a workpiece with a suction cup and confirm the hold with a vacuum switch."@en .
+
+ltu:MechanicalGrippingCapability a maestro:Capability ;
+    rdfs:label "Mechanical gripping"@en ;
+    maestro:description "Hold a workpiece between the jaws of a pneumatic parallel gripper."@en .
+
+ltu:LiftingCapability a maestro:Capability ;
+    rdfs:label "Lifting"@en ;
+    maestro:description "Move a workpiece or tool vertically between two end positions."@en .
+
+ltu:PresenceSensingCapability a maestro:Capability ;
+    rdfs:label "Workpiece presence sensing"@en ;
+    maestro:description "Detect whether a workpiece is present at a position (capacitive, diffuse or through-beam sensor)."@en .
+
+ltu:MaterialRecognitionCapability a maestro:Capability ;
+    rdfs:label "Material / colour recognition"@en ;
+    maestro:description "Tell black workpieces from red and metallic (silver) ones with optical and capacitive sensors."@en .
+
+ltu:HeightMeasuringCapability a maestro:Capability ;
+    rdfs:label "Height measuring"@en ;
+    maestro:description "Measure the workpiece height with an analogue displacement sensor and compare it with a window."@en .
+
+ltu:OrientationCheckingCapability a maestro:Capability ;
+    rdfs:label "Orientation checking"@en ;
+    maestro:description "Check that the workpiece opening faces upwards with a solenoid plunger and an inductive sensor."@en .
+
+ltu:EjectingCapability a maestro:Capability ;
+    rdfs:label "Ejecting"@en ;
+    maestro:description "Push a workpiece off a carrier onto a slide or towards the next station."@en .
+
+ltu:SlideConveyingCapability a maestro:Capability ;
+    rdfs:label "Slide conveying and buffering"@en ;
+    maestro:description "Convey workpieces on an inclined (optionally air-cushioned) slide and hold a few of them."@en .
+
+ltu:SortingCapability a maestro:Capability ;
+    rdfs:label "Sorting"@en ;
+    maestro:description "Route workpieces to different outlets by a test result or a material class."@en .
+
+ltu:IndexingCapability a maestro:Capability ;
+    rdfs:label "Rotary indexing"@en ;
+    maestro:description "Rotate a six-position indexing table by 60 degrees and stop it in position."@en .
+
+ltu:ClampingCapability a maestro:Capability ;
+    rdfs:label "Clamping"@en ;
+    maestro:description "Fix a workpiece in place during machining."@en .
+
+ltu:DrillingCapability a maestro:Capability ;
+    rdfs:label "Drilling (simulated hole polishing)"@en ;
+    maestro:description "Lower a running drilling machine onto the workpiece hole and raise it again. The Processing manual says the polishing of the hole is only simulated, for safety."@en .
+
+ltu:PneumaticActuationCapability a maestro:Capability ;
+    rdfs:label "Pneumatic actuation"@en ;
+    maestro:description "Supply and switch compressed air for the station actuators: service unit and CPV valve terminal."@en .
+
+ltu:StationControlCapability a maestro:Capability ;
+    rdfs:label "Station control and I/O"@en ;
+    maestro:description "Read station sensors and drive station actuators: PLC board and I/O terminal."@en .
+
+ltu:OperatorInterfaceCapability a maestro:Capability ;
+    rdfs:label "Operator interface"@en ;
+    maestro:description "Push buttons, key switch and indicator lights of the control console."@en .
+
+ltu:StationLinkCapability a maestro:Capability ;
+    rdfs:label "StationLink signalling"@en ;
+    maestro:description "Exchange the optical 1-bit busy / free signal with a neighbouring station."@en .
+
+
+#################################################################
+# PROTOCOLS
+#
+# The stations have no network interface in the documents. The PLC board
+# reaches the station over parallel SysLink cables (XMA2 digital, XMA3
+# analogue on the Testing station, XMG1 control console); neighbouring
+# stations exchange one bit over the optical StationLink.
+#################################################################
+
+ltu:SysLinkDigitalIO a maestro:Protocol ;
+    rdfs:label "Festo SysLink parallel digital I/O (24 V DC)"@en ;
+    maestro:description "24-pin SysLink connector carrying 8 digital inputs (pins 13-20), 8 digital outputs (pins 1-8) and the 24 V supplies of sensors (24VB/0VB) and actuators (24VA/0VA). Used by XMA2 (station) and XMG1 (control console)."@en .
+
+ltu:SysLinkAnalogue a maestro:Protocol ;
+    rdfs:label "Festo SysLink analogue (0-10 V)"@en ;
+    maestro:description "15-pin SysLink analogue connector XMA3; the Testing station puts the height process value on UE1 (pin 8)."@en .
+
+ltu:StationLinkProtocol a maestro:Protocol ;
+    rdfs:label "Festo StationLink optical 1-bit link"@en ;
+    maestro:description "Through-beam transmitter on the incoming-material side and receiver on the outgoing-material side. By switching its transmitter on or off a station tells its upstream station whether it is ready to receive a workpiece or busy. The light/dark polarity is not stated."@en .
+
+
+#################################################################
+# ENERGY
+#
+# Compressed air reuses maestro:CompressedAir; each station has its own 24 V
+# DC supply (station files).
+#################################################################
+
+
+#################################################################
+# ROLES, SAFETY RULES AND HAZARDS
+#
+# The four manuals repeat the same safety chapter. Station-specific
+# constraints, hazards and safety functions are in the station files and
+# add themselves to ltu:MPSSafetyRules.
+#################################################################
+
+ltu:InstructorRole a maestro:Role ;
+    rdfs:label "Instructor"@en ;
+    maestro:description "Supervises trainees working on the stations."@en .
+
+ltu:TraineeRole a maestro:Role ;
+    rdfs:label "Trainee"@en ;
+    maestro:description "Works on the stations under the supervision of an instructor; the stations are intended only for vocational and further training in automation and technology."@en .
+
+ltu:MPSSafetyRules a maestro:Policy ;
+    rdfs:label "MPS notes on safety (station manuals)"@en ;
+    maestro:description "Rules of the 'Notes on safety' chapter that all four station manuals share."@en ;
+    maestro:contains ltu:C_Supervision ,
+                ltu:C_MaxPressure ,
+                ltu:C_LowVoltage ,
+                ltu:C_WirePowerOff ,
+                ltu:C_AirAfterTubing ,
+                ltu:C_NoDisconnectUnderPressure ,
+                ltu:C_InterventionAtRest ,
+                ltu:C_SecureMounting ;
+    maestro:hasPermission ltu:Perm_TraineeRunsStations ;
+    maestro:requiresPermission ltu:Perm_TraineeRunsStations .
+
+ltu:Perm_TraineeRunsStations a maestro:Permission ;
+    rdfs:label "Trainees may run the station cycles"@en ;
+    maestro:grantedTo ltu:TraineeRole ;
+    maestro:action maestro:Invoke ;
+    maestro:description "Targets are the station cycle skills, added by the station files."@en .
+
+ltu:C_Supervision a maestro:Constraint ;
+    rdfs:label "Trainees work only under the supervision of an instructor"@en ;
+    maestro:expression "role == Trainee implies instructor present" ;
+    maestro:constrains ltu:Perm_TraineeRunsStations .
+
+ltu:C_MaxPressure a maestro:Constraint ;
+    rdfs:label "Do not exceed the permissible pressure of 8 bar (800 kPa)"@en ;
+    maestro:expression "supplyPressure <= 8 bar" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:C_LowVoltage a maestro:Constraint ;
+    rdfs:label "Use only low voltages of up to 24 V DC"@en ;
+    maestro:expression "supplyVoltage <= 24 V DC" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:C_WirePowerOff a maestro:Constraint ;
+    rdfs:label "Make or break electrical connections only with the power switched off"@en ;
+    maestro:expression "rewiring implies power == off" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:C_AirAfterTubing a maestro:Constraint ;
+    rdfs:label "Switch on compressed air only after all tubing is connected and secured"@en ;
+    maestro:expression "airOn implies allTubingSecured" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:C_NoDisconnectUnderPressure a maestro:Constraint ;
+    rdfs:label "Do not disconnect air lines under pressure"@en ;
+    maestro:expression "disconnectTubing implies pressure == 0" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:C_InterventionAtRest a maestro:Constraint ;
+    rdfs:label "No manual intervention unless the machine is at rest"@en ;
+    maestro:expression "manualIntervention implies stationAtRest" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:C_SecureMounting a maestro:Constraint ;
+    rdfs:label "Mount all components securely on the profile plate"@en ;
+    maestro:expression "allComponentsSecured" ;
+    maestro:constrains ltu:MPSLine .
+
+ltu:R_Injury a maestro:Risk ;
+    rdfs:label "Physical or fatal injury to the user or third parties"@en ;
+    maestro:description "Residual risk the manuals name for use of the stations."@en .
+
+ltu:R_Damage a maestro:Risk ;
+    rdfs:label "Damage to the machinery or other material property"@en ;
+    maestro:description "Residual risk the manuals name for use of the stations."@en .
+
+ltu:H_CylinderMotionOnAirOn a maestro:Hazard ;
+    rdfs:label "Cylinders advance or retract when compressed air is switched on"@en ;
+    maestro:description "Manual safety chapter: 'take care when switching on the compressed air; cylinders may advance or retract'."@en ;
+    maestro:increases ltu:R_Injury .
+
+ltu:H_MovingStation a maestro:Hazard ;
+    rdfs:label "Manual intervention while the station is moving"@en ;
+    maestro:increases ltu:R_Injury .
+
+ltu:H_Overpressure a maestro:Hazard ;
+    rdfs:label "Supply pressure above 8 bar"@en ;
+    maestro:increases ltu:R_Damage .
+
+ltu:M_AirAfterTubing a maestro:Mitigation ;
+    rdfs:label "Switch on air only after all tubing is connected and secured"@en ;
+    maestro:reduces ltu:R_Injury .
+
+ltu:M_InterventionAtRest a maestro:Mitigation ;
+    rdfs:label "Intervene only when the station is at rest; stop with STOP or EMERGENCY-STOP"@en ;
+    maestro:reduces ltu:R_Injury .
+
+ltu:M_Supervision a maestro:Mitigation ;
+    rdfs:label "Instructor supervision of trainees"@en ;
+    maestro:reduces ltu:R_Injury .
+
+ltu:M_ServiceUnitSetting a maestro:Mitigation ;
+    rdfs:label "Set the service unit to the station's operating pressure"@en ;
+    maestro:reduces ltu:R_Damage .
+
+
+#################################################################
+# MAINTENANCE TASKS
+#
+# All four manuals: 'largely maintenance-free'; clean at regular
+# intervals
+# (no interval is given) with a soft lint-free cloth or brush, no
+# aggressive or abrasive cleaning agents. Station plans are in the
+# station files.
+#################################################################
+
+ltu:MT_CleanOptics a maestro:MaintenanceTask ;
+    rdfs:label "Clean lenses of optical sensors, fibre optics and reflectors (at regular intervals)"@en .
+
+ltu:MT_CleanProximitySensors a maestro:MaintenanceTask ;
+    rdfs:label "Clean the active surface of the proximity sensors (at regular intervals)"@en .
+
+ltu:MT_CleanStation a maestro:MaintenanceTask ;
+    rdfs:label "Clean the entire station (at regular intervals)"@en .
+
+ltu:MT_VisualCheck a maestro:MaintenanceTask ;
+    rdfs:label "Visual check of electrical connections, compressed-air connections and mechanical components before each commissioning"@en .
+
+
+#################################################################
+# FESTO COMPONENT CATALOGUE
+#
+# One maestro:ProductType per Festo part number in the parts lists and data-
+# sheet
+# lists. The stations' bills of materials point at these types; the
+# installed
+# modules share the part-number identifier with their type.
+#################################################################
+
+ltu:PN_034035 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "034035" .
+
+ltu:PT_034035 a maestro:ProductType ;
+    rdfs:label "I/O terminal (D:MP-B-AN-E/A-T)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:description "8 digital inputs and 8 digital outputs on screw terminals, 24 status LEDs, 24-pin Amphenol-Tuchel SysLink connector (XMA2); inputs switchable PNP/NPN with two slide switches."@en ;
+    maestro:hasIdentifier ltu:PN_034035 .
+
+ltu:PN_152894 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "152894" .
+
+ltu:PT_152894 a maestro:ProductType ;
+    rdfs:label "Service unit (start-up valve with filter-control valve) (D:S-PVW-LFR)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:S-PVW-LFR" ;
+    maestro:description "Sintered filter with water separator, diaphragm regulator, gauge and on/off 3/2-way valve; 750 l/min; max. operating pressure 12 bar; PUN 6x1 connection."@en ;
+    maestro:hasIdentifier ltu:PN_152894 .
+
+ltu:PN_170395 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "170395" .
+
+ltu:PT_170395 a maestro:ProductType ;
+    rdfs:label "Profile plate (D:DE-PP-350B)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:DE-PP-350B" ;
+    maestro:description "Carrier plate for the station modules, fixed to the trolley with 4 T-head nuts M6-32 and 4 socket head screws M6x10."@en ;
+    maestro:hasIdentifier ltu:PN_170395 .
+
+ltu:PN_196963 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196963" .
+
+ltu:PT_196963 a maestro:ProductType ;
+    rdfs:label "StationLink transmitter assembly (D:MP3-M-SLS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLS" ;
+    maestro:description "Optical StationLink (1-bit link) transmitter, mounted on the incoming-material side of a station."@en ;
+    maestro:hasIdentifier ltu:PN_196963 .
+
+ltu:PN_196964 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196964" .
+
+ltu:PT_196964 a maestro:ProductType ;
+    rdfs:label "StationLink receiver assembly (D:MP3-M-SLE)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLE" ;
+    maestro:description "Optical StationLink (1-bit link) receiver, mounted on the outgoing-material side of a station."@en ;
+    maestro:hasIdentifier ltu:PN_196964 .
+
+ltu:PN_196965 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196965" .
+
+ltu:PT_196965 a maestro:ProductType ;
+    rdfs:label "Holder TM-BG (D:MP3-M-HTM)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-HTM" ;
+    maestro:description "Holder listed in the parts lists; its assignment to a module is not stated."@en ;
+    maestro:hasIdentifier ltu:PN_196965 .
+
+ltu:PN_196958 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196958" .
+
+ltu:PT_196958 a maestro:ProductType ;
+    rdfs:label "Mounting system E (D:MP3-M-TSE)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-TSE" ;
+    maestro:description "Mounting system listed in the parts lists."@en ;
+    maestro:hasIdentifier ltu:PN_196958 .
+
+ltu:PN_162228 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "162228" .
+
+ltu:PT_162228 a maestro:ProductType ;
+    rdfs:label "Connector (D:MP2-M-VB)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP2-M-VB" ;
+    maestro:description "Profile connector, 2 per station in the parts lists."@en ;
+    maestro:hasIdentifier ltu:PN_162228 .
+
+ltu:PN_165323 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165323" .
+
+ltu:PT_165323 a maestro:ProductType ;
+    rdfs:label "Through-beam sensor, receiver (SOEG-E-Q30-PS-S-2L)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-E-Q30-PS-S-2L" ;
+    maestro:description "Infrared through-beam receiver, PNP, 10-30 V DC, range max. 6000 mm, M8 3-pin, max. 1000 Hz, IP65."@en ;
+    maestro:hasIdentifier ltu:PN_165323 .
+
+ltu:PN_165353 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165353" .
+
+ltu:PT_165353 a maestro:ProductType ;
+    rdfs:label "Through-beam sensor, transmitter (SOEG-S-Q30-S-L)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-S-Q30-S-L" ;
+    maestro:description "Infrared through-beam transmitter, 10-30 V DC, range max. 6000 mm, M8 3-pin, IP65."@en ;
+    maestro:hasIdentifier ltu:PN_165353 .
+
+ltu:PN_150857 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "150857" .
+
+ltu:PT_150857 a maestro:ProductType ;
+    rdfs:label "Proximity sensor SME-8 (SME-8-S-LED-24)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SME-8-S-LED-24" ;
+    maestro:description "Reed contact actuated by the piston magnet, N/O, 12-30 V, 3-pin plug, yellow LED, switching accuracy +-0.1 mm, IP67."@en ;
+    maestro:hasIdentifier ltu:PN_150857 .
+
+ltu:PN_161414 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "161414" .
+
+ltu:PT_161414 a maestro:ProductType ;
+    rdfs:label "Solenoid valve 5/2-way, single solenoid (CPV10-M1H-5LS-M7)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "CPV10-M1H-5LS-M7" ;
+    maestro:description "CPV10 valve, monostable with air-spring return, 400 l/min, min. pilot pressure 3 bar, 0.5 W."@en ;
+    maestro:hasIdentifier ltu:PN_161414 .
+
+ltu:PN_161416 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "161416" .
+
+ltu:PT_161416 a maestro:ProductType ;
+    rdfs:label "Solenoid valve 2x 3/2-way, normally closed (CPV10-M1H-2x3-GLS-M7)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "CPV10-M1H-2x3-GLS-M7" ;
+    maestro:description "CPV10 valve location with two 3/2-way valves, basic position closed, 400 l/min, 0.5 W."@en ;
+    maestro:hasIdentifier ltu:PN_161416 .
+
+ltu:PN_175056 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "175056" .
+
+ltu:PT_175056 a maestro:ProductType ;
+    rdfs:label "One-way flow control valve, type C (GRLA-M5-QS-4-LF-C)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "GRLA-M5-QS-4-LF-C" ;
+    maestro:description "Exhaust-air flow control, M5 / QS-4, 0.2-10 bar."@en ;
+    maestro:hasIdentifier ltu:PN_175056 .
+
+ltu:PN_158981 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "158981" .
+
+ltu:PT_158981 a maestro:ProductType ;
+    rdfs:label "Shock absorber (YSR-5-5-C)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "YSR-5-5-C" ;
+    maestro:description "Stroke 5 mm, 1 J per stroke, max. impact 200 N, M8x1, self-adjusting. (The data-sheet file on the CD is named 158891.)"@en ;
+    maestro:hasIdentifier ltu:PN_158981 .
+
+ltu:PN_165327 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165327" .
+
+ltu:PT_165327 a maestro:ProductType ;
+    rdfs:label "Fibre-optic device (SOEG-L-Q30-P-A-S-2L)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-L-Q30-P-A-S-2L" ;
+    maestro:description "Red light, PNP, 10-30 V DC, sensitivity potentiometer (max. 12 turns), M8 4-pin, max. 1000 Hz, IP65."@en ;
+    maestro:hasIdentifier ltu:PN_165327 .
+
+ltu:PN_007347 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "007347" .
+
+ltu:PT_007347 a maestro:ProductType ;
+    rdfs:label "Micro switch (S-3-E)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "S-3-E" ;
+    maestro:description "Electrical limit switch with changeover contact, actuated by trip cams or roller levers."@en ;
+    maestro:hasIdentifier ltu:PN_007347 .
+
+ltu:PN_004645 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "004645" .
+
+ltu:PT_004645 a maestro:ProductType ;
+    rdfs:label "Silencer (U-M5)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "U-M5" ;
+    maestro:description "Silencer M5."@en ;
+    maestro:hasIdentifier ltu:PN_004645 .
+
+ltu:PN_019181 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "019181" .
+
+ltu:PT_019181 a maestro:ProductType ;
+    rdfs:label "Round cylinder DSNU-8-80 (DSNU-8-80)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "DSNU-8-80" ;
+    maestro:description "Double-acting cylinder; the only cylinder on the Distributing data-sheet list, so taken as the ejecting cylinder (inferred). Stroke not stated (the type code suggests 80 mm)."@en ;
+    maestro:hasIdentifier ltu:PN_019181 .
+
+ltu:PN_011910 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "011910" .
+
+ltu:PT_011910 a maestro:ProductType ;
+    rdfs:label "Semi-rotary drive DSR-16-180 (DSR-16-180)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "DSR-16-180" ;
+    maestro:description "Swivel range adjustable 0-180 degrees with mechanical end stops."@en ;
+    maestro:hasIdentifier ltu:PN_011910 .
+
+ltu:PN_036135 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "036135" .
+
+ltu:PT_036135 a maestro:ProductType ;
+    rdfs:label "Vacuum suction cup (VAS-8)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "VAS-8" ;
+    maestro:description "Suction cup of the Changer module (assignment inferred from the data-sheet list)."@en ;
+    maestro:hasIdentifier ltu:PN_036135 .
+
+ltu:PN_185865 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "185865" .
+
+ltu:PT_185865 a maestro:ProductType ;
+    rdfs:label "Vacuum generator (vacuum generator)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "vacuum generator" ;
+    maestro:description "Vacuum generator of the Changer module; type designation not stated."@en ;
+    maestro:hasIdentifier ltu:PN_185865 .
+
+ltu:PN_152629 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "152629" .
+
+ltu:PT_152629 a maestro:ProductType ;
+    rdfs:label "Vacuum switch VPEV (VPEV)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "VPEV" ;
+    maestro:description "Gives an output signal when a workpiece is securely picked up; yellow LED; set with the adjusting screw. (The English manual text says 152619.)"@en ;
+    maestro:hasIdentifier ltu:PN_152629 .
+
+ltu:PN_015889 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "015889" .
+
+ltu:PT_015889 a maestro:ProductType ;
+    rdfs:label "Vacuum filter (VAF-8)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "VAF-8" ;
+    maestro:description "Vacuum filter (assignment to the Changer module inferred)."@en ;
+    maestro:hasIdentifier ltu:PN_015889 .
+
+ltu:PN_165360 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165360" .
+
+ltu:PT_165360 a maestro:ProductType ;
+    rdfs:label "Fibre-optic cable, through-beam (SOEZ-SE)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEZ-SE" ;
+    maestro:description "Through-beam fibre-optic cable; two heads on the magazine barrel."@en ;
+    maestro:hasIdentifier ltu:PN_165360 .
+
+ltu:PN_161417 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "161417" .
+
+ltu:PT_161417 a maestro:ProductType ;
+    rdfs:label "Solenoid valve 3/2-way, normally open (3/2-way solenoid valve, normally open)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "3/2-way solenoid valve, normally open" ;
+    maestro:description "On the Distributing data-sheet list; which actuator it drives is not stated."@en ;
+    maestro:hasIdentifier ltu:PN_161417 .
+
+ltu:PN_153462 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "153462" .
+
+ltu:PT_153462 a maestro:ProductType ;
+    rdfs:label "Non-return valve H-QS-4 (H-QS-4)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "H-QS-4" ;
+    maestro:description "On the Distributing data-sheet list; location not stated."@en ;
+    maestro:hasIdentifier ltu:PN_153462 .
+
+ltu:PN_526850 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526850" .
+
+ltu:PT_526850 a maestro:ProductType ;
+    rdfs:label "Recognition module (D:MP3-M-ME)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-ME" ;
+    maestro:description "Material / colour recognition with a capacitive and a diffuse sensor."@en ;
+    maestro:hasIdentifier ltu:PN_526850 .
+
+ltu:PN_532954 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "532954" .
+
+ltu:PT_532954 a maestro:ProductType ;
+    rdfs:label "Lifting module (D:MP3-M-MH)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-MH" ;
+    maestro:description "Rodless lifting cylinder and short-stroke ejecting cylinder; lifts workpieces to the Measuring module."@en ;
+    maestro:hasIdentifier ltu:PN_532954 .
+
+ltu:PN_172939 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "172939" .
+
+ltu:PT_172939 a maestro:ProductType ;
+    rdfs:label "Cable guide (D:MP2-B-KF)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP2-B-KF" ;
+    maestro:description "Guide for moving tubing and cables of the Lifting module."@en ;
+    maestro:hasIdentifier ltu:PN_172939 .
+
+ltu:PN_195779 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "195779" .
+
+ltu:PT_195779 a maestro:ProductType ;
+    rdfs:label "Measuring module (D:MP2-M-M)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP2-M-M" ;
+    maestro:description "Analogue height measurement with a linear potentiometer and a comparator."@en ;
+    maestro:hasIdentifier ltu:PN_195779 .
+
+ltu:PN_656859 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "656859" .
+
+ltu:PT_656859 a maestro:ProductType ;
+    rdfs:label "Air cushioned slide module (D:MP3-M-LRT-B)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-LRT-B" ;
+    maestro:description "Upper slide with air cushion; 5 workpieces with stopper fitted."@en ;
+    maestro:hasIdentifier ltu:PN_656859 .
+
+ltu:PN_656858 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "656858" .
+
+ltu:PT_656858 a maestro:ProductType ;
+    rdfs:label "Slide module 210 (D:MP3-M-R210)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-R210" ;
+    maestro:description "Lower slide, 210 mm; 4 workpieces with stopper fitted."@en ;
+    maestro:hasIdentifier ltu:PN_656858 .
+
+ltu:PN_526227 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526227" .
+
+ltu:PT_526227 a maestro:ProductType ;
+    rdfs:label "CP valve terminal, Testing (D:MP3-M-MCM)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-MCM" ;
+    maestro:description "CPV10 valve terminal with valve locations coded C, M, M."@en ;
+    maestro:hasIdentifier ltu:PN_526227 .
+
+ltu:PN_196969 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196969" .
+
+ltu:PT_196969 a maestro:ProductType ;
+    rdfs:label "Retro-reflective sensor assembly (D:MP3-M-SOEG-RT-Q3)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SOEG-RT-Q3" ;
+    maestro:description "Parts-list item of the safety light barrier B4 (sensor SOEG-RSP-Q30-PS-S-2L, 165331)."@en ;
+    maestro:hasIdentifier ltu:PN_196969 .
+
+ltu:PN_165331 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165331" .
+
+ltu:PT_165331 a maestro:ProductType ;
+    rdfs:label "Retro-reflective sensor (SOEG-RSP-Q30-PS-S-2L)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-RSP-Q30-PS-S-2L" ;
+    maestro:description "Red light, PNP, 10-30 V DC, range max. 2000 mm, max. 1000 Hz, IP65, external reflector."@en ;
+    maestro:hasIdentifier ltu:PN_165331 .
+
+ltu:PN_526865 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526865" .
+
+ltu:PT_526865 a maestro:ProductType ;
+    rdfs:label "Accessories, Testing (D:MP3-M-KTPR)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-KTPR" ;
+    maestro:description "Accessory kit of the Testing station."@en ;
+    maestro:hasIdentifier ltu:PN_526865 .
+
+ltu:PN_258172 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "258172" .
+
+ltu:PT_258172 a maestro:ProductType ;
+    rdfs:label "Capacitive proximity sensor M18 (capacitive proximity sensor M18)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "capacitive proximity sensor M18" ;
+    maestro:description "PNP, N/O, 10-55 V DC, switching distance 2-8 mm adjustable, max. 200 mA, 300 Hz, IP65."@en ;
+    maestro:hasIdentifier ltu:PN_258172 .
+
+ltu:PN_165342 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165342" .
+
+ltu:PT_165342 a maestro:ProductType ;
+    rdfs:label "Diffuse sensor M18 (SOEG-RT-M18-PS-K-L)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-RT-M18-PS-K-L" ;
+    maestro:description "Infrared, PNP, 10-30 V DC, range max. 432 mm, 250 Hz, IP65."@en ;
+    maestro:hasIdentifier ltu:PN_165342 .
+
+ltu:PN_015221 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "015221" .
+
+ltu:PT_015221 a maestro:ProductType ;
+    rdfs:label "Rodless linear drive DGO-12 (DGO-12)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "DGO-12" ;
+    maestro:description "Double acting, piston 12 mm, magnetic coupling, 2-7 bar, 68 N at 6 bar. Installed stroke not stated."@en ;
+    maestro:hasIdentifier ltu:PN_015221 .
+
+ltu:PN_151685 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "151685" .
+
+ltu:PT_151685 a maestro:ProductType ;
+    rdfs:label "Proximity sensor SMTO-1 (SMTO-1-PS-S-LED-24-C)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SMTO-1-PS-S-LED-24-C" ;
+    maestro:description "Magnetic piston sensing, PNP, N/O, 10-30 V DC, M8x1 plug."@en ;
+    maestro:hasIdentifier ltu:PN_151685 .
+
+ltu:PN_161779 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "161779" .
+
+ltu:PT_161779 a maestro:ProductType ;
+    rdfs:label "Piloted non-return valve (HGL-M5)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "HGL-M5" ;
+    maestro:description "M5, 0.5-10 bar."@en ;
+    maestro:hasIdentifier ltu:PN_161779 .
+
+ltu:PN_156041 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "156041" .
+
+ltu:PT_156041 a maestro:ProductType ;
+    rdfs:label "Compact cylinder ADVU-16 (ADVU-16)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "ADVU-16" ;
+    maestro:description "Double acting, piston 16 mm, 1.2-10 bar. The CD also holds data sheet 156508 (ADVU-16-10-P-A, stroke 10 mm); which one is fitted is not stated."@en ;
+    maestro:hasIdentifier ltu:PN_156041 .
+
+ltu:PN_326498 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "326498" .
+
+ltu:PT_326498 a maestro:ProductType ;
+    rdfs:label "Linear displacement sensor (potentiometer) (linear displacement sensor)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "linear displacement sensor" ;
+    maestro:description "Conductive-plastic potentiometer; measures 0-25 mm as 0-100 % of the supply voltage; 1 kOhm; linearity +-0.2 %."@en ;
+    maestro:hasIdentifier ltu:PN_326498 .
+
+ltu:PN_526214 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526214" .
+
+ltu:PT_526214 a maestro:ProductType ;
+    rdfs:label "Analogue comparator 0-10 V (analogue comparator)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "analogue comparator" ;
+    maestro:description "20-28 V DC; analogue input 0-10 V; outputs low / mid / high (PNP); reference 10 V; thresholds LEVEL1 and LEVEL2 set by potentiometer; hysteresis 80 mV."@en ;
+    maestro:hasIdentifier ltu:PN_526214 .
+
+ltu:PN_175047 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "175047" .
+
+ltu:PT_175047 a maestro:ProductType ;
+    rdfs:label "One-way flow control valve (GRLA-M5)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "GRLA-M5" ;
+    maestro:description "Exhaust-air flow control, M5, 0.2-10 bar (Testing data-sheet list)."@en ;
+    maestro:hasIdentifier ltu:PN_175047 .
+
+ltu:PN_654972 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "654972" .
+
+ltu:PT_654972 a maestro:ProductType ;
+    rdfs:label "Rotary indexing table module (D:MP3-M-RST)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RST" ;
+    maestro:description "Six semi-circular workpiece retainers; DC gear motor; 60 degrees per indexing step."@en ;
+    maestro:hasIdentifier ltu:PN_654972 .
+
+ltu:PN_195773 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "195773" .
+
+ltu:PT_195773 a maestro:ProductType ;
+    rdfs:label "Testing module (Processing) (D:MP3-M-BP-B-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-BP-B-BS" ;
+    maestro:description "Testing solenoid with inductive sensor; checks that the workpiece opening faces upwards."@en ;
+    maestro:hasIdentifier ltu:PN_195773 .
+
+ltu:PN_196974 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196974" .
+
+ltu:PT_196974 a maestro:ProductType ;
+    rdfs:label "Drilling module (D:MP3-M-B-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-B-BS" ;
+    maestro:description "24 V DC drilling machine on a toothed-belt linear axis with two micro switches."@en ;
+    maestro:hasIdentifier ltu:PN_196974 .
+
+ltu:PN_526218 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526218" .
+
+ltu:PT_526218 a maestro:ProductType ;
+    rdfs:label "Clamping module (D:MP3-M-S-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-S-BS" ;
+    maestro:description "Solenoid clamping device that fixes the workpiece during drilling."@en ;
+    maestro:hasIdentifier ltu:PN_526218 .
+
+ltu:PN_526873 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526873" .
+
+ltu:PT_526873 a maestro:ProductType ;
+    rdfs:label "Branch module (electrical ejector) (D:MP3-M-AW-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-AW-BS" ;
+    maestro:description "Electrical sorting gate that pushes finished workpieces to the next station."@en ;
+    maestro:hasIdentifier ltu:PN_526873 .
+
+ltu:PN_526229 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526229" .
+
+ltu:PT_526229 a maestro:ProductType ;
+    rdfs:label "Terminal block (D:MP3-KBL)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-KBL" ;
+    maestro:description "Terminal strip XA1 of the Processing connection board."@en ;
+    maestro:hasIdentifier ltu:PN_526229 .
+
+ltu:PN_268327 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "268327" .
+
+ltu:PT_268327 a maestro:ProductType ;
+    rdfs:label "Relay (RPE-1E2/2W 24 V DC)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "RPE-1E2/2W 24 V DC" ;
+    maestro:description "Coil 24 V DC, 32 mA, DPDT, max. 250 V / 5 A (type 710755)."@en ;
+    maestro:hasIdentifier ltu:PN_268327 .
+
+ltu:PN_196980 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "196980" .
+
+ltu:PT_196980 a maestro:ProductType ;
+    rdfs:label "Capacitive sensor assembly (D:MP3-M-SE-KAP-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SE-KAP-BS" ;
+    maestro:description "Capacitive sensor (data sheet 178575: 10-30 V DC, 4 mm, PNP, N/O)."@en ;
+    maestro:hasIdentifier ltu:PN_196980 .
+
+ltu:PN_526198 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526198" .
+
+ltu:PT_526198 a maestro:ProductType ;
+    rdfs:label "Inductive sensor assembly (D:MP3-M-SE-IND-W-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SE-IND-W-BS" ;
+    maestro:description "Inductive sensor SIEN-M8NB-PS-S-L (data sheet 150395: 2.5 mm, PNP, N/O, IP67)."@en ;
+    maestro:hasIdentifier ltu:PN_526198 .
+
+ltu:PN_526858 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526858" .
+
+ltu:PT_526858 a maestro:ProductType ;
+    rdfs:label "Accessories, Processing (D:MP3-KT-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-KT-BS" ;
+    maestro:description "Accessory kit of the Processing station."@en ;
+    maestro:hasIdentifier ltu:PN_526858 .
+
+ltu:PN_526867 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526867" .
+
+ltu:PT_526867 a maestro:ProductType ;
+    rdfs:label "Gear motor (drilling axis) (gear motor)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "gear motor" ;
+    maestro:description "24 V DC, 0.31 A, rated output 3.14 W, planetary gear i = 20.25 (the circuit diagram says 24 V / 5 W)."@en ;
+    maestro:hasIdentifier ltu:PN_526867 .
+
+ltu:PN_652345 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "652345" .
+
+ltu:PT_652345 a maestro:ProductType ;
+    rdfs:label "Gear motor (indexing table) (gear motor 403 033)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "gear motor 403 033" ;
+    maestro:description "24 V, no-load speed 13 1/min, rated torque 5.0 Nm, i = 78:1 (the circuit diagram says 24 V / 5 W)."@en ;
+    maestro:hasIdentifier ltu:PN_652345 .
+
+ltu:PN_326395 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "326395" .
+
+ltu:PT_326395 a maestro:ProductType ;
+    rdfs:label "Drilling machine (drilling machine 24 V DC)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "drilling machine 24 V DC" ;
+    maestro:description "Nominal 24 V, 50 W output, chuck 1-6 mm, service life 200 h (the circuit diagram says 24 V / 25 W)."@en ;
+    maestro:hasIdentifier ltu:PN_326395 .
+
+ltu:PN_654152 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "654152" .
+
+ltu:PT_654152 a maestro:ProductType ;
+    rdfs:label "Toothed-belt linear axis DGEL-12 (DGEL-12)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "DGEL-12" ;
+    maestro:description "Max. feed force 30 N, feed constant 38 mm/rev, repetition accuracy +-0.08 mm. Installed stroke not stated."@en ;
+    maestro:hasIdentifier ltu:PN_654152 .
+
+ltu:PN_195777 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "195777" .
+
+ltu:PT_195777 a maestro:ProductType ;
+    rdfs:label "Holder (receptacle) module (D:MP3-M-AN-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-AN-BS" ;
+    maestro:description "Retainer that holds the workpiece at the pick-up position."@en ;
+    maestro:hasIdentifier ltu:PN_195777 .
+
+ltu:PN_526215 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526215" .
+
+ltu:PT_526215 a maestro:ProductType ;
+    rdfs:label "PicAlfa module (D:MP3-M-PA-B-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-PA-B-BS" ;
+    maestro:description "Pneumatic two-axis handling device: linear axis, lifting cylinder and parallel gripper."@en ;
+    maestro:hasIdentifier ltu:PN_526215 .
+
+ltu:PN_653393 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "653393" .
+
+ltu:PT_653393 a maestro:ProductType ;
+    rdfs:label "Slide module (D:MP3-M-RT250)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RT250" ;
+    maestro:description "Slide for 5 workpieces, inclination infinitely adjustable."@en ;
+    maestro:hasIdentifier ltu:PN_653393 .
+
+ltu:PN_526872 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526872" .
+
+ltu:PT_526872 a maestro:ProductType ;
+    rdfs:label "CP valve terminal, Handling (D:MP3-CP-GMM)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-CP-GMM" ;
+    maestro:description "CPV10 valve terminal of the Handling station (codes G, M, M in the parts list; C, M, M in the electric layout)."@en ;
+    maestro:hasIdentifier ltu:PN_526872 .
+
+ltu:PN_526212 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526212" .
+
+ltu:PT_526212 a maestro:ProductType ;
+    rdfs:label "Diffuse sensor assembly (D:MP3-M-RLT-BS)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RLT-BS" ;
+    maestro:description "Fibre-optic diffuse sensor assembly, 2 per Handling station."@en ;
+    maestro:hasIdentifier ltu:PN_526212 .
+
+ltu:PN_526866 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "526866" .
+
+ltu:PT_526866 a maestro:ProductType ;
+    rdfs:label "Accessories, Handling (D:MP3-M-KTPA)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-KTPA" ;
+    maestro:description "Accessory kit of the Handling station."@en ;
+    maestro:hasIdentifier ltu:PN_526866 .
+
+ltu:PN_161973 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "161973" .
+
+ltu:PT_161973 a maestro:ProductType ;
+    rdfs:label "Rodless linear drive DGPL-12 (DGPL-12)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "DGPL-12" ;
+    maestro:description "Double acting, plain-bearing guide, piston 12 mm, 2.5-8 bar, 68 N at 6 bar. Installed stroke not stated."@en ;
+    maestro:hasIdentifier ltu:PN_161973 .
+
+ltu:PN_164019 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "164019" .
+
+ltu:PT_164019 a maestro:ProductType ;
+    rdfs:label "Flat cylinder DZF-18-80 (DZF-18-80-P-A)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "DZF-18-80-P-A" ;
+    maestro:description "Double acting, oval piston, stroke 80 mm, 1-10 bar, 153 N advance at 6 bar. (The data-sheet file is named DZF_18_180.)"@en ;
+    maestro:hasIdentifier ltu:PN_164019 .
+
+ltu:PN_197542 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "197542" .
+
+ltu:PT_197542 a maestro:ProductType ;
+    rdfs:label "Parallel gripper HGP-10 (HGP-10-A-B)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "HGP-10-A-B" ;
+    maestro:description "Double acting, self-centring, 2-8 bar, gripping force 40 N closing / 47 N opening; stroke per jaw 3 mm (operating instructions)."@en ;
+    maestro:hasIdentifier ltu:PN_197542 .
+
+ltu:PN_176055 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "176055" .
+
+ltu:PT_176055 a maestro:ProductType ;
+    rdfs:label "Valve kit 5/3-way, mid position closed (CPV10-BS-5/3G-M7)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "CPV10-BS-5/3G-M7" ;
+    maestro:description "Valve kit that gives a CPV10 location the 5/3 closed-centre function (assignment to 1V1 inferred)."@en ;
+    maestro:hasIdentifier ltu:PN_176055 .
+
+ltu:PN_165358 a maestro:Identifier ;
+    maestro:identifierScheme "Festo part number" ;
+    maestro:identifierValue "165358" .
+
+ltu:PT_165358 a maestro:ProductType ;
+    rdfs:label "Fibre-optic cable, diffuse (SOEZ-LLK-RT-2,0-M6)"@en ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEZ-LLK-RT-2,0-M6" ;
+    maestro:description "Diffuse fibre-optic cable, M6 brass head."@en ;
+    maestro:hasIdentifier ltu:PN_165358 .

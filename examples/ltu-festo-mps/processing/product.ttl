@@ -1,0 +1,302 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix pro:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing#> .
+
+#################################################################
+# LTU FESTO MPS - PROCESSING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Processing station
+# (03_Processing_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing/product> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing/product/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS - Processing station (product: control sequence)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "GRAFCET control sequence of the Processing station as an HHM-Core recipe."@en .
+
+
+#################################################################
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty steps (1, 6, 10, 12, 13, the macro entry and
+# exit steps) and the flag steps 5 and 14 are folded into transition
+# expressions. Step 11 forks into the three parallel macro steps M20
+# (drill hole checking, steps 21-23), M30 (drilling, 31-34) and M40
+# (workpiece output, 41-42); each branch can skip to its exit step, which
+# the Parallel constraints state. The bit shift of flag 'workpiece
+# orientation' (step 14) is the data binding from the check to the
+# drilling and output steps.
+#################################################################
+
+pro:ControlSequence a maestro:Recipe ;
+    rdfs:label "Processing station control sequence (GRAFCET, 1-bit link)"@en ;
+    maestro:version "DE 01/04" ;
+    maestro:description "Function chart according to DIN EN 60848 (IEC 60848) for the Processing station, '1-bit-link', with macro steps M20, M30, M40. Timers 3s/X9, 1s/X13, 3s/X21, 1s/X41."@en ;
+    maestro:hasStep pro:X2 ,
+               pro:X3 ,
+               pro:X4 ,
+               pro:X7 ,
+               pro:X8 ,
+               pro:X9 ,
+               pro:X11 ,
+               pro:X21 ,
+               pro:X22 ,
+               pro:X23 ,
+               pro:X31 ,
+               pro:X32 ,
+               pro:X33 ,
+               pro:X34 ,
+               pro:X41 ,
+               pro:X42 .
+
+pro:X2 a maestro:PlanStep ;
+    rdfs:label "Step 2 - 'reset' indicator light"@en ;
+    maestro:stepOrder 2 ;
+    maestro:realizedBy pro:SwitchIndicatorLight ;
+    maestro:hasControlFlow pro:CF_X2_X3 .
+
+pro:CF_X2_X3 a maestro:ControlFlowConstraint ;
+    rdfs:label "X2 -> X3"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X3 ;
+    maestro:expression "'reset' button pressed" .
+
+pro:X3 a maestro:PlanStep ;
+    rdfs:label "Step 3 - move station to initial position"@en ;
+    maestro:stepOrder 3 ;
+    maestro:realizedBy pro:ResetStation ;
+    maestro:hasControlFlow pro:CF_X3_X4 .
+
+pro:CF_X3_X4 a maestro:ControlFlowConstraint ;
+    rdfs:label "X3 -> X4"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X4 ;
+    maestro:expression "drill in upward position" .
+
+pro:X4 a maestro:PlanStep ;
+    rdfs:label "Step 4 - turn rotary indexing table to initial position"@en ;
+    maestro:stepOrder 4 ;
+    maestro:realizedBy pro:IndexTable ;
+    maestro:hasControlFlow pro:CF_X4_X7 , pro:CF_X4_X8 .
+
+pro:CF_X4_X7 a maestro:ControlFlowConstraint ;
+    rdfs:label "X4 -> X7"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep pro:X7 ;
+    maestro:expression "station in initial position; flag 'reset finished' set (step 5); flag 'start' not set (via step 6)" .
+
+pro:CF_X4_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X4 -> X8"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "station in initial position; flag 'reset finished' set (step 5); flag 'start' set (via step 6)" .
+
+pro:X7 a maestro:PlanStep ;
+    rdfs:label "Step 7 - 'start' indicator light"@en ;
+    maestro:stepOrder 7 ;
+    maestro:realizedBy pro:SwitchIndicatorLight ;
+    maestro:hasControlFlow pro:CF_X7_X8 .
+
+pro:CF_X7_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X7 -> X8"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "flag 'start' is set" .
+
+pro:X8 a maestro:PlanStep ;
+    rdfs:label "Step 8 - station not occupied"@en ;
+    maestro:stepOrder 8 ;
+    maestro:realizedBy pro:SetStationLinkSignal ;
+    maestro:hasControlFlow pro:CF_X8_X9 .
+
+pro:CF_X8_X9 a maestro:ControlFlowConstraint ;
+    rdfs:label "X8 -> X9"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X9 ;
+    maestro:expression "workpiece available" .
+
+pro:X9 a maestro:PlanStep ;
+    rdfs:label "Step 9 - station occupied"@en ;
+    maestro:stepOrder 9 ;
+    maestro:realizedBy pro:SetStationLinkSignal ;
+    maestro:hasControlFlow pro:CF_X9_X11 .
+
+pro:CF_X9_X11 a maestro:ControlFlowConstraint ;
+    rdfs:label "X9 -> X11"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X11 ;
+    maestro:expression "3s/X9 'delay'; downstream station free (via step 10)" .
+
+pro:X11 a maestro:PlanStep ;
+    rdfs:label "Step 11 - turn on rotary indexing table"@en ;
+    maestro:stepOrder 11 ;
+    maestro:realizedBy pro:IndexTable ;
+    maestro:hasControlFlow pro:CF_X11_X21 , pro:CF_X11_X31 , pro:CF_X11_X41 , pro:CF_X11_X42 .
+
+pro:CF_X11_X21 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X21"@en ;
+    maestro:flowType maestro:Parallel ;
+    maestro:relatedStep pro:X21 ;
+    maestro:expression "table positioned (step 12); 1s/X13; M20 entry: workpiece available and flag 'start' set (else M20 exits at once)" .
+
+pro:CF_X11_X31 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X31"@en ;
+    maestro:flowType maestro:Parallel ;
+    maestro:relatedStep pro:X31 ;
+    maestro:expression "table positioned (step 12); 1s/X13; M30 entry: workpiece available and flag 'workpiece orientation' bit 2 not set (else M30 exits at once)" .
+
+pro:CF_X11_X41 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X41"@en ;
+    maestro:flowType maestro:Parallel ;
+    maestro:relatedStep pro:X41 ;
+    maestro:expression "table positioned (step 12); 1s/X13; M40 entry: flag 'workpiece orientation' bit 3 not set" .
+
+pro:CF_X11_X42 a maestro:ControlFlowConstraint ;
+    rdfs:label "X11 -> X42"@en ;
+    maestro:flowType maestro:Parallel ;
+    maestro:relatedStep pro:X42 ;
+    maestro:expression "table positioned (step 12); 1s/X13; M40 entry: flag 'workpiece orientation' bit 3 set" .
+
+pro:X21 a maestro:PlanStep ;
+    rdfs:label "Step 21 - checking workpiece orientation"@en ;
+    maestro:description "Turns on the verifying magnet."@en ;
+    maestro:stepOrder 21 ;
+    maestro:realizedBy pro:CheckOrientation ;
+    maestro:hasControlFlow pro:CF_X21_X22 , pro:CF_X21_X23 .
+
+pro:CF_X21_X22 a maestro:ControlFlowConstraint ;
+    rdfs:label "X21 -> X22"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep pro:X22 ;
+    maestro:expression "3s/X21 and workpiece orientation ok" .
+
+pro:CF_X21_X23 a maestro:ControlFlowConstraint ;
+    rdfs:label "X21 -> X23"@en ;
+    maestro:flowType maestro:Alternative ;
+    maestro:relatedStep pro:X23 ;
+    maestro:expression "3s/X21 and workpiece orientation not ok" .
+
+pro:X22 a maestro:PlanStep ;
+    rdfs:label "Step 22 - workpiece orientation ok"@en ;
+    maestro:description "Turns off the verifying magnet; resets flag 'workpiece orientation' bit 1."@en ;
+    maestro:stepOrder 22 ;
+    maestro:realizedBy pro:CheckOrientation ;
+    maestro:hasControlFlow pro:CF_X22_X8 .
+
+pro:CF_X22_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X22 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "verifying magnet is off (M20 exit); macro steps M20, M30 and M40 completed; step 14 sets flag 'cycle end' and shifts the 'workpiece orientation' bits; step 6 goes to step 7 first if flag 'start' is not set" .
+
+pro:X23 a maestro:PlanStep ;
+    rdfs:label "Step 23 - workpiece orientation not ok"@en ;
+    maestro:description "Turns off the verifying magnet; sets flag 'workpiece orientation' bit 1."@en ;
+    maestro:stepOrder 23 ;
+    maestro:realizedBy pro:CheckOrientation ;
+    maestro:hasControlFlow pro:CF_X23_X8 .
+
+pro:CF_X23_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X23 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "verifying magnet is off (M20 exit); macro steps M20, M30 and M40 completed; step 14 sets flag 'cycle end' and shifts the 'workpiece orientation' bits; step 6 goes to step 7 first if flag 'start' is not set" .
+
+pro:X31 a maestro:PlanStep ;
+    rdfs:label "Step 31 - fixate workpiece"@en ;
+    maestro:stepOrder 31 ;
+    maestro:realizedBy pro:ClampWorkpiece ;
+    maestro:hasControlFlow pro:CF_X31_X32 ;
+    maestro:hasDataBinding pro:DB_OrientationToDrilling .
+
+pro:CF_X31_X32 a maestro:ControlFlowConstraint ;
+    rdfs:label "X31 -> X32"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X32 ;
+    maestro:expression "workpiece is fixed" .
+
+pro:X32 a maestro:PlanStep ;
+    rdfs:label "Step 32 - drill on"@en ;
+    maestro:description "Lowers the drilling unit and turns on the drill."@en ;
+    maestro:stepOrder 32 ;
+    maestro:realizedBy pro:LowerDrill ;
+    maestro:hasControlFlow pro:CF_X32_X33 .
+
+pro:CF_X32_X33 a maestro:ControlFlowConstraint ;
+    rdfs:label "X32 -> X33"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X33 ;
+    maestro:expression "drilling unit lowered" .
+
+pro:X33 a maestro:PlanStep ;
+    rdfs:label "Step 33 - drill off"@en ;
+    maestro:description "Raises the drilling unit and turns off the drill."@en ;
+    maestro:stepOrder 33 ;
+    maestro:realizedBy pro:RaiseDrill ;
+    maestro:hasControlFlow pro:CF_X33_X34 .
+
+pro:CF_X33_X34 a maestro:ControlFlowConstraint ;
+    rdfs:label "X33 -> X34"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep pro:X34 ;
+    maestro:expression "drilling unit raised" .
+
+pro:X34 a maestro:PlanStep ;
+    rdfs:label "Step 34 - free workpiece"@en ;
+    maestro:stepOrder 34 ;
+    maestro:realizedBy pro:ReleaseWorkpiece ;
+    maestro:hasControlFlow pro:CF_X34_X8 .
+
+pro:CF_X34_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X34 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "workpiece is unfixed (M30 exit); macro steps M20, M30 and M40 completed; step 14 sets flag 'cycle end' and shifts the 'workpiece orientation' bits; step 6 goes to step 7 first if flag 'start' is not set" .
+
+pro:X41 a maestro:PlanStep ;
+    rdfs:label "Step 41 - workpiece orientation ok: eject workpiece"@en ;
+    maestro:stepOrder 41 ;
+    maestro:realizedBy pro:EjectWorkpiece ;
+    maestro:hasControlFlow pro:CF_X41_X8 ;
+    maestro:hasDataBinding pro:DB_OrientationToOutput .
+
+pro:CF_X41_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X41 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "1s/X41 'delay' (M40 exit); macro steps M20, M30 and M40 completed; step 14 sets flag 'cycle end' and shifts the 'workpiece orientation' bits; step 6 goes to step 7 first if flag 'start' is not set" .
+
+pro:X42 a maestro:PlanStep ;
+    rdfs:label "Step 42 - workpiece orientation not ok"@en ;
+    maestro:description "Turns on the 'start' and 'workpiece orientation not ok' (WORKPIECE NOK) lights."@en ;
+    maestro:stepOrder 42 ;
+    maestro:realizedBy pro:SwitchIndicatorLight ;
+    maestro:hasControlFlow pro:CF_X42_X8 .
+
+pro:CF_X42_X8 a maestro:ControlFlowConstraint ;
+    rdfs:label "X42 -> X8"@en ;
+    maestro:flowType maestro:Loop ;
+    maestro:relatedStep pro:X8 ;
+    maestro:expression "error acknowledged (M40 exit); macro steps M20, M30 and M40 completed; step 14 sets flag 'cycle end' and shifts the 'workpiece orientation' bits; step 6 goes to step 7 first if flag 'start' is not set" .
+
+pro:DB_OrientationToDrilling a maestro:DataBinding ;
+    rdfs:label "Orientation result -> drilling (bit 1 shifted to bit 2 in step 14)"@en ;
+    maestro:bindsFrom pro:P_OrientationResult ;
+    maestro:bindsTo pro:P_OrientationAtDrilling .
+
+pro:DB_OrientationToOutput a maestro:DataBinding ;
+    rdfs:label "Orientation result -> output (shifted to bit 3)"@en ;
+    maestro:bindsFrom pro:P_OrientationResult ;
+    maestro:bindsTo pro:P_OrientationAtOutput .

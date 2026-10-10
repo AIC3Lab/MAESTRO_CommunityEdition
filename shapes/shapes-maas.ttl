@@ -1,0 +1,117 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix mhsh: <https://w3id.org/maestro/hhm/shapes#> .
+
+#################################################################
+# SHACL SHAPES - MANUFACTURING-AS-A-SERVICE MODULE (modules/maas.ttl)
+#
+# Service offers by providers, service requests by customers,
+# quotes with price and ISO-4217-style currency code, contracts
+# accepting a quote and the production orders that realise them.
+#################################################################
+
+mhsh:QuoteStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Quote ;
+    rdfs:label "A quote carries exactly one price and currency, answers exactly one request and rests on exactly one offer."@en ;
+    sh:property [
+        sh:path maestro:price ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:decimal ;
+        sh:message "A maestro:Quote must carry exactly one maestro:price as an xsd:decimal literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:currency ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:pattern "^[A-Z]{3}$" ;
+        sh:message "A maestro:Quote must carry exactly one maestro:currency as a three-letter upper-case code (xsd:string)." ;
+    ] ;
+    sh:property [
+        sh:path maestro:quoteFor ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ServiceRequest ;
+        sh:message "A maestro:Quote must answer exactly one maestro:ServiceRequest via maestro:quoteFor." ;
+    ] ;
+    sh:property [
+        sh:path maestro:basedOnOffer ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:ServiceOffer ;
+        sh:message "A maestro:Quote must rest on exactly one maestro:ServiceOffer via maestro:basedOnOffer." ;
+    ] .
+
+mhsh:ServiceOfferStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:ServiceOffer ;
+    rdfs:label "A service offer is made by a provider, offers a capability and is provided at stations."@en ;
+    sh:property [
+        sh:path maestro:offeredBy ;
+        sh:minCount 1 ;
+        sh:class maestro:PhysicalResourceProvider ;
+        sh:message "A maestro:ServiceOffer must be offered by at least one maestro:PhysicalResourceProvider via maestro:offeredBy." ;
+    ] ;
+    sh:property [
+        sh:path maestro:offersCapability ;
+        sh:minCount 1 ;
+        sh:class maestro:Capability ;
+        sh:message "A maestro:ServiceOffer must offer at least one maestro:Capability via maestro:offersCapability." ;
+    ] ;
+    sh:property [
+        sh:path maestro:providedAt ;
+        sh:class maestro:Station ;
+        sh:message "maestro:providedAt on a maestro:ServiceOffer must point to a maestro:Station." ;
+    ] .
+
+mhsh:ServiceRequestStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:ServiceRequest ;
+    rdfs:label "A service request comes from a customer, is for a product type and asks for a positive integer quantity."@en ;
+    sh:property [
+        sh:path maestro:requestedBy ;
+        sh:minCount 1 ;
+        sh:class maestro:Customer ;
+        sh:message "A maestro:ServiceRequest must be requested by at least one maestro:Customer via maestro:requestedBy." ;
+    ] ;
+    sh:property [
+        sh:path maestro:forProduct ;
+        sh:minCount 1 ;
+        sh:class maestro:ProductType ;
+        sh:message "A maestro:ServiceRequest must be for at least one maestro:ProductType via maestro:forProduct." ;
+    ] ;
+    sh:property [
+        sh:path maestro:requestedQuantity ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 1 ;
+        sh:message "maestro:requestedQuantity on a maestro:ServiceRequest is an xsd:integer literal >= 1." ;
+    ] .
+
+mhsh:ContractStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Contract ;
+    rdfs:label "A contract accepts exactly one quote and is realised by at most one production order."@en ;
+    sh:property [
+        sh:path maestro:acceptsQuote ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:class maestro:Quote ;
+        sh:message "A maestro:Contract must accept exactly one maestro:Quote via maestro:acceptsQuote." ;
+    ] ;
+    sh:property [
+        sh:path maestro:realizedByOrder ;
+        sh:maxCount 1 ;
+        sh:class maestro:ProductionOrder ;
+        sh:message "maestro:realizedByOrder on a maestro:Contract is at most one maestro:ProductionOrder." ;
+    ] .
+
+mhsh:ProductionOrderProductShape a sh:NodeShape ;
+    sh:targetClass maestro:ProductionOrder ;
+    rdfs:label "A production order orders at least one product type."@en ;
+    sh:property [
+        sh:path maestro:ordersProduct ;
+        sh:minCount 1 ;
+        sh:class maestro:ProductType ;
+        sh:message "A maestro:ProductionOrder must order at least one maestro:ProductType via maestro:ordersProduct." ;
+    ] .

@@ -1,0 +1,156 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/shared#> .
+@prefix lin:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line#> .
+@prefix dis:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing#> .
+@prefix tes:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing#> .
+@prefix pro:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing#> .
+@prefix han:  <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling#> .
+
+#################################################################
+# LTU FESTO MPS LINE - PRODUCT (WORKPIECE AND LINE RECIPE)
+#
+# The workpiece the four stations handle and the line recipe that
+# chains the four station cycles. Imports the line plant and the four
+# station product files, so loading this file loads the whole line.
+#################################################################
+
+<https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line/product> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line/product/0.1.0> ;
+    rdfs:label "MAESTRO HHM-Core example: LTU Festo MPS line (product: workpiece and line recipe)"@en ;
+    owl:imports <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/line> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/distributing/product> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/testing/product> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/processing/product> ,
+                <https://w3id.org/maestro/hhm/examples/ltu-festo-mps/handling/product> ;
+    owl:versionInfo "0.1.0" ;
+    rdfs:comment "Workpiece type and variants and the line recipe Distributing -> Testing -> Processing -> Handling of the LTU Festo MPS line."@en .
+
+
+#################################################################
+# WORKPIECE
+#
+# Processing assembly instructions: 'the basic body of an assemblable
+# pneumatic cylinder'. Colours from the Testing and Handling manuals;
+# heights from the Testing manual. Diameter, mass and the materials of
+# the red and black workpieces are not stated, and no workpiece order
+# number is given (so the product types carry no maestro:Identifier).
+#################################################################
+
+lin:Workpiece a maestro:ProductType ;
+    rdfs:label "MPS workpiece: basic body of an assemblable pneumatic cylinder"@en ;
+    maestro:description "Cylindrical body with an opening on one side; stacked in the Distributing magazine with the opening upwards. Comes in red, silver (metallic) and black. Diameter not stated."@en ;
+    maestro:hasVariant lin:WorkpieceRed , lin:WorkpieceSilver , lin:WorkpieceBlack ;
+    maestro:hasFeature lin:F_Opening , lin:F_Height , lin:F_MaterialClass ;
+    maestro:hasRequirement lin:R_OpeningUp .
+
+lin:WorkpieceRed a maestro:Variant ;
+    rdfs:label "MPS workpiece, red"@en ;
+    maestro:description "Detected by the capacitive and the diffuse sensors ('not black'); passes the height check set up with a red workpiece."@en ;
+    maestro:hasRequirement lin:R_HeightRed .
+
+lin:WorkpieceSilver a maestro:Variant ;
+    rdfs:label "MPS workpiece, silver (metallic)"@en ;
+    maestro:description "Called 'metallic' in the manuals. The sensors cannot tell it from red."@en ;
+    maestro:hasRequirement lin:R_HeightSilver .
+
+lin:WorkpieceBlack a maestro:Variant ;
+    rdfs:label "MPS workpiece, black"@en ;
+    maestro:description "Not detected by the diffuse sensors; sorted onto slide 1 by the Handling station. Whether the Testing height window rejects it is not stated."@en ;
+    maestro:hasRequirement lin:R_HeightBlack .
+
+lin:F_Opening a maestro:Feature ;
+    rdfs:label "Opening (hole) on one side"@en ;
+    maestro:description "Must face upwards in the magazine; the Processing station checks it with the testing solenoid and simulates polishing of the hole."@en ;
+    maestro:requiresOperation lin:LS3_Process .
+
+lin:F_Height a maestro:Feature ;
+    rdfs:label "Workpiece height"@en ;
+    maestro:description "Measured by the Testing station's analogue sensor and comparator."@en .
+
+lin:F_MaterialClass a maestro:Feature ;
+    rdfs:label "Colour / material class (black vs red or silver)"@en ;
+    maestro:description "Recognised optically by the Testing and Handling stations; the Handling station sorts by it."@en .
+
+lin:R_OpeningUp a maestro:Requirement ;
+    rdfs:label "Opening faces upwards"@en ;
+    maestro:description "Distributing: 'the opening of the workpieces must point upwards'. Processing: workpieces inserted the wrong way up are not drilled and raise WORKPIECE NOK."@en ;
+    maestro:appliesTo lin:F_Opening ;
+    maestro:requiredValue "opening upwards" ;
+    maestro:mandatory true .
+
+lin:R_HeightRed a maestro:Requirement ;
+    rdfs:label "Height of the red workpiece 25 mm"@en ;
+    maestro:description "Testing manual: the comparator is set up with the red 25 mm workpiece."@en ;
+    maestro:appliesTo lin:F_Height ;
+    maestro:requiredValue "25 mm" .
+
+lin:R_HeightSilver a maestro:Requirement ;
+    rdfs:label "Height of the silver workpiece 25 mm"@en ;
+    maestro:description "Testing manual: 'Red and silver workpieces are 2.5 mm higher than black workpieces'."@en ;
+    maestro:appliesTo lin:F_Height ;
+    maestro:requiredValue "25 mm (2.5 mm higher than black)" .
+
+lin:R_HeightBlack a maestro:Requirement ;
+    rdfs:label "Height of the black workpiece 22.5 mm (derived)"@en ;
+    maestro:description "Derived: 2.5 mm lower than the 25 mm red workpiece; not printed in the documents."@en ;
+    maestro:appliesTo lin:F_Height ;
+    maestro:requiredValue "22.5 mm" .
+
+
+#################################################################
+# LINE RECIPE
+#
+# One step per station, realised by the station's cycle skill; the
+# station GRAFCETs are the control sequences inside each step.
+#################################################################
+
+lin:MPSLineRecipe a maestro:Recipe ;
+    rdfs:label "Festo MPS line process: distribute, test, process, sort"@en ;
+    maestro:version "1" ;
+    maestro:description "A workpiece leaves the Distributing magazine, is tested for material class and height, has its orientation checked and its hole (simulated) polished, and is sorted by colour class at the Handling station."@en ;
+    maestro:hasStep lin:LS1_Distribute , lin:LS2_Test , lin:LS3_Process , lin:LS4_Sort .
+
+lin:LS1_Distribute a maestro:PlanStep ;
+    rdfs:label "Line step 1 - Distribute (Distributing station)"@en ;
+    maestro:stepOrder 1 ;
+    maestro:realizedBy dis:DistributeWorkpiece ;
+    maestro:hasControlFlow lin:CF_LS1_Distribute .
+
+lin:CF_LS1_Distribute a maestro:ControlFlowConstraint ;
+    rdfs:label "LS1 -> LS2"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep lin:LS2_Test ;
+    maestro:expression "workpiece released at the Testing retainer; the Testing station signalled 'not occupied' over StationLink" .
+
+lin:LS2_Test a maestro:PlanStep ;
+    rdfs:label "Line step 2 - Test material class and height (Testing station)"@en ;
+    maestro:stepOrder 2 ;
+    maestro:realizedBy tes:TestWorkpiece ;
+    maestro:hasControlFlow lin:CF_LS2_Test .
+
+lin:CF_LS2_Test a maestro:ControlFlowConstraint ;
+    rdfs:label "LS2 -> LS3"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep lin:LS3_Process ;
+    maestro:expression "height ok: workpiece passed over the air cushioned slide (rejected workpieces stay on the Testing lower slide)" .
+
+lin:LS3_Process a maestro:PlanStep ;
+    rdfs:label "Line step 3 - Check orientation and drill (Processing station)"@en ;
+    maestro:stepOrder 3 ;
+    maestro:realizedBy pro:ProcessWorkpiece ;
+    maestro:hasControlFlow lin:CF_LS3_Process .
+
+lin:CF_LS3_Process a maestro:ControlFlowConstraint ;
+    rdfs:label "LS3 -> LS4"@en ;
+    maestro:flowType maestro:Precedes ;
+    maestro:relatedStep lin:LS4_Sort ;
+    maestro:expression "orientation ok: workpiece ejected to the transfer position (wrongly inserted workpieces raise WORKPIECE NOK and are removed by hand)" .
+
+lin:LS4_Sort a maestro:PlanStep ;
+    rdfs:label "Line step 4 - Pick and sort by colour class (Handling station)"@en ;
+    maestro:stepOrder 4 ;
+    maestro:realizedBy han:PickAndSortWorkpiece .

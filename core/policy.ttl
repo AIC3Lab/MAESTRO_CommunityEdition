@@ -1,0 +1,496 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core : Safety / Security / Policy cluster
+#
+# HHM-Core v1 cluster "Safety / Security / Policy": Policy,
+# Constraint, Hazard, Risk, Mitigation, Mode, Role, Permission and
+# Evidence. The MAESTRO 1.0 safety module is folded in here:
+# SafetyFunction, EmergencyStop, SafetyIntegrityLevel,
+# PerformanceLevel, RiskLevel and RiskAssessment.
+#
+# Extension point: rules and validation (SHACL shapes in shapes/;
+# the ODRL core-profile bridge in ext/odrl.ttl). XACML-style policy
+# languages are named by the HHM diagram but not in the listed
+# standards basis: hook only, no IRIs, no mapping.
+#################################################################
+
+<https://w3id.org/maestro/hhm/policy> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/policy/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: Safety / Security / Policy" ;
+    rdfs:label "MAESTRO HHM-Core: Safety / Security / Policy"@en ;
+    dct:description "HHM-Core v1 Safety / Security / Policy cluster: policies with constraints, permissions, roles, modes and evidence; hazards, risks and mitigations; safety functions with declared integrity and performance levels; risk assessments."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. Safety integrity and performance levels are declared by the integrator; the ontology records them and neither defines nor verifies the requirement. The ODRL bridge lives in ext/odrl.ttl. Definitions are reused from the MAESTRO 1.0 policy, safety and core modules; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/policy> , <https://w3id.org/maestro/safety> , <https://w3id.org/maestro/core> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/skill> , <https://w3id.org/maestro/hhm/recipe> .
+
+#################################################################
+# POLICY CLASSES
+#################################################################
+
+maestro:Policy a owl:Class ;
+    rdfs:label "Policy"@en ;
+    skos:definition "A group of constraints and permissions governing skills, plan steps, modules or endpoints."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster."@en ;
+    dct:source <https://w3id.org/maestro/policy#Policy> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Constraint a owl:Class ;
+    rdfs:label "Constraint"@en ;
+    skos:definition "A specified restriction on a skill, plan step, module, endpoint or other target."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster. The target is stated with maestro:constrains, the restriction text with maestro:expression."@en ;
+    dct:source <https://w3id.org/maestro/core#Constraint> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Hazard a owl:Class ;
+    rdfs:label "Hazard"@en ;
+    skos:definition "A potential source of harm associated with a resource, process or environment."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster."@en ;
+    dct:source <https://w3id.org/maestro/safety#Hazard> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Risk a owl:Class ;
+    rdfs:label "Risk"@en ;
+    skos:definition "How likely a harm is and how severe it would be, for a given subject in a given context."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster. Used for harm to persons and also for property and production loss. Its rating after assessment is an maestro:RiskLevel on the assessment."@en ;
+    dct:source <https://w3id.org/maestro/safety#Risk> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Mitigation a owl:Class ;
+    rdfs:label "Mitigation"@en ;
+    skos:definition "A measure that reduces a risk."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster. A reified measure, so that assessments can name the mitigations they rely on."@en ;
+    dct:source <https://w3id.org/maestro/safety#Mitigation> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Mode a owl:Class ;
+    rdfs:label "Mode"@en ;
+    skos:definition "An operating mode, such as automatic, manual or maintenance, that a policy can require."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster, a controlled vocabulary of individuals."@en ;
+    dct:source <https://w3id.org/maestro/policy#Mode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:AutomaticMode a owl:NamedIndividual , maestro:Mode ;
+    rdfs:label "Automatic"@en ;
+    skos:definition "The resource runs skills without operator intervention."@en ;
+    dct:source <https://w3id.org/maestro/policy#AutoMode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:ManualMode a owl:NamedIndividual , maestro:Mode ;
+    rdfs:label "Manual"@en ;
+    skos:definition "An operator drives the resource step by step."@en ;
+    dct:source <https://w3id.org/maestro/policy#ManualMode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:MaintenanceMode a owl:NamedIndividual , maestro:Mode ;
+    rdfs:label "Maintenance"@en ;
+    skos:definition "The resource is under maintenance and not available for production."@en ;
+    dct:source <https://w3id.org/maestro/policy#MaintenanceMode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Role a owl:Class ;
+    rdfs:label "Role"@en ;
+    skos:definition "An actor role to which permissions are granted."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster (role-based access). The manufacturing-as-a-service module adds the individuals CustomerRole, ProviderRole and MarketplaceRole."@en ;
+    dct:source <https://w3id.org/maestro/policy#Role> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Permission a owl:Class ;
+    rdfs:label "Permission"@en ;
+    skos:definition "The ability to perform an action over a target, granted to a role."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster."@en ;
+    dct:source <https://w3id.org/maestro/policy#Permission> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Action a owl:Class ;
+    rdfs:label "Action"@en ;
+    skos:definition "An operation a permission governs."@en ;
+    rdfs:comment "Controlled vocabulary of individuals: Invoke, Read, Write, Configure. Needed so a permission can say what it permits."@en ;
+    dct:source <https://w3id.org/maestro/policy#Action> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Invoke a owl:NamedIndividual , maestro:Action ;
+    rdfs:label "Invoke a skill or service"@en ;
+    skos:definition "Start a skill or call a service."@en ;
+    dct:source <https://w3id.org/maestro/policy#Invoke> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Read a owl:NamedIndividual , maestro:Action ;
+    rdfs:label "Read data"@en ;
+    skos:definition "Read data from the target."@en ;
+    dct:source <https://w3id.org/maestro/policy#Read> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Write a owl:NamedIndividual , maestro:Action ;
+    rdfs:label "Write data"@en ;
+    skos:definition "Write data to the target."@en ;
+    dct:source <https://w3id.org/maestro/policy#Write> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Configure a owl:NamedIndividual , maestro:Action ;
+    rdfs:label "Change a configuration"@en ;
+    skos:definition "Change the configuration of the target."@en ;
+    dct:source <https://w3id.org/maestro/policy#Configure> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:Evidence a owl:Class ;
+    rdfs:label "Evidence"@en ;
+    skos:definition "A reference to a log, document or observation that backs a policy, an assessment or a state assertion."@en ;
+    rdfs:comment "HHM-Core Safety / Security / Policy cluster (Evidence: log / doc / obs ref). The reference itself is maestro:evidenceRef."@en ;
+    dct:source <https://w3id.org/maestro/policy#Evidence> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# SAFETY CLASSES (folded in from the MAESTRO 1.0 safety module)
+#################################################################
+
+maestro:SafetyFunction a owl:Class ;
+    rdfs:label "Safety function"@en ;
+    skos:definition "A function of a resource or control system that is relied on to bring or keep equipment in a safe state when a specific hazard arises."@en ;
+    rdfs:comment "The ontology records the function; it does not define or verify its safety requirements."@en ;
+    dct:source <https://w3id.org/maestro/safety#SafetyFunction> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:EmergencyStop a owl:Class ;
+    rdfs:label "Emergency stop"@en ;
+    skos:definition "A safety function that a person triggers with a single action to stop a hazardous situation."@en ;
+    rdfs:comment "Recorded as a complementary measure alongside other safeguards, not a substitute for them."@en ;
+    rdfs:subClassOf maestro:SafetyFunction ;
+    dct:source <https://w3id.org/maestro/safety#EmergencyStop> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:SafetyIntegrityLevel a owl:Class ;
+    rdfs:label "Safety integrity level"@en ;
+    skos:definition "A safety integrity level, SIL 1 to SIL 4, declared by the integrator for a safety function."@en ;
+    rdfs:comment "Kept separate from maestro:PerformanceLevel; the ontology does not convert between the two."@en ;
+    dct:source <https://w3id.org/maestro/safety#SafetyIntegrityLevel> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:SIL1 a owl:NamedIndividual , maestro:SafetyIntegrityLevel ; rdfs:label "SIL 1"@en ;
+    skos:definition "Safety integrity level 1, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#SIL1> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:SIL2 a owl:NamedIndividual , maestro:SafetyIntegrityLevel ; rdfs:label "SIL 2"@en ;
+    skos:definition "Safety integrity level 2, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#SIL2> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:SIL3 a owl:NamedIndividual , maestro:SafetyIntegrityLevel ; rdfs:label "SIL 3"@en ;
+    skos:definition "Safety integrity level 3, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#SIL3> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:SIL4 a owl:NamedIndividual , maestro:SafetyIntegrityLevel ; rdfs:label "SIL 4"@en ;
+    skos:definition "Safety integrity level 4, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#SIL4> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:PerformanceLevel a owl:Class ;
+    rdfs:label "Performance level"@en ;
+    skos:definition "A performance level, PL a to PL e, declared by the integrator for a safety function."@en ;
+    rdfs:comment "Kept separate from maestro:SafetyIntegrityLevel; the ontology does not convert between the two."@en ;
+    dct:source <https://w3id.org/maestro/safety#PerformanceLevel> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:PLa a owl:NamedIndividual , maestro:PerformanceLevel ; rdfs:label "PL a"@en ;
+    skos:definition "Performance level a, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#PLa> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:PLb a owl:NamedIndividual , maestro:PerformanceLevel ; rdfs:label "PL b"@en ;
+    skos:definition "Performance level b, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#PLb> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:PLc a owl:NamedIndividual , maestro:PerformanceLevel ; rdfs:label "PL c"@en ;
+    skos:definition "Performance level c, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#PLc> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:PLd a owl:NamedIndividual , maestro:PerformanceLevel ; rdfs:label "PL d"@en ;
+    skos:definition "Performance level d, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#PLd> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:PLe a owl:NamedIndividual , maestro:PerformanceLevel ; rdfs:label "PL e"@en ;
+    skos:definition "Performance level e, declared by the integrator."@en ;
+    dct:source <https://w3id.org/maestro/safety#PLe> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:RiskLevel a owl:Class ;
+    rdfs:label "Risk level"@en ;
+    skos:definition "A qualitative rating of a risk after assessment."@en ;
+    rdfs:comment "Controlled vocabulary: Low, Medium, High."@en ;
+    dct:source <https://w3id.org/maestro/safety#RiskLevel> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:LowRisk a owl:NamedIndividual , maestro:RiskLevel ; rdfs:label "Low"@en ;
+    skos:definition "Low residual risk."@en ;
+    dct:source <https://w3id.org/maestro/safety#LowRisk> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:MediumRisk a owl:NamedIndividual , maestro:RiskLevel ; rdfs:label "Medium"@en ;
+    skos:definition "Medium residual risk."@en ;
+    dct:source <https://w3id.org/maestro/safety#MediumRisk> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+maestro:HighRisk a owl:NamedIndividual , maestro:RiskLevel ; rdfs:label "High"@en ;
+    skos:definition "High residual risk."@en ;
+    dct:source <https://w3id.org/maestro/safety#HighRisk> ; rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:RiskAssessment a owl:Class ;
+    rdfs:label "Risk assessment"@en ;
+    skos:definition "A context-specific assessment of the risks to or from a subject, stating its method, assumptions, evidence and the mitigations it relies on."@en ;
+    rdfs:comment "Ontology validation does not certify equipment compliance; it records what was assessed, how and on what evidence."@en ;
+    dct:source <https://w3id.org/maestro/safety#RiskAssessment> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# OBJECT PROPERTIES - POLICY
+#################################################################
+
+maestro:contains a owl:ObjectProperty ;
+    rdfs:label "contains"@en ;
+    skos:definition "Relates a policy to a constraint it contains."@en ;
+    rdfs:comment "HHM-Core edge Policy contains Constraint."@en ;
+    rdfs:domain maestro:Policy ;
+    rdfs:range  maestro:Constraint ;
+    dct:source <https://w3id.org/maestro/policy#contains> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:hasPermission a owl:ObjectProperty ;
+    rdfs:label "has permission"@en ;
+    skos:definition "Relates a policy to a permission it grants."@en ;
+    rdfs:comment "What the policy grants; maestro:requiresPermission states what must already be held for the policy to apply."@en ;
+    rdfs:domain maestro:Policy ;
+    rdfs:range  maestro:Permission ;
+    dct:source <https://w3id.org/maestro/policy#hasPermission> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:requiresPermission a owl:ObjectProperty ;
+    rdfs:label "requires permission"@en ;
+    skos:definition "Relates a policy to a permission that must be held for the policy to apply."@en ;
+    rdfs:comment "HHM-Core edge Policy requiresPermission Permission."@en ;
+    rdfs:domain maestro:Policy ;
+    rdfs:range  maestro:Permission ;
+    dct:source <https://w3id.org/maestro/policy#requiresPermission> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:requiresMode a owl:ObjectProperty ;
+    rdfs:label "requires mode"@en ;
+    skos:definition "Relates a policy to the operating mode it gates on."@en ;
+    rdfs:comment "HHM-Core edge Policy requiresMode Mode."@en ;
+    rdfs:domain maestro:Policy ;
+    rdfs:range  maestro:Mode ;
+    dct:source <https://w3id.org/maestro/policy#requiresMode> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:hasEvidence a owl:ObjectProperty ;
+    schema:domainIncludes maestro:Policy ;
+    rdfs:label "has evidence"@en ;
+    skos:definition "Relates a policy, or another record, to the evidence that backs it."@en ;
+    rdfs:comment "HHM-Core edge Policy hasEvidence Evidence. Domain left open so assessments and state assertions can reuse it."@en ;
+    rdfs:range  maestro:Evidence ;
+    dct:source <https://w3id.org/maestro/policy#hasEvidence> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:grantedTo a owl:ObjectProperty ;
+    rdfs:label "granted to"@en ;
+    skos:definition "Relates a permission to the role it is granted to."@en ;
+    rdfs:comment "HHM-Core edge Permission grantedTo Role."@en ;
+    rdfs:domain maestro:Permission ;
+    rdfs:range  maestro:Role ;
+    dct:source <https://w3id.org/maestro/policy#grantedTo> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:action a owl:ObjectProperty ;
+    rdfs:label "action"@en ;
+    skos:definition "Relates a permission to the action it covers."@en ;
+    rdfs:domain maestro:Permission ;
+    rdfs:range  maestro:Action ;
+    dct:source <https://w3id.org/maestro/policy#action> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:target a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:Skill , maestro:SkillService , maestro:Endpoint , maestro:Module ;
+    rdfs:label "target"@en ;
+    skos:definition "Relates a permission to the skill, service, endpoint, module or data set it covers."@en ;
+    rdfs:comment "Range left open: the target may be any entity."@en ;
+    rdfs:domain maestro:Permission ;
+    dct:source <https://w3id.org/maestro/policy#target> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:constrains a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:Skill , maestro:PlanStep , maestro:Module , maestro:Endpoint ;
+    rdfs:label "constrains"@en ;
+    skos:definition "Relates a constraint to the target it restricts: a skill, a plan step, a module or an endpoint."@en ;
+    rdfs:comment "HHM-Core edges Constraint constrains Skill / PlanStep / Module / Endpoint. Range left open (a union of targets) to stay within OWL 2 RL."@en ;
+    rdfs:domain maestro:Constraint ;
+    dct:source <https://w3id.org/maestro/core#constrains> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# OBJECT PROPERTIES - SAFETY
+#################################################################
+
+maestro:increases a owl:ObjectProperty ;
+    rdfs:label "increases"@en ;
+    skos:definition "Relates a hazard to a risk it raises."@en ;
+    rdfs:comment "HHM-Core edge Hazard increases Risk."@en ;
+    rdfs:domain maestro:Hazard ;
+    rdfs:range  maestro:Risk ;
+    dct:source <https://w3id.org/maestro/safety#increases> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:reduces a owl:ObjectProperty ;
+    rdfs:label "reduces"@en ;
+    skos:definition "Relates a mitigation to a risk it reduces."@en ;
+    rdfs:comment "HHM-Core edge Mitigation reduces Risk."@en ;
+    rdfs:domain maestro:Mitigation ;
+    rdfs:range  maestro:Risk ;
+    dct:source <https://w3id.org/maestro/safety#reduces> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:mitigates a owl:ObjectProperty ;
+    rdfs:label "mitigates"@en ;
+    skos:definition "Relates a safety function to the hazard it mitigates."@en ;
+    rdfs:comment "A mitigation measure acts on a risk through maestro:reduces; a safety function acts on the hazard."@en ;
+    rdfs:domain maestro:SafetyFunction ;
+    rdfs:range  maestro:Hazard ;
+    dct:source <https://w3id.org/maestro/safety#mitigates> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:requiredSIL a owl:ObjectProperty ;
+    rdfs:label "required SIL"@en ;
+    skos:definition "The safety integrity level required of a safety function (target level), as declared by the integrator."@en ;
+    rdfs:domain maestro:SafetyFunction ;
+    rdfs:range  maestro:SafetyIntegrityLevel ;
+    dct:source <https://w3id.org/maestro/safety#requiredSIL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:achievedSIL a owl:ObjectProperty ;
+    rdfs:label "achieved SIL"@en ;
+    skos:definition "The safety integrity level a safety function has been assessed to achieve."@en ;
+    rdfs:comment "Assert only with an maestro:RiskAssessment as evidence. A required level never establishes an achieved level."@en ;
+    rdfs:domain maestro:SafetyFunction ;
+    rdfs:range  maestro:SafetyIntegrityLevel ;
+    dct:source <https://w3id.org/maestro/safety#achievedSIL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:requiredPerformanceLevel a owl:ObjectProperty ;
+    rdfs:label "required performance level"@en ;
+    skos:definition "The performance level required of a safety function (target level), as declared by the integrator."@en ;
+    rdfs:domain maestro:SafetyFunction ;
+    rdfs:range  maestro:PerformanceLevel ;
+    dct:source <https://w3id.org/maestro/safety#requiredPerformanceLevel> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:achievedPerformanceLevel a owl:ObjectProperty ;
+    rdfs:label "achieved performance level"@en ;
+    skos:definition "The performance level a safety function has been assessed to achieve."@en ;
+    rdfs:comment "Assert only with an maestro:RiskAssessment as evidence."@en ;
+    rdfs:domain maestro:SafetyFunction ;
+    rdfs:range  maestro:PerformanceLevel ;
+    dct:source <https://w3id.org/maestro/safety#achievedPerformanceLevel> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:assessedSubject a owl:ObjectProperty ;
+    schema:rangeIncludes maestro:Module , maestro:Station , maestro:Skill , maestro:PlanStep ;
+    rdfs:label "assessed subject"@en ;
+    skos:definition "Relates a risk assessment to the module, station, skill or plan step it assesses."@en ;
+    rdfs:comment "Range left open."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    dct:source <https://w3id.org/maestro/safety#assessedSubject> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:assessesRisk a owl:ObjectProperty ;
+    rdfs:label "assesses risk"@en ;
+    skos:definition "Relates a risk assessment to the risk it evaluates."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  maestro:Risk ;
+    dct:source <https://w3id.org/maestro/safety#assessesRisk> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:identifiesHazard a owl:ObjectProperty ;
+    rdfs:label "identifies hazard"@en ;
+    skos:definition "Relates a risk assessment to a hazard it considered."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  maestro:Hazard ;
+    dct:source <https://w3id.org/maestro/safety#identifiesHazard> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:reliesOnMitigation a owl:ObjectProperty ;
+    rdfs:label "relies on mitigation"@en ;
+    skos:definition "Relates a risk assessment to a mitigation the assessed level assumes in place."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  maestro:Mitigation ;
+    dct:source <https://w3id.org/maestro/safety#reliesOnMitigation> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:riskLevel a owl:ObjectProperty ;
+    rdfs:label "risk level"@en ;
+    skos:definition "Relates a risk assessment to the residual risk rating it concludes."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  maestro:RiskLevel ;
+    dct:source <https://w3id.org/maestro/safety#riskLevel> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:riskEvidence a owl:ObjectProperty ;
+    rdfs:label "risk evidence"@en ;
+    skos:definition "Relates a risk assessment to evidence it rests on: a test report, an audit, an observation record."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  maestro:Evidence ;
+    dct:source <https://w3id.org/maestro/safety#riskEvidence> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:evidenceRef a owl:DatatypeProperty ;
+    rdfs:label "evidence reference"@en ;
+    skos:definition "IRI of the log, document or observation the evidence refers to."@en ;
+    rdfs:domain maestro:Evidence ;
+    rdfs:range  xsd:anyURI ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:riskAssessmentMethod a owl:DatatypeProperty ;
+    rdfs:label "risk assessment method"@en ;
+    skos:definition "The method and version used, stated as free text by the assessor, for example the risk estimation procedure or risk matrix applied."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/safety#riskAssessmentMethod> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+maestro:assumption a owl:DatatypeProperty ;
+    rdfs:label "assumption"@en ;
+    skos:definition "An assumption the assessment rests on: operating mode, exposure, access."@en ;
+    rdfs:domain maestro:RiskAssessment ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/safety#assumption> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/policy> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# Modes
+[] a owl:AllDifferent ;
+    owl:members ( maestro:AutomaticMode maestro:ManualMode maestro:MaintenanceMode ) .
+
+# Actions
+[] a owl:AllDifferent ;
+    owl:members ( maestro:Invoke maestro:Read maestro:Write maestro:Configure ) .
+
+# Safety integrity levels
+[] a owl:AllDifferent ;
+    owl:members ( maestro:SIL1 maestro:SIL2 maestro:SIL3 maestro:SIL4 ) .
+
+# Performance levels
+[] a owl:AllDifferent ;
+    owl:members ( maestro:PLa maestro:PLb maestro:PLc maestro:PLd maestro:PLe ) .
+
+# Risk levels
+[] a owl:AllDifferent ;
+    owl:members ( maestro:LowRisk maestro:MediumRisk maestro:HighRisk ) .

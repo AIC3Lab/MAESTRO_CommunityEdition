@@ -1,0 +1,63 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : PROV-O provenance bridge
+#
+# Realises the HHM extension point "PROV-O" on SkillExecution with
+# logical bridge axioms to W3C PROV-O, as MAESTRO 1.0 does: an
+# execution is a prov:Activity that used the skill, its inputs and
+# its equipment. PROV-O is not imported.
+#################################################################
+
+<https://w3id.org/maestro/hhm/prov> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/prov/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: PROV-O bridge" ;
+    rdfs:label "MAESTRO HHM-Core: PROV-O bridge"@en ;
+    dct:description "Aligns skill executions to W3C PROV-O so executions carry standard provenance: used entities and start and end times."@en ;
+    rdfs:comment "Logical bridge axioms to W3C PROV-O (references/prov-o.ttl). Mirrors the MAESTRO 1.0 prov module. The object property maestro:hasTime (to a time interval) is deliberately not a sub-property of the PROV-O datatype properties; the two datatype aliases below carry the PROV timestamps on the execution itself."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/prov> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/execution> , <https://w3id.org/maestro/hhm/telemetry> .
+
+maestro:SkillExecution rdfs:subClassOf prov:Activity .
+
+maestro:executes   rdfs:subPropertyOf prov:used .
+maestro:hasInput   rdfs:subPropertyOf prov:used .
+maestro:executedOn rdfs:subPropertyOf prov:used .
+
+maestro:ExecutionRecord skos:broadMatch prov:Entity .
+
+maestro:startedAtTime a owl:DatatypeProperty ;
+    rdfs:label "started at time"@en ;
+    skos:definition "Start timestamp of a skill execution, mapped to prov:startedAtTime on the activity."@en ;
+    rdfs:subPropertyOf prov:startedAtTime ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/prov#startedAtTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/prov> .
+
+maestro:endedAtTime a owl:DatatypeProperty ;
+    rdfs:label "ended at time"@en ;
+    skos:definition "End timestamp of a skill execution, mapped to prov:endedAtTime on the activity."@en ;
+    rdfs:subPropertyOf prov:endedAtTime ;
+    rdfs:domain maestro:SkillExecution ;
+    rdfs:range  xsd:dateTime ;
+    dct:source <https://w3id.org/maestro/prov#endedAtTime> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/prov> .

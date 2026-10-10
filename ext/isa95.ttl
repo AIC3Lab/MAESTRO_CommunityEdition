@@ -1,0 +1,110 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix schema: <https://schema.org/> .
+@prefix DINEN62264: <http://www.w3id.org/hsu-aut/DINEN62264-2#> .
+@prefix maestro: <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO HHM-Core extension : ISA-95 / IEC 62264 (HSU DIN EN 62264-2 ODP)
+#
+# Realises the HHM extension point "ISA-95 / IEC 62264" on Recipe:
+# the equipment hierarchy Enterprise > Site > Area > WorkCenter >
+# WorkUnit into which stations are placed, with documentary matches
+# to the HSU DIN EN 62264-2 ontology design pattern. Production
+# orders live in modules/maas.ttl.
+#################################################################
+
+<https://w3id.org/maestro/hhm/isa95> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/hhm/isa95/0.1.0> ;
+    owl:versionInfo "0.1.0" ;
+    dct:title "MAESTRO HHM-Core: ISA-95 equipment hierarchy" ;
+    rdfs:label "MAESTRO HHM-Core: ISA-95 equipment hierarchy"@en ;
+    dct:description "Enterprise, site, area, work centre and work unit, the ISA-95 equipment hierarchy above the HHM-Core station."@en ;
+    rdfs:comment "Apart from documentary skos:closeMatch links to the HSU DIN EN 62264-2 ontology design pattern (references/hsu-dinen62264-2.ttl), this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 planning module; dct:source names the term a definition was taken from."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-09-30"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://w3id.org/maestro/planning> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/hhm/resource> .
+
+maestro:Enterprise a owl:Class ;
+    rdfs:label "Enterprise"@en ;
+    skos:definition "The organisation that owns and operates one or more sites."@en ;
+    skos:closeMatch DINEN62264:Enterprise ;
+    dct:source <https://w3id.org/maestro/planning#Enterprise> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:Site a owl:Class ;
+    rdfs:label "Site"@en ;
+    skos:definition "A physical, geographical or logical grouping of production within an enterprise."@en ;
+    skos:closeMatch DINEN62264:Site ;
+    dct:source <https://w3id.org/maestro/planning#Site> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:Area a owl:Class ;
+    rdfs:label "Area"@en ;
+    skos:definition "A grouping of work centres within a site."@en ;
+    skos:closeMatch DINEN62264:Area ;
+    dct:source <https://w3id.org/maestro/planning#Area> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:WorkCenter a owl:Class ;
+    rdfs:label "Work centre"@en ;
+    skos:definition "A grouping of work units within an area, such as a production line or a cell."@en ;
+    skos:closeMatch DINEN62264:Work_Center ;
+    dct:source <https://w3id.org/maestro/planning#WorkCenter> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:WorkUnit a owl:Class ;
+    rdfs:label "Work unit"@en ;
+    skos:definition "The lowest level of the equipment hierarchy at which work is scheduled; an HHM-Core station typically plays this role."@en ;
+    skos:closeMatch DINEN62264:Work_Unit ;
+    dct:source <https://w3id.org/maestro/planning#WorkUnit> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:partOfEnterprise a owl:ObjectProperty ;
+    rdfs:label "part of enterprise"@en ;
+    skos:definition "Relates a site to the enterprise it belongs to."@en ;
+    rdfs:domain maestro:Site ;
+    rdfs:range  maestro:Enterprise ;
+    skos:closeMatch DINEN62264:SiteIsPartOfEnterprise ;
+    dct:source <https://w3id.org/maestro/planning#partOfEnterprise> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:partOfSite a owl:ObjectProperty ;
+    rdfs:label "part of site"@en ;
+    skos:definition "Relates an area to the site it belongs to."@en ;
+    rdfs:domain maestro:Area ;
+    rdfs:range  maestro:Site ;
+    skos:closeMatch DINEN62264:AreaIsPartOfSite ;
+    dct:source <https://w3id.org/maestro/planning#partOfSite> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:partOfArea a owl:ObjectProperty ;
+    rdfs:label "part of area"@en ;
+    skos:definition "Relates a work centre to the area it belongs to."@en ;
+    rdfs:domain maestro:WorkCenter ;
+    rdfs:range  maestro:Area ;
+    skos:closeMatch DINEN62264:CenterIsPartOfArea ;
+    dct:source <https://w3id.org/maestro/planning#partOfArea> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
+
+maestro:partOfWorkCenter a owl:ObjectProperty ;
+    schema:domainIncludes maestro:WorkUnit , maestro:Station ;
+    rdfs:label "part of work centre"@en ;
+    skos:definition "Relates a work unit, or a station, to the work centre it belongs to."@en ;
+    rdfs:comment "Domain left open so an maestro:Station can be placed in a work centre without being retyped."@en ;
+    rdfs:range  maestro:WorkCenter ;
+    skos:closeMatch DINEN62264:UnitIsPartOfCenter ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/isa95> .
