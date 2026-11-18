@@ -7,65 +7,109 @@
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix schema: <https://schema.org/> .
 @prefix VDI2206: <http://www.w3id.org/hsu-aut/VDI2206#> .
-@prefix maestro: <https://w3id.org/maestro#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix odrl: <http://www.w3.org/ns/odrl/2/> .
+@prefix maestro:   <https://w3id.org/maestro#> .
 
 #################################################################
-# MAESTRO HHM-Core : Physical Resources cluster
+# MAESTRO : Physical Resources cluster
 #
 # HHM-Core v1 cluster "Physical Resources": Station, Module,
 # Capability, and the two edges hasModule and providesCapability.
 # This is the root module of the package; it also declares the few
 # datatype properties every other module reuses (description,
-# version, serialNumber, manufacturer, model, location).
+# version, serialNumber, manufacturer, model, location) and the
+# signature of the external terms the package uses (last section).
 #
 # Extension points named by the HHM diagram: AutomationML / CAEX
-# topology (ext/automationml.ttl) and the ISA-88 equipment model
-# (ext/isa88.ttl).
+# topology (experimental-extensions/automationml.ttl) and the ISA-88
+# equipment model (experimental-extensions/isa88.ttl).
 #################################################################
 
-<https://w3id.org/maestro/hhm/resource> a owl:Ontology ;
-    owl:versionIRI <https://w3id.org/maestro/hhm/resource/0.1.0> ;
-    owl:versionInfo "0.1.0" ;
-    dct:title "MAESTRO HHM-Core: Physical Resources" ;
-    rdfs:label "MAESTRO HHM-Core: Physical Resources"@en ;
+<https://w3id.org/maestro/resource> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/resource/0.2.0> ;
+    owl:versionInfo "0.2.0" ;
+    dct:title "MAESTRO: Physical Resources" ;
+    rdfs:label "MAESTRO: Physical Resources"@en ;
     dct:description "HHM-Core v1 Physical Resources cluster: stations composed of plug-and-produce modules, and the capabilities a module provides."@en ;
-    rdfs:comment "Root module of the MAESTRO HHM-Core package. Apart from a documentary skos:closeMatch of Module to the HSU VDI 2206 ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Definitions are reused from the MAESTRO 1.0 resource and core modules; dct:source names the term a definition was taken from."@en ;
+    rdfs:comment "Root module of the MAESTRO package. Apart from a documentary skos:closeMatch of Module to the HSU VDI 2206 ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. It also declares the kind (class, property or annotation property) of the external terms the package uses, so that the import closure of every module is in the OWL 2 RL profile; no upstream ontology is imported. Definitions are reused from the MAESTRO 1.0 resource and core modules; dct:source names the term a definition was taken from."@en ;
     dct:creator "Melwin Xavier" ;
     dct:license <https://opensource.org/licenses/MIT> ;
     dct:created "2026-09-30"^^xsd:date ;
-    dct:modified "2026-09-30"^^xsd:date ;
+    dct:modified "2026-11-13"^^xsd:date ;
     dct:source <https://github.com/melwinxavier/MAESTRO> ;
-    rdfs:seeAlso <https://w3id.org/maestro/resource> , <https://w3id.org/maestro/core> ;
+    rdfs:seeAlso <https://w3id.org/maestro/core> ;
     dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
-    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    dct:isPartOf <https://w3id.org/maestro> ;
     vann:preferredNamespacePrefix "maestro" ;
     vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI .
+
+#################################################################
+# PACKAGE-WIDE GROUPING CLASS AND PART-WHOLE PROPERTIES
+#
+# Declared in the root module because every other module imports it.
+# Grouping classes organise the class tree only: they carry no
+# disjointness axioms, so an individual may belong to several clusters
+# (for example a parameter definition that is also a DTDL property).
+#################################################################
+
+maestro:ValueSet a owl:Class ;
+    rdfs:label "Value set"@en ;
+    skos:definition "A controlled vocabulary whose members are named individuals, such as the protocols, execution statuses or risk levels of the package."@en ;
+    rdfs:comment "Grouping class for the value-set classes of every module. The members of each value set are pairwise distinct (owl:AllDifferent in the declaring module); disjointness between value-set classes is declared in experimental-extensions/runtime.ttl and experimental-extensions/maintenance.ttl over the value sets each of them imports, which leaves maestro:EnergySource, and maestro:ReturnToServiceOutcome against maestro:State and maestro:StateDimension, uncovered."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
+
+maestro:hasPart a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "has part"@en ;
+    skos:definition "Relates a whole to one of its parts."@en ;
+    rdfs:comment "Transitive super-property of the structural part-whole edges of the package: maestro:hasModule (station to module), maestro:hasStep (recipe to plan step), maestro:hasSubSkill (composite skill to constituent skill) and maestro:hasSubItem (bill-of-materials item to nested item). Domain and range left open so that a property path such as maestro:hasPart+ reaches every nested part. HHM-Core draws hasPart between BOM nodes only; that edge is maestro:hasSubItem here."@en ;
+    schema:domainIncludes maestro:Station , maestro:Recipe , maestro:CompositeSkill , maestro:BOMItem ;
+    schema:rangeIncludes maestro:Module , maestro:PlanStep , maestro:Skill , maestro:BOMItem ;
+    dct:references <https://w3id.org/maestro/core#hasPart> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
+
+maestro:partOf a owl:ObjectProperty , owl:TransitiveProperty ;
+    rdfs:label "part of"@en ;
+    skos:definition "Relates a part to a whole it belongs to."@en ;
+    rdfs:comment "Inverse of maestro:hasPart, and transitive like it."@en ;
+    owl:inverseOf maestro:hasPart ;
+    schema:domainIncludes maestro:Module , maestro:PlanStep , maestro:Skill , maestro:BOMItem ;
+    schema:rangeIncludes maestro:Station , maestro:Recipe , maestro:CompositeSkill , maestro:BOMItem ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 #################################################################
 # CLASSES
 #################################################################
 
+maestro:Resource a owl:Class ;
+    rdfs:label "Resource"@en ;
+    skos:definition "A physical production resource of the HHM-Core resource model: a station or a module."@en ;
+    rdfs:comment "Grouping class of the Physical Resources cluster. Not disjoint with the ISA-95 equipment levels: a station typically also plays the role of an maestro:WorkUnit."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
+
 maestro:Station a owl:Class ;
     rdfs:label "Station"@en ;
     skos:definition "A work station composed of plug-and-produce modules; the top physical unit of the HHM-Core resource model."@en ;
     rdfs:comment "HHM-Core Physical Resources cluster. A station carries modules through maestro:hasModule; which modules it carries may change through reconfiguration while the station itself stays stable."@en ;
+    rdfs:subClassOf maestro:Resource ;
     dct:source <https://w3id.org/maestro/resource#Station> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:Module a owl:Class ;
     rdfs:label "Module"@en ;
     skos:definition "A reconfigurable, plug-and-produce production module that provides capabilities and executes skills."@en ;
     rdfs:comment "HHM-Core Physical Resources cluster. Close match to VDI2206:Module of the HSU VDI 2206 ODP: system elements or components combined into a group that together perform a specific function. Real execution is attached to the module (see maestro:SkillExecution); a digital twin only represents it."@en ;
+    rdfs:subClassOf maestro:Resource ;
     skos:closeMatch VDI2206:Module ;
     dct:source <https://w3id.org/maestro/resource#Module> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:Capability a owl:Class ;
     rdfs:label "Capability"@en ;
     skos:definition "A specification of a manufacturing possibility: what a holder can do, independent of how it is done."@en ;
     rdfs:comment "HHM-Core Physical Resources cluster. Provided by modules (maestro:providesCapability) and required by skills (maestro:requiresCapability); reusable capability specifications are individuals of this class."@en ;
     dct:source <https://w3id.org/maestro/core#Capability> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 #################################################################
 # OBJECT PROPERTIES
@@ -74,11 +118,21 @@ maestro:Capability a owl:Class ;
 maestro:hasModule a owl:ObjectProperty ;
     rdfs:label "has module"@en ;
     skos:definition "Relates a station to a plug-and-produce module it carries."@en ;
-    rdfs:comment "HHM-Core edge Station hasModule Module."@en ;
+    rdfs:comment "HHM-Core edge Station hasModule Module. A sub-property of maestro:hasPart. Not inverse-functional: in a reconfigurable plant a module can move between stations, so 'at most one station at a time' is a SHACL warning (shacl/shacl-resource.ttl), not an OWL axiom."@en ;
+    rdfs:subPropertyOf maestro:hasPart ;
     rdfs:domain maestro:Station ;
     rdfs:range  maestro:Module ;
     dct:source <https://w3id.org/maestro/resource#hasModule> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
+
+maestro:moduleOf a owl:ObjectProperty ;
+    rdfs:label "module of"@en ;
+    skos:definition "Relates a module to the station that carries it."@en ;
+    rdfs:comment "Inverse of maestro:hasModule."@en ;
+    owl:inverseOf maestro:hasModule ;
+    rdfs:domain maestro:Module ;
+    rdfs:range  maestro:Station ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:providesCapability a owl:ObjectProperty ;
     rdfs:label "provides capability"@en ;
@@ -87,7 +141,16 @@ maestro:providesCapability a owl:ObjectProperty ;
     rdfs:domain maestro:Module ;
     rdfs:range  maestro:Capability ;
     dct:source <https://w3id.org/maestro/resource#providesCapability> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
+
+maestro:providedBy a owl:ObjectProperty ;
+    rdfs:label "provided by"@en ;
+    skos:definition "Relates a capability to a module that provides it."@en ;
+    rdfs:comment "Inverse of maestro:providesCapability."@en ;
+    owl:inverseOf maestro:providesCapability ;
+    rdfs:domain maestro:Capability ;
+    rdfs:range  maestro:Module ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 #################################################################
 # DATATYPE PROPERTIES (shared across the package)
@@ -97,10 +160,10 @@ maestro:description a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Feature , maestro:Capability , maestro:Hazard , maestro:Risk , maestro:Mitigation , maestro:SafetyFunction , maestro:Skill , maestro:FaultDiagnosis ;
     rdfs:label "description"@en ;
     skos:definition "Free-text description of an entity."@en ;
-    rdfs:comment "Domain left open: used by features, hazards, mitigations, safety functions and other entities."@en ;
-    rdfs:range xsd:string ;
+    rdfs:comment "Domain left open: used by features, hazards, mitigations, safety functions and other entities. The range is rdfs:Literal on purpose: a description is plain or language-tagged text (xsd:string or rdf:langString), checked by the shapes; a range of xsd:string would make every language-tagged description inconsistent."@en ;
+    rdfs:range rdfs:Literal ;
     dct:source <https://w3id.org/maestro/core#description> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:version a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Skill , maestro:Recipe , maestro:Policy ;
@@ -109,7 +172,7 @@ maestro:version a owl:DatatypeProperty ;
     rdfs:comment "Domain left open: used by skills, recipes and policies."@en ;
     rdfs:range xsd:string ;
     dct:source <https://w3id.org/maestro/core#version> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:manufacturer a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Module ;
@@ -117,7 +180,7 @@ maestro:manufacturer a owl:DatatypeProperty ;
     skos:definition "The name of the manufacturer of a resource."@en ;
     rdfs:range xsd:string ;
     dct:source <https://w3id.org/maestro/resource#manufacturer> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:model a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Module ;
@@ -125,7 +188,7 @@ maestro:model a owl:DatatypeProperty ;
     skos:definition "The model designation of a resource as given by its manufacturer."@en ;
     rdfs:range xsd:string ;
     dct:source <https://w3id.org/maestro/resource#model> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:serialNumber a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Module , maestro:ProductInstance ;
@@ -134,12 +197,68 @@ maestro:serialNumber a owl:DatatypeProperty ;
     rdfs:comment "Domain left open: a module and a product instance both carry one."@en ;
     rdfs:range xsd:string ;
     dct:source <https://w3id.org/maestro/resource#serialNumber> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:location a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Station , maestro:Actor ;
     rdfs:label "location"@en ;
     skos:definition "Free-text location of a station or an actor, such as a hall, a site or an address."@en ;
-    rdfs:comment "MAESTRO 1.0 places entities at a planning Site; the HHM-Core package keeps a literal."@en ;
+    rdfs:comment "MAESTRO 1.0 places entities at a planning Site; this package keeps a literal."@en ;
     rdfs:range xsd:string ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/resource> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
+
+#################################################################
+# EXTERNAL VOCABULARY SIGNATURE
+#
+# Declarations of the external terms the package uses, so that the
+# ontology and every module's import closure are in the OWL 2 RL and
+# OWL 2 DL profiles: a term that is used but not declared is a
+# profile violation. Declared here because every other module
+# imports this one. The documentary Dublin Core, VANN, SKOS and
+# schema.org properties are annotation properties; the PROV-O and
+# ODRL terms are the targets of the logical bridge axioms in
+# experimental-extensions/prov.ttl and experimental-extensions/odrl.ttl.
+#
+# A declaration states the kind of a term and nothing else: no
+# upstream ontology is imported and no upstream axiom is repeated.
+# These terms keep their own namespaces and carry no
+# rdfs:isDefinedBy; a new external term needs a line here.
+#################################################################
+
+dct:conformsTo a owl:AnnotationProperty .
+dct:created a owl:AnnotationProperty .
+dct:creator a owl:AnnotationProperty .
+dct:description a owl:AnnotationProperty .
+dct:isPartOf a owl:AnnotationProperty .
+dct:isReplacedBy a owl:AnnotationProperty .
+dct:license a owl:AnnotationProperty .
+dct:modified a owl:AnnotationProperty .
+dct:references a owl:AnnotationProperty .
+dct:source a owl:AnnotationProperty .
+dct:title a owl:AnnotationProperty .
+
+vann:preferredNamespacePrefix a owl:AnnotationProperty .
+vann:preferredNamespaceUri a owl:AnnotationProperty .
+
+skos:altLabel a owl:AnnotationProperty .
+skos:broadMatch a owl:AnnotationProperty .
+skos:closeMatch a owl:AnnotationProperty .
+skos:definition a owl:AnnotationProperty .
+skos:relatedMatch a owl:AnnotationProperty .
+skos:scopeNote a owl:AnnotationProperty .
+
+schema:domainIncludes a owl:AnnotationProperty .
+schema:rangeIncludes a owl:AnnotationProperty .
+
+prov:Activity a owl:Class .
+prov:used a owl:ObjectProperty .
+prov:generated a owl:ObjectProperty .
+prov:startedAtTime a owl:DatatypeProperty .
+prov:endedAtTime a owl:DatatypeProperty .
+
+odrl:Policy a owl:Class .
+odrl:Permission a owl:Class .
+odrl:permission a owl:ObjectProperty .
+odrl:action a owl:ObjectProperty .
+odrl:target a owl:ObjectProperty .
+odrl:assignee a owl:ObjectProperty .

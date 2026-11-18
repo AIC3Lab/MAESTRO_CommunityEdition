@@ -1,0 +1,14 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic, deliberately invalid): a parameter whose minimum
+# is above its maximum. Expected: one sh:Violation from
+# msh:ParameterDefBoundsOrderShape. See shacl/probes/README.md.
+
+probe:Count a maestro:ParameterDef ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:minValue 10 ;
+    maestro:maxValue 1 .

@@ -1,0 +1,11 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic, deliberately invalid): a description that is a
+# number. Expected: one sh:Violation from msh:DescriptionTextShape.
+# See shacl/probes/README.md.
+
+probe:Capability a maestro:Capability ;
+    maestro:description 42 .

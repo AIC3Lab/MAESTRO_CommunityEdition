@@ -1,0 +1,153 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+# core/resource.ttl: statements that belong to the MAESTRO resource module (https://w3id.org/maestro/resource).
+# Umbrella: ../testing.ttl. Single-file form of the use case: ../testing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix tes: <https://w3id.org/maestro/examples/ltu-festo-mps/testing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/resource> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station - core/resource"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/testing> ;
+    owl:imports <https://w3id.org/maestro/resource> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Station (1)
+#################################################################
+
+tes:Station a maestro:Station ;
+    rdfs:label "Testing station"@en ;
+    maestro:description "Station 2 (PR) of the MPS. Determines the material characteristics of a workpiece (black vs red/silver), checks its height and either rejects it or passes it to the next station: the Recognition module detects the workpiece and its colour class, the Lifting module raises it to the Measuring module (analogue height sensor and comparator), and the ejecting cylinder pushes good workpieces onto the upper air cushioned slide and rejected ones onto the lower slide."@en ;
+    maestro:hasIdentifier tes:ID_ManualOrderNo, tes:ID_StationMaterialNo ;
+    maestro:hasModule tes:AirSlideModule,
+        tes:ControlConsole,
+        tes:IOTerminal,
+        tes:LiftingModule,
+        tes:MeasuringModule,
+        tes:PLCBoard,
+        tes:RecognitionModule,
+        tes:SafetyLightBarrier,
+        tes:ServiceUnit,
+        tes:SlideModule,
+        tes:StationLinkReceiver,
+        tes:StationLinkTransmitter,
+        tes:ValveTerminal ;
+    maestro:hasParameterDef tes:TD_AirConsumption,
+        tes:TD_AirSlideCapacity,
+        tes:TD_DigitalInputs,
+        tes:TD_DigitalOutputs,
+        tes:TD_LowerSlideCapacity,
+        tes:TD_MaxPressure,
+        tes:TD_MeasuringModuleHeight,
+        tes:TD_OperatingPressure,
+        tes:TD_SupplyCurrent,
+        tes:TD_SupplyVoltage ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Testing station (PR)" .
+
+#################################################################
+# maestro:Module (13)
+#################################################################
+
+tes:AirSlideModule a maestro:Module ;
+    rdfs:label "Air cushioned slide module"@en ;
+    maestro:description "Upper slide: takes good workpieces to the downstream station; the air cushion evens out friction. Inclination adjustable; stopper turned 180 degrees when a downstream station follows."@en ;
+    maestro:hasIdentifier ltu:PN_656859 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-LRT-B" ;
+    maestro:providesCapability ltu:SlideConveyingCapability .
+
+tes:ControlConsole a maestro:Module ;
+    rdfs:label "Control console"@en ;
+    maestro:description "START, STOP, RESET, AUTO/MAN, EMERGENCY-STOP (if available) and the COLOUR warning light; connected via XMG1."@en ;
+    maestro:providesCapability ltu:OperatorInterfaceCapability .
+
+tes:IOTerminal a maestro:Module ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:description "Station side of SysLink XMA2: inputs I0-I7, outputs O0-O3 and O7 used."@en ;
+    maestro:hasIdentifier ltu:PN_034035 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+tes:LiftingModule a maestro:Module ;
+    rdfs:label "Lifting module"@en ;
+    maestro:description "Rodless lifting cylinder 1A1 (DGO-12) lifts the workpiece from the retainer to the Measuring module; short-stroke ejecting cylinder 2A1 (ADVU-16) pushes it onto the upper or lower slide. End positions 1B1/1B2 (SMTO-1) and 2B1 (SME-8)."@en ;
+    maestro:hasIdentifier ltu:PN_532954 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-MH" ;
+    maestro:providesCapability ltu:EjectingCapability, ltu:LiftingCapability, ltu:SortingCapability .
+
+tes:MeasuringModule a maestro:Module ;
+    rdfs:label "Measuring module"@en ;
+    maestro:description "Linear potentiometer R1 gives the workpiece height as 0-10 V; comparator 3A1 turns it into 'height correct' (window LEVEL1-LEVEL2), or the analogue value goes to a PLC via XMA3. A shock absorber cushions the lifting cylinder's upper end position."@en ;
+    maestro:hasIdentifier ltu:PN_195779 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP2-M-M" ;
+    maestro:providesCapability ltu:HeightMeasuringCapability .
+
+tes:PLCBoard a maestro:Module ;
+    rdfs:label "PLC board"@en ;
+    maestro:description "Connects to XMA2, XMA3 (analogue variant), XMG1, the power supply and the PC."@en ;
+    maestro:model "PLC board (controller not stated)" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+tes:RecognitionModule a maestro:Module ;
+    rdfs:label "Recognition module"@en ;
+    maestro:description "Capacitive sensor PART_AV detects every workpiece; diffuse sensor B2 detects red and silver workpieces but not black ones. A logic combination gives 'black' or 'red/silver'; red and silver cannot be told apart."@en ;
+    maestro:hasIdentifier ltu:PN_526850 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-ME" ;
+    maestro:providesCapability ltu:MaterialRecognitionCapability, ltu:PresenceSensingCapability .
+
+tes:SafetyLightBarrier a maestro:Module ;
+    rdfs:label "Safety light barrier B4 (retro-reflective sensor)"@en ;
+    maestro:description "Retro-reflective sensor SOEG-RSP-Q30-PS-S-2L on the lifting-module bracket; checks that the working area above the retainer is free before the lifting cylinder moves."@en ;
+    maestro:hasIdentifier ltu:PN_196969 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SOEG-RT-Q3" ;
+    maestro:providesCapability ltu:PresenceSensingCapability .
+
+tes:ServiceUnit a maestro:Module ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:description "Compressed-air inlet, set to 6 bar."@en ;
+    maestro:hasIdentifier ltu:PN_152894 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:S-PVW-LFR" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability .
+
+tes:SlideModule a maestro:Module ;
+    rdfs:label "Slide module 210 (lower slide)"@en ;
+    maestro:description "Lower slide for rejected workpieces; holds 4."@en ;
+    maestro:hasIdentifier ltu:PN_656858 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-R210" ;
+    maestro:providesCapability ltu:SlideConveyingCapability .
+
+tes:StationLinkReceiver a maestro:Module ;
+    rdfs:label "StationLink receiver IP_FI"@en ;
+    maestro:description "Outgoing-material side; reads 'downstream station free' (I7)."@en ;
+    maestro:hasIdentifier ltu:PN_196964 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLE" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+tes:StationLinkTransmitter a maestro:Module ;
+    rdfs:label "StationLink transmitter IP_N_FO"@en ;
+    maestro:description "Incoming-material side; signals 'station occupied' to the upstream station (O7)."@en ;
+    maestro:hasIdentifier ltu:PN_196963 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLS" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+tes:ValveTerminal a maestro:Module ;
+    rdfs:label "CPV valve terminal 0V1"@en ;
+    maestro:description "Valve locations 1V1 (code C: two 3/2-way valves, 1M1 lower / 1M2 raise), 2V1 (code M: 5/2-way, 2M1 eject) and 3V1 (code M: 5/2-way, 3M1 air slide)."@en ;
+    maestro:hasIdentifier ltu:PN_526227 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-MCM" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability .

@@ -1,0 +1,50 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+# core/policy.ttl: statements that belong to the MAESTRO policy module (https://w3id.org/maestro/policy).
+# Umbrella: ../testing.ttl. Single-file form of the use case: ../testing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix tes: <https://w3id.org/maestro/examples/ltu-festo-mps/testing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/policy> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station - core/policy"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/testing> ;
+    owl:imports <https://w3id.org/maestro/policy> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Hazard (1)
+#################################################################
+
+tes:H_LiftInWorkingArea a maestro:Hazard ;
+    rdfs:label "Lifting cylinder moves while the working area above the retainer is occupied"@en ;
+    maestro:causesRisk ltu:R_Injury ;
+    maestro:description "The Lifting module moves the platform up to the Measuring module through this area."@en .
+
+#################################################################
+# maestro:SafetyFunction (1)
+#################################################################
+
+tes:SF_SafetyLightBarrier a maestro:SafetyFunction ;
+    rdfs:label "Safety light barrier B4 blocks the lifting cylinder"@en ;
+    maestro:description "Retro-reflective sensor B4 prevents the lifting cylinder from moving when the working space is occupied; the reset also requires it unbroken. Whether B4 is a certified protective device is not stated."@en ;
+    maestro:mitigates tes:H_LiftInWorkingArea .
+
+#################################################################
+# maestro:EmergencyStop (1)
+#################################################################
+
+tes:EmergencyStop a maestro:EmergencyStop ;
+    rdfs:label "EMERGENCY-STOP pushbutton, Testing station control console"@en ;
+    maestro:description "The manual names the EMERGENCY-STOP pushbutton '(if available)'; together with STOP it interrupts the sequence at any time and must be released before a program is loaded. Safety category, performance level and wiring are not stated."@en ;
+    maestro:mitigates ltu:H_MovingStation .
+
+#################################################################
+# Further statements about individuals described in other files (1)
+#################################################################
+
+ltu:Perm_TraineeRunsStations
+    maestro:target tes:TestWorkpiece .

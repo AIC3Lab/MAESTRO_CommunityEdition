@@ -1,0 +1,29 @@
+# MAESTRO example: LTU Festo MPS - Distributing station
+# ext/maintenance.ttl: statements that belong to the MAESTRO maintenance module (https://w3id.org/maestro/maintenance).
+# Umbrella: ../distributing.ttl. Single-file form of the use case: ../distributing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix dis: <https://w3id.org/maestro/examples/ltu-festo-mps/distributing#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/maintenance> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Distributing station - ext/maintenance"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/distributing> ;
+    owl:imports <https://w3id.org/maestro/maintenance> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:MaintenancePlan (1)
+#################################################################
+
+dis:MaintenancePlan a maestro:MaintenancePlan ;
+    rdfs:label "Distributing station care plan (manual chapter 'Maintenance')"@en ;
+    maestro:description "Only 'at regular intervals' is given; no numeric interval is stated."@en ;
+    maestro:hasTask ltu:MT_CleanOptics,
+        ltu:MT_CleanProximitySensors,
+        ltu:MT_CleanStation,
+        ltu:MT_VisualCheck ;
+    maestro:planForAsset dis:ChangerModule, dis:StackMagazineModule, dis:StationLinkReceiver .

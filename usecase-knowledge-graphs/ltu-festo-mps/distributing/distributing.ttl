@@ -1,0 +1,98 @@
+# MAESTRO example: LTU Festo MPS - Distributing station
+#
+# Umbrella of this use case: the ontology header, which imports the module files under core/ and ext/.
+# Single-file form: distributing-merged.ttl (written by tools/merge_usecases.py).
+#
+# Notes carried over from the former plant.ttl, product.ttl, which this use case was split from;
+# section titles and file names in them refer to those files.
+#
+# [plant.ttl]
+# LTU FESTO MPS - DISTRIBUTING STATION - PLANT (DESIGN TIME)
+#
+# Sources: 648811_Manual_Distributing (DE/EN 04/06 R2.2),
+# 01_Distributing_
+# GRAFCET.pdf (DE 01/04), Function.pdf, Function0.pdf and Changer.pdf in
+# 'Distributing Station design documents'.
+#
+# The circuit diagrams and parts list of this station are only on the
+# Festo CD-ROM 665871, which is not among the documents. So the signals
+# below have no PLC address, terminal bit or BMK; they are named after
+# the
+# GRAFCET transitions and actions. Part numbers come from the manual's
+# data-sheet list; quantities are not stated.
+#
+# STATION
+#
+# Station 1 of the MPS numbering. Order number 648811 is that of the
+# manual; the station material number is not stated.
+#
+# TECHNICAL DATA
+#
+# Static values from the manual's technical-data table and commissioning
+# section.
+#
+# BILL OF MATERIALS
+#
+# No parts list for this station is among the documents: the nodes are
+# the data-sheet list of the manual, quantities not stated.
+#
+# SIGNALS (DATA POINTS)
+#
+# Direction is from the PLC's view in the 'dir' sense of the manual: a
+# sensor
+# signal is an maestro:Output of the station (maestro:DtdlTelemetry), an actuator
+# command an maestro:Input (maestro:DtdlProperty). Ten station signals for the 7 +
+# 7
+# I/O of the technical data; how the commands map onto outputs is not
+# stated.
+#
+# I/O PATH: SYSLINK ENDPOINTS AND DATA INTERFACES
+#
+# The URNs name the SysLink connectors; there is no network address in
+# the documents.
+#
+# SKILLS
+#
+# One atomic skill per GRAFCET action; DistributeWorkpiece is the cycle.
+#
+# [product.ttl]
+# LTU FESTO MPS - DISTRIBUTING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Distributing station
+# (01_Distributing_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty steps (1 start, 5 cycle start, 7 'downstream
+# station free', 9 magazine status) and the flag-only step 4 are folded
+# into the transition expressions of the control-flow constraints.
+# Alternative = OR-divergence, Loop = jump back.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/distributing> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Distributing station"@en ;
+    rdfs:comment "The Festo MPS Distributing station of the LTU line: modules, components, signals, skills, safety and care. The GRAFCET control sequence is an HHM-Core recipe in core/recipe.ttl. Built from the station manual 648811, its GRAFCET and the Function / Changer sheets."@en ;
+    owl:imports <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/invocation>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/maas>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/policy>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/product>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/recipe>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/resource>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/skill>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/automationml>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/dtdl>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/energy>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/isa95>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/maintenance>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/runtime>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/shared> ;
+    owl:versionIRI <https://w3id.org/maestro/examples/ltu-festo-mps/distributing/0.1.0> ;
+    owl:versionInfo "0.1.0" .

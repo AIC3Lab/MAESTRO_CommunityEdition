@@ -1,0 +1,119 @@
+# MAESTRO example: LTU Festo MPS - Processing station
+# ext/dtdl.ttl: statements that belong to the MAESTRO dtdl module (https://w3id.org/maestro/dtdl).
+# Umbrella: ../processing.ttl. Single-file form of the use case: ../processing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix pro: <https://w3id.org/maestro/examples/ltu-festo-mps/processing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/processing/ext/dtdl> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Processing station - ext/dtdl"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/processing> ;
+    owl:imports <https://w3id.org/maestro/dtdl> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:DtdlInterface (2)
+#################################################################
+
+pro:ConsoleIO a maestro:DtdlInterface ;
+    rdfs:label "Processing station control console (XMG1)"@en ;
+    maestro:description "Operator signals of the control console."@en ;
+    maestro:exposedVia pro:XMG1 ;
+    maestro:hasProperty pro:CC_ResetLamp, pro:CC_StartLamp, pro:CC_WorkpieceNokLamp ;
+    maestro:hasTelemetry pro:CC_AutoMan,
+        pro:CC_EmergencyStop,
+        pro:CC_Reset,
+        pro:CC_Start,
+        pro:CC_Stop .
+
+pro:StationIO a maestro:DtdlInterface ;
+    rdfs:label "Processing station I/O image (XMA2)"@en ;
+    maestro:description "Digital inputs I0-I7 and outputs O0-O7."@en ;
+    maestro:exposedVia pro:XMA2 ;
+    maestro:hasProperty pro:DO_Clamp,
+        pro:DO_DrillMotor,
+        pro:DO_Eject,
+        pro:DO_IndexTable,
+        pro:DO_LowerDrill,
+        pro:DO_RaiseDrill,
+        pro:DO_StationOccupied,
+        pro:DO_TestSolenoid ;
+    maestro:hasTelemetry pro:DI_DownstreamFree,
+        pro:DI_DrillDown,
+        pro:DI_DrillUp,
+        pro:DI_OrientationOK,
+        pro:DI_TablePositioned,
+        pro:DI_WorkpieceAtChecking,
+        pro:DI_WorkpieceAtDrilling,
+        pro:DI_WorkpieceAvailable .
+
+#################################################################
+# maestro:DtdlTelemetry (13)
+#################################################################
+
+pro:CC_AutoMan a maestro:DtdlTelemetry .
+
+pro:CC_EmergencyStop a maestro:DtdlTelemetry .
+
+pro:CC_Reset a maestro:DtdlTelemetry .
+
+pro:CC_Start a maestro:DtdlTelemetry .
+
+pro:CC_Stop a maestro:DtdlTelemetry .
+
+pro:DI_DownstreamFree a maestro:DtdlTelemetry .
+
+pro:DI_DrillDown a maestro:DtdlTelemetry .
+
+pro:DI_DrillUp a maestro:DtdlTelemetry .
+
+pro:DI_OrientationOK a maestro:DtdlTelemetry .
+
+pro:DI_TablePositioned a maestro:DtdlTelemetry .
+
+pro:DI_WorkpieceAtChecking a maestro:DtdlTelemetry .
+
+pro:DI_WorkpieceAtDrilling a maestro:DtdlTelemetry .
+
+pro:DI_WorkpieceAvailable a maestro:DtdlTelemetry .
+
+#################################################################
+# maestro:DtdlProperty (17)
+#################################################################
+
+pro:CC_ResetLamp a maestro:DtdlProperty .
+
+pro:CC_StartLamp a maestro:DtdlProperty .
+
+pro:CC_WorkpieceNokLamp a maestro:DtdlProperty .
+
+pro:DO_Clamp a maestro:DtdlProperty .
+
+pro:DO_DrillMotor a maestro:DtdlProperty .
+
+pro:DO_Eject a maestro:DtdlProperty .
+
+pro:DO_IndexTable a maestro:DtdlProperty .
+
+pro:DO_LowerDrill a maestro:DtdlProperty .
+
+pro:DO_RaiseDrill a maestro:DtdlProperty .
+
+pro:DO_StationOccupied a maestro:DtdlProperty .
+
+pro:DO_TestSolenoid a maestro:DtdlProperty .
+
+pro:TD_DigitalInputs a maestro:DtdlProperty .
+
+pro:TD_DigitalOutputs a maestro:DtdlProperty .
+
+pro:TD_IndexingAngle a maestro:DtdlProperty .
+
+pro:TD_Retainers a maestro:DtdlProperty .
+
+pro:TD_SupplyCurrent a maestro:DtdlProperty .
+
+pro:TD_SupplyVoltage a maestro:DtdlProperty .

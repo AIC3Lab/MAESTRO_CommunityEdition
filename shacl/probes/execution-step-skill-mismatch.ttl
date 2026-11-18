@@ -1,0 +1,27 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic): an execution that realises a plan step but runs
+# a skill other than the one realising that step. Advisory rule. Expected:
+# one sh:Warning from msh:ExecutionStepSkillShape and no sh:Violation.
+# See shacl/probes/README.md.
+
+probe:Module a maestro:Module ;
+    maestro:providesCapability probe:Capability .
+
+probe:Capability a maestro:Capability .
+
+probe:PlannedSkill a maestro:AtomicSkill .
+
+probe:OtherSkill a maestro:AtomicSkill .
+
+probe:Step a maestro:PlanStep ;
+    maestro:realizedBy probe:PlannedSkill .
+
+probe:Execution a maestro:SkillExecution ;
+    maestro:executes probe:OtherSkill ;
+    maestro:executedOn probe:Module ;
+    maestro:hasStatus maestro:Completed ;
+    maestro:realizesStep probe:Step .

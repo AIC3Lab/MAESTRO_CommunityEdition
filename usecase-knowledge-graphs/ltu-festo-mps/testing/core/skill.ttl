@@ -1,0 +1,473 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+# core/skill.ttl: statements that belong to the MAESTRO skill module (https://w3id.org/maestro/skill).
+# Umbrella: ../testing.ttl. Single-file form of the use case: ../testing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix tes: <https://w3id.org/maestro/examples/ltu-festo-mps/testing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/skill> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station - core/skill"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/testing> ;
+    owl:imports <https://w3id.org/maestro/skill> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:AtomicSkill (9)
+#################################################################
+
+tes:DetectMaterial a maestro:AtomicSkill ;
+    rdfs:label "Detect workpiece and material class"@en ;
+    maestro:description "Read PART_AV and B2: black if PART_AV and not B2, red/silver if both. Silver and red are not told apart."@en ;
+    maestro:hasParameterDef tes:DI_NotBlack, tes:DI_WorkpieceAvailable, tes:T_RecognitionDwell ;
+    maestro:hasPostcondition tes:Post_DetectMaterial ;
+    maestro:hasPrecondition tes:Pre_DetectMaterial ;
+    maestro:requiresCapability ltu:MaterialRecognitionCapability, ltu:PresenceSensingCapability ;
+    maestro:version "DE 01/04" .
+
+tes:EjectWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Eject workpiece"@en ;
+    maestro:description "Extend and retract the ejecting cylinder: in the upper position onto the air cushioned slide, in the lower position onto the lower slide."@en ;
+    maestro:hasParameterDef tes:DI_EjectorRetracted, tes:DO_ExtendEjector ;
+    maestro:hasPostcondition tes:Post_EjectWorkpiece ;
+    maestro:requiresCapability ltu:EjectingCapability ;
+    maestro:version "DE 01/04" .
+
+tes:LowerLiftingCylinder a maestro:AtomicSkill ;
+    rdfs:label "Lower lifting cylinder"@en ;
+    maestro:description "Lower the lifting platform to the retainer level."@en ;
+    maestro:hasParameterDef tes:DI_LiftLowered, tes:DO_LowerLift ;
+    maestro:hasPostcondition tes:Post_LowerLiftingCylinder ;
+    maestro:requiresCapability ltu:LiftingCapability ;
+    maestro:version "DE 01/04" .
+
+tes:MeasureHeight a maestro:AtomicSkill ;
+    rdfs:label "Measure workpiece height"@en ;
+    maestro:description "GRAFCET step 12 (empty step 'measure height'): wait 2 s and evaluate the comparator output; the analogue value is on XMA3."@en ;
+    maestro:hasParameterDef tes:AI_Height,
+        tes:CFG_ComparatorLevel1,
+        tes:CFG_ComparatorLevel2,
+        tes:DI_HeightOK,
+        tes:T_MeasuringDwell ;
+    maestro:hasPostcondition tes:Post_MeasureHeight ;
+    maestro:hasPrecondition tes:Pre_MeasureHeight ;
+    maestro:requiresCapability ltu:HeightMeasuringCapability ;
+    maestro:version "DE 01/04" .
+
+tes:RaiseLiftingCylinder a maestro:AtomicSkill ;
+    rdfs:label "Raise lifting cylinder"@en ;
+    maestro:description "Lift the workpiece to the Measuring module."@en ;
+    maestro:hasParameterDef tes:DI_LiftRaised, tes:DI_SafetyLightBarrier, tes:DO_RaiseLift ;
+    maestro:hasPostcondition tes:Post_RaiseLiftingCylinder ;
+    maestro:hasPrecondition tes:Pre_RaiseLiftingCylinder ;
+    maestro:requiresCapability ltu:LiftingCapability ;
+    maestro:version "DE 01/04" .
+
+tes:ResetStation a maestro:AtomicSkill ;
+    rdfs:label "Reset to initial position"@en ;
+    maestro:description "GRAFCET steps 3-5: move to the initial position, eject a workpiece left on the lifting platform, set flag 'reset finished'."@en ;
+    maestro:hasParameterDef tes:CC_Reset,
+        tes:DI_EjectorRetracted,
+        tes:DI_LiftLowered,
+        tes:DI_SafetyLightBarrier ;
+    maestro:hasPostcondition tes:Post_ResetStation ;
+    maestro:hasPrecondition tes:Pre_ResetStation ;
+    maestro:requiresCapability ltu:StationControlCapability ;
+    maestro:version "DE 01/04" .
+
+tes:SetStationLinkSignal a maestro:AtomicSkill ;
+    rdfs:label "Signal 'station occupied' / 'not occupied'"@en ;
+    maestro:description "Switch the StationLink transmitter towards the upstream station."@en ;
+    maestro:hasParameterDef tes:DO_StationOccupied ;
+    maestro:requiresCapability ltu:StationLinkCapability ;
+    maestro:version "DE 01/04" .
+
+tes:SwitchAirSlide a maestro:AtomicSkill ;
+    rdfs:label "Switch air cushioned slide"@en ;
+    maestro:description "Turn the air cushion of the upper slide on for the hand-over and off again."@en ;
+    maestro:hasParameterDef tes:DO_AirSlideOn, tes:T_AirSlideOn ;
+    maestro:requiresCapability ltu:SlideConveyingCapability ;
+    maestro:version "DE 01/04" .
+
+tes:SwitchIndicatorLight a maestro:AtomicSkill ;
+    rdfs:label "Switch indicator light"@en ;
+    maestro:description "Turn the 'reset', 'start' or COLOUR ('material') light on or off."@en ;
+    maestro:hasParameterDef tes:CC_ColourLamp, tes:CC_ResetLamp, tes:CC_StartLamp ;
+    maestro:requiresCapability ltu:OperatorInterfaceCapability ;
+    maestro:version "DE 01/04" .
+
+#################################################################
+# maestro:CompositeSkill (1)
+#################################################################
+
+tes:TestWorkpiece a maestro:CompositeSkill ;
+    rdfs:label "Test workpiece (station cycle)"@en ;
+    maestro:description "Detect the material class, lift and measure the height, then pass a good workpiece over the air cushioned slide to the downstream station or reject it onto the lower slide (manual section 5, GRAFCET steps 8-18)."@en ;
+    maestro:hasInterfaceContract tes:AnalogueIO, tes:StationIO ;
+    maestro:hasPostcondition tes:Post_TestWorkpiece ;
+    maestro:hasPrecondition tes:Pre_TestWorkpiece ;
+    maestro:hasSubSkill tes:DetectMaterial,
+        tes:EjectWorkpiece,
+        tes:LowerLiftingCylinder,
+        tes:MeasureHeight,
+        tes:RaiseLiftingCylinder,
+        tes:SwitchAirSlide ;
+    maestro:requiresCapability ltu:EjectingCapability,
+        ltu:HeightMeasuringCapability,
+        ltu:LiftingCapability,
+        ltu:MaterialRecognitionCapability,
+        ltu:SortingCapability ;
+    maestro:version "DE 01/04" .
+
+#################################################################
+# maestro:ParameterDef (37)
+#################################################################
+
+tes:AI_Height a maestro:ParameterDef ;
+    rdfs:label "Workpiece height, process value (analogue)"@en ;
+    maestro:description "Wiper of linear potentiometer R1 to comparator AIN and XMA3 UE1. The sensor gives 0-25 mm as 0-100 % of the 10 V reference; scaling at the PLC is not stated."@en ;
+    maestro:hasIdentifier tes:ID_AI_Height_BMK, tes:ID_AI_Height_Bit, tes:ID_AI_Height_Pin ;
+    maestro:maxValue 10.0 ;
+    maestro:minValue 0.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI .
+
+tes:CC_AutoMan a maestro:ParameterDef ;
+    rdfs:label "Key-operated switch AUTO/MAN"@en ;
+    maestro:description "AUTO = continuous cycle, MAN = individual cycle. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:CC_ColourLamp a maestro:ParameterDef ;
+    rdfs:label "Warning light COLOUR"@en ;
+    maestro:description "Manual: off for black, on for red/silver workpieces in the Recognition module. The GRAFCET turns its 'material' light on for black (steps 9/10); the documents disagree. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:CC_EmergencyStop a maestro:ParameterDef ;
+    rdfs:label "EMERGENCY-STOP pushbutton (if available)"@en ;
+    maestro:description "Interrupts the sequence at any time; must be released before a program is loaded. Whether it is a PLC input or a hard-wired safety circuit is not stated. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:CC_Reset a maestro:ParameterDef ;
+    rdfs:label "RESET pushbutton (illuminated)"@en ;
+    maestro:description "The reset sequence is prompted by the illuminated RESET pushbutton and runs when it is pressed. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:CC_ResetLamp a maestro:ParameterDef ;
+    rdfs:label "'reset' indicator light"@en ;
+    maestro:description "Lamp of the RESET pushbutton; on while the station is not reset. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:CC_Start a maestro:ParameterDef ;
+    rdfs:label "START pushbutton (illuminated)"@en ;
+    maestro:description "Starts the sequence; also acknowledges an error after the operator has removed its cause. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:CC_StartLamp a maestro:ParameterDef ;
+    rdfs:label "'start' indicator light"@en ;
+    maestro:description "Lamp of the START pushbutton; on while the station waits for START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:CC_Stop a maestro:ParameterDef ;
+    rdfs:label "STOP pushbutton"@en ;
+    maestro:description "Interrupts the sequence at any time. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:CFG_ComparatorLevel1 a maestro:ParameterDef ;
+    rdfs:label "Comparator threshold LEVEL1 (lower)"@en ;
+    maestro:description "Set with the red 25 mm workpiece at about the 5th scale mark so that MID lights; no value in mm or V is stated."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI .
+
+tes:CFG_ComparatorLevel2 a maestro:ParameterDef ;
+    rdfs:label "Comparator threshold LEVEL2 (upper)"@en ;
+    maestro:description "Set at about the 6th scale mark; no value in mm or V is stated."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI .
+
+tes:DI_DownstreamFree a maestro:ParameterDef ;
+    rdfs:label "Downstream station free"@en ;
+    maestro:description "StationLink receiver; light/dark polarity not stated."@en ;
+    maestro:hasIdentifier tes:ID_DI_DownstreamFree_BMK,
+        tes:ID_DI_DownstreamFree_Bit,
+        tes:ID_DI_DownstreamFree_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_EjectorRetracted a maestro:ParameterDef ;
+    rdfs:label "Ejecting cylinder retracted"@en ;
+    maestro:description "Retracted end position of 2A1."@en ;
+    maestro:hasIdentifier tes:ID_DI_EjectorRetracted_BMK,
+        tes:ID_DI_EjectorRetracted_Bit,
+        tes:ID_DI_EjectorRetracted_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_HeightOK a maestro:ParameterDef ;
+    rdfs:label "Comparator: workpiece height correct"@en ;
+    maestro:description "Comparator output 'OK' (MID): 1 = height inside the LEVEL1-LEVEL2 window."@en ;
+    maestro:hasIdentifier tes:ID_DI_HeightOK_BMK, tes:ID_DI_HeightOK_Bit, tes:ID_DI_HeightOK_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_LiftLowered a maestro:ParameterDef ;
+    rdfs:label "Lifting cylinder lowered"@en ;
+    maestro:description "Lower end position of 1A1."@en ;
+    maestro:hasIdentifier tes:ID_DI_LiftLowered_BMK,
+        tes:ID_DI_LiftLowered_Bit,
+        tes:ID_DI_LiftLowered_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_LiftRaised a maestro:ParameterDef ;
+    rdfs:label "Lifting cylinder raised"@en ;
+    maestro:description "Upper end position of 1A1."@en ;
+    maestro:hasIdentifier tes:ID_DI_LiftRaised_BMK,
+        tes:ID_DI_LiftRaised_Bit,
+        tes:ID_DI_LiftRaised_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_NotBlack a maestro:ParameterDef ;
+    rdfs:label "Not black workpiece"@en ;
+    maestro:description "Diffuse sensor; 1 = red or silver workpiece, 0 = black."@en ;
+    maestro:hasIdentifier tes:ID_DI_NotBlack_BMK, tes:ID_DI_NotBlack_Bit, tes:ID_DI_NotBlack_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_SafetyLightBarrier a maestro:ParameterDef ;
+    rdfs:label "Safety light barrier"@en ;
+    maestro:description "Retro-reflective sensor over the working area of the Lifting module. Logic level for 'free' not stated; the reset needs 'safety light barrier unbroken'."@en ;
+    maestro:hasIdentifier tes:ID_DI_SafetyLightBarrier_BMK,
+        tes:ID_DI_SafetyLightBarrier_Bit,
+        tes:ID_DI_SafetyLightBarrier_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DI_WorkpieceAvailable a maestro:ParameterDef ;
+    rdfs:label "Workpiece available"@en ;
+    maestro:description "Capacitive sensor in the Recognition module; 1 = workpiece in the retainer, any colour."@en ;
+    maestro:hasIdentifier tes:ID_DI_WorkpieceAvailable_BMK,
+        tes:ID_DI_WorkpieceAvailable_Bit,
+        tes:ID_DI_WorkpieceAvailable_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+tes:DO_AirSlideOn a maestro:ParameterDef ;
+    rdfs:label "Air slider on"@en ;
+    maestro:description "1 = air cushion of the upper slide on."@en ;
+    maestro:hasIdentifier tes:ID_DO_AirSlideOn_BMK,
+        tes:ID_DO_AirSlideOn_Bit,
+        tes:ID_DO_AirSlideOn_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:DO_ExtendEjector a maestro:ParameterDef ;
+    rdfs:label "Extend ejecting cylinder"@en ;
+    maestro:description "1 = extend; single solenoid, spring return."@en ;
+    maestro:hasIdentifier tes:ID_DO_ExtendEjector_BMK,
+        tes:ID_DO_ExtendEjector_Bit,
+        tes:ID_DO_ExtendEjector_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:DO_LowerLift a maestro:ParameterDef ;
+    rdfs:label "Lower lifting cylinder"@en ;
+    maestro:description "1 = lower (valve 1V1)."@en ;
+    maestro:hasIdentifier tes:ID_DO_LowerLift_BMK, tes:ID_DO_LowerLift_Bit, tes:ID_DO_LowerLift_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:DO_RaiseLift a maestro:ParameterDef ;
+    rdfs:label "Raise lifting cylinder"@en ;
+    maestro:description "1 = raise (valve 1V1)."@en ;
+    maestro:hasIdentifier tes:ID_DO_RaiseLift_BMK, tes:ID_DO_RaiseLift_Bit, tes:ID_DO_RaiseLift_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:DO_StationOccupied a maestro:ParameterDef ;
+    rdfs:label "Station occupied"@en ;
+    maestro:description "StationLink transmitter towards the upstream station; switched on/off to signal ready/busy (polarity not stated)."@en ;
+    maestro:hasIdentifier tes:ID_DO_StationOccupied_BMK,
+        tes:ID_DO_StationOccupied_Bit,
+        tes:ID_DO_StationOccupied_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:TD_AirConsumption a maestro:ParameterDef ;
+    rdfs:label "Compressed-air supply, suction capacity approx. 50 l/min"@en ;
+    maestro:description "Compressed-air supply named for commissioning (approximate value)."@en ;
+    maestro:maxValue 50.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/L-PER-MIN"^^xsd:anyURI .
+
+tes:TD_AirSlideCapacity a maestro:ParameterDef ;
+    rdfs:label "Air cushioned slide capacity: 5 workpieces"@en ;
+    maestro:description "With the mechanical stopper fitted."@en ;
+    maestro:maxValue 5.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:TD_DigitalInputs a maestro:ParameterDef ;
+    rdfs:label "Digital inputs: 7"@en ;
+    maestro:description "Number of digital inputs in the technical-data table."@en ;
+    maestro:maxValue 7.0 ;
+    maestro:minValue 7.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:TD_DigitalOutputs a maestro:ParameterDef ;
+    rdfs:label "Digital outputs: 5"@en ;
+    maestro:description "Number of digital outputs in the technical-data table."@en ;
+    maestro:maxValue 5.0 ;
+    maestro:minValue 5.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:TD_LowerSlideCapacity a maestro:ParameterDef ;
+    rdfs:label "Lower slide capacity: 4 workpieces"@en ;
+    maestro:description "Slide module 210 with stopper fitted; receives rejected workpieces."@en ;
+    maestro:maxValue 4.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+tes:TD_MaxPressure a maestro:ParameterDef ;
+    rdfs:label "Maximum permissible pressure 8 bar"@en ;
+    maestro:description "'Do not exceed' limit of the safety chapter."@en ;
+    maestro:maxValue 8.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI .
+
+tes:TD_MeasuringModuleHeight a maestro:ParameterDef ;
+    rdfs:label "Measuring module mounting height 240 mm"@en ;
+    maestro:description "Top edge of the profile plate to the bottom edge of the measuring-module bracket (commissioning)."@en ;
+    maestro:maxValue 240.0 ;
+    maestro:minValue 240.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/MilliM"^^xsd:anyURI .
+
+tes:TD_OperatingPressure a maestro:ParameterDef ;
+    rdfs:label "Operating pressure 6 bar"@en ;
+    maestro:description "Service unit setting. Operating pressure 6 bar (600 kPa)."@en ;
+    maestro:maxValue 6.0 ;
+    maestro:minValue 6.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI .
+
+tes:TD_SupplyCurrent a maestro:ParameterDef ;
+    rdfs:label "Supply current 4.5 A"@en ;
+    maestro:description "Technical data 4.5 A; section 'voltage supply' says max. 5 A."@en ;
+    maestro:maxValue 4.5 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/A"^^xsd:anyURI .
+
+tes:TD_SupplyVoltage a maestro:ParameterDef ;
+    rdfs:label "Supply voltage 24 V DC"@en ;
+    maestro:description "Power supply unit 24 V DC; the whole station is supplied through the PLC board."@en ;
+    maestro:maxValue 24.0 ;
+    maestro:minValue 24.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI .
+
+tes:T_AirSlideOn a maestro:ParameterDef ;
+    rdfs:label "Air slide on time 3 s (3s/X14)"@en ;
+    maestro:description "Air cushion stays on 3 s after ejection, or until the downstream station is occupied."@en ;
+    maestro:maxValue 3.0 ;
+    maestro:minValue 3.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+tes:T_MeasuringDwell a maestro:ParameterDef ;
+    rdfs:label "Measuring dwell time 2 s (2s/X12)"@en ;
+    maestro:description "GRAFCET timer before the height result is evaluated."@en ;
+    maestro:maxValue 2.0 ;
+    maestro:minValue 2.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+tes:T_RecognitionDwell a maestro:ParameterDef ;
+    rdfs:label "Recognition dwell time 3 s (3s/X9, 3s/X10)"@en ;
+    maestro:description "GRAFCET timer before the lifting cylinder rises."@en ;
+    maestro:maxValue 3.0 ;
+    maestro:minValue 3.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+#################################################################
+# maestro:Precondition (5)
+#################################################################
+
+tes:Pre_DetectMaterial a maestro:Precondition ;
+    rdfs:label "Workpiece available"@en ;
+    maestro:expression "DI_WorkpieceAvailable == 1" .
+
+tes:Pre_MeasureHeight a maestro:Precondition ;
+    rdfs:label "Lifting cylinder raised"@en ;
+    maestro:expression "DI_LiftRaised == 1" .
+
+tes:Pre_RaiseLiftingCylinder a maestro:Precondition ;
+    rdfs:label "Working area free"@en ;
+    maestro:expression "safety light barrier unbroken (DI_SafetyLightBarrier)" .
+
+tes:Pre_ResetStation a maestro:Precondition ;
+    rdfs:label "RESET pressed and safety light barrier unbroken"@en ;
+    maestro:expression "CC_Reset == 1 && working area free (DI_SafetyLightBarrier)" .
+
+tes:Pre_TestWorkpiece a maestro:Precondition ;
+    rdfs:label "Workpiece in the retainer, working area free, START pressed"@en ;
+    maestro:expression "DI_WorkpieceAvailable == 1 && working area free && CC_Start == 1" .
+
+#################################################################
+# maestro:Postcondition (7)
+#################################################################
+
+tes:Post_DetectMaterial a maestro:Postcondition ;
+    rdfs:label "Material class known"@en ;
+    maestro:expression "black := DI_WorkpieceAvailable && !DI_NotBlack" .
+
+tes:Post_EjectWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece ejected"@en ;
+    maestro:expression "DI_EjectorRetracted == 1 after the extend stroke" .
+
+tes:Post_LowerLiftingCylinder a maestro:Postcondition ;
+    rdfs:label "Lifting cylinder lowered"@en ;
+    maestro:expression "DI_LiftLowered == 1" .
+
+tes:Post_MeasureHeight a maestro:Postcondition ;
+    rdfs:label "Height result known"@en ;
+    maestro:expression "heightOk := DI_HeightOK after 2 s" .
+
+tes:Post_RaiseLiftingCylinder a maestro:Postcondition ;
+    rdfs:label "Lifting cylinder raised"@en ;
+    maestro:expression "DI_LiftRaised == 1" .
+
+tes:Post_ResetStation a maestro:Postcondition ;
+    rdfs:label "Initial position: lifting cylinder lowered, ejecting cylinder retracted, air slide off"@en ;
+    maestro:expression "DI_LiftLowered == 1 && DI_EjectorRetracted == 1 && DO_AirSlideOn == 0" .
+
+tes:Post_TestWorkpiece a maestro:Postcondition ;
+    rdfs:label "Good workpiece on the air cushioned slide or rejected workpiece on the lower slide"@en ;
+    maestro:expression "heightOk ? workpiece passed downstream : workpiece on lower slide" .

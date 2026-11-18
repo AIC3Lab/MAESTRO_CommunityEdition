@@ -1,0 +1,99 @@
+# MAESTRO example: LTU Festo MPS - Distributing station
+# core/resource.ttl: statements that belong to the MAESTRO resource module (https://w3id.org/maestro/resource).
+# Umbrella: ../distributing.ttl. Single-file form of the use case: ../distributing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix dis: <https://w3id.org/maestro/examples/ltu-festo-mps/distributing#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/resource> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Distributing station - core/resource"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/distributing> ;
+    owl:imports <https://w3id.org/maestro/resource> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Station (1)
+#################################################################
+
+dis:Station a maestro:Station ;
+    rdfs:label "Distributing station"@en ;
+    maestro:description "Station 1 (VE) of the MPS. Separates workpieces from the Stack magazine module (up to 8 workpieces, filling level monitored by a through-beam sensor, a double-acting cylinder pushes them out one at a time); the Changer module picks the workpiece up with a suction cup, a vacuum switch confirms the hold, and a rotary drive swings the arm to the transfer point of the downstream station. A feed device in the sense of VDI 3240."@en ;
+    maestro:hasIdentifier dis:ID_ManualOrderNo ;
+    maestro:hasModule dis:ChangerModule,
+        dis:ControlConsole,
+        dis:IOTerminal,
+        dis:PLCBoard,
+        dis:ServiceUnit,
+        dis:StackMagazineModule,
+        dis:StationLinkReceiver,
+        dis:ValveTerminal ;
+    maestro:hasParameterDef dis:TD_AirConsumption,
+        dis:TD_DigitalInputs,
+        dis:TD_DigitalOutputs,
+        dis:TD_MagazineCapacity,
+        dis:TD_MaxPressure,
+        dis:TD_OperatingPressure,
+        dis:TD_SupplyCurrent,
+        dis:TD_SupplyVoltage,
+        dis:TD_SwivelRange ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Distributing station (VE)" .
+
+#################################################################
+# maestro:Module (8)
+#################################################################
+
+dis:ChangerModule a maestro:Module ;
+    rdfs:label "Changer module"@en ;
+    maestro:description "Pneumatic handling device: semi-rotary drive DSR-16-180 swings an arm with a vacuum suction cup between the magazine and the downstream station. Micro switches S-3-E sense the swivel end positions; vacuum switch VPEV confirms that a workpiece is held."@en ;
+    maestro:providesCapability ltu:TransferCapability, ltu:VacuumGrippingCapability .
+
+dis:ControlConsole a maestro:Module ;
+    rdfs:label "Control console"@en ;
+    maestro:description "START, STOP and RESET pushbuttons, AUTO/MAN key switch, EMERGENCY-STOP (if available) and the MAG. EMPTY warning light; connected via XMG1."@en ;
+    maestro:providesCapability ltu:OperatorInterfaceCapability .
+
+dis:IOTerminal a maestro:Module ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:description "Station side of the SysLink connection XMA2 (7 inputs and 7 outputs used per the technical data)."@en ;
+    maestro:hasIdentifier ltu:PN_034035 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+dis:PLCBoard a maestro:Module ;
+    rdfs:label "PLC board"@en ;
+    maestro:description "Holds the controller; connects to the I/O terminal (XMA2), the control console (XMG1), the power supply (4 mm safety plugs) and the PC."@en ;
+    maestro:model "PLC board (controller not stated)" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+dis:ServiceUnit a maestro:Module ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:description "Compressed-air inlet, set to 6 bar."@en ;
+    maestro:hasIdentifier ltu:PN_152894 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:S-PVW-LFR" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability .
+
+dis:StackMagazineModule a maestro:Module ;
+    rdfs:label "Stack magazine module"@en ;
+    maestro:description "Gravity magazine barrel for up to 8 workpieces. A double-acting ejecting cylinder pushes the lowest workpiece out to a mechanical stop, the transfer point to the Changer module. Through-beam fibre-optic sensor for the filling level; SME-8 proximity sensors for the cylinder end positions; one-way flow control valves set the piston speed."@en ;
+    maestro:providesCapability ltu:FeedingCapability, ltu:PresenceSensingCapability .
+
+dis:StationLinkReceiver a maestro:Module ;
+    rdfs:label "StationLink receiver"@en ;
+    maestro:description "Only the receiver is mounted on the Distributing station (outgoing-material side); it reads 'downstream station free'. That data sheet 165323 is this receiver is inferred."@en ;
+    maestro:hasIdentifier ltu:PN_165323 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "SOEG-E-Q30-PS-S-2L" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+dis:ValveTerminal a maestro:Module ;
+    rdfs:label "CPV valve terminal"@en ;
+    maestro:description "Valve terminal with manual overrides; the data-sheet list names a 3/2-way normally open (161417) and a 5/2-way (161414) solenoid valve. Which valve drives which actuator is not stated."@en ;
+    maestro:model "CPV" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability .

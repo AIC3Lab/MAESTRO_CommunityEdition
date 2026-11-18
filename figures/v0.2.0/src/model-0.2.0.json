@@ -1,0 +1,2960 @@
+{
+ "ns": "maestro:",
+ "modules": [
+  {
+   "id": "resource",
+   "layer": "core",
+   "title": "Physical Resources",
+   "file": "core/resource.ttl",
+   "color": "#12A594",
+   "classes": [
+    [
+     "Capability",
+     [
+      "description : string  (open domain)"
+     ]
+    ],
+    [
+     "Module",
+     [
+      "manufacturer : string  (open domain)",
+      "model : string  (open domain)",
+      "serialNumber : string  (open domain)"
+     ]
+    ],
+    [
+     "Resource",
+     []
+    ],
+    [
+     "Station",
+     [
+      "location : string  (open domain)"
+     ]
+    ],
+    [
+     "ValueSet",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "Module",
+     "Resource"
+    ],
+    [
+     "Station",
+     "Resource"
+    ]
+   ],
+   "props": [
+    [
+     "hasModule",
+     "Station",
+     "Module",
+     "",
+     null
+    ],
+    [
+     "hasPart",
+     "Station",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Station",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Station",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Station",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "moduleOf",
+     "Module",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "providedBy",
+     "Capability",
+     "Module",
+     "dashed",
+     "added"
+    ],
+    [
+     "providesCapability",
+     "Module",
+     "Capability",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "AutomationML / CAEX topology -> ext/automationml.ttl",
+    "ISA-88 equipment model -> ext/isa88.ttl",
+    "Package-wide: ValueSet, transitive hasPart / partOf (super-property of hasModule, hasStep, hasSubSkill, hasSubItem)",
+    "open-domain datatype properties (drawn on the classes that use them): description : string, location : string, manufacturer : string, model : string, serialNumber : string, version : string"
+   ]
+  },
+  {
+   "id": "skill",
+   "layer": "core",
+   "title": "Skills",
+   "file": "core/skill.ttl",
+   "color": "#E54D2E",
+   "classes": [
+    [
+     "AtomicSkill",
+     []
+    ],
+    [
+     "CompositeSkill",
+     []
+    ],
+    [
+     "Condition",
+     []
+    ],
+    [
+     "ParameterDef",
+     [
+      "maxValue : number",
+      "minValue : number",
+      "paramName : string",
+      "paramType : anyURI",
+      "unitRef : anyURI"
+     ]
+    ],
+    [
+     "ParameterDirection",
+     [
+      "individuals: In-out, Input, Output"
+     ]
+    ],
+    [
+     "ParameterValue",
+     [
+      "value : literal"
+     ]
+    ],
+    [
+     "Postcondition",
+     [
+      "expression : string  (open domain)"
+     ]
+    ],
+    [
+     "Precondition",
+     [
+      "expression : string  (open domain)"
+     ]
+    ],
+    [
+     "Skill",
+     [
+      "description : string  (open domain)",
+      "version : string  (open domain)"
+     ]
+    ],
+    [
+     "SkillElement",
+     []
+    ],
+    [
+     "SkillInterface",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "AtomicSkill",
+     "Skill"
+    ],
+    [
+     "CompositeSkill",
+     "Skill"
+    ],
+    [
+     "Condition",
+     "SkillElement"
+    ],
+    [
+     "ParameterDef",
+     "SkillElement"
+    ],
+    [
+     "ParameterDirection",
+     "ValueSet"
+    ],
+    [
+     "ParameterValue",
+     "SkillElement"
+    ],
+    [
+     "Postcondition",
+     "Condition"
+    ],
+    [
+     "Precondition",
+     "Condition"
+    ],
+    [
+     "Skill",
+     "SkillElement"
+    ],
+    [
+     "SkillInterface",
+     "SkillElement"
+    ]
+   ],
+   "props": [
+    [
+     "hasCondition",
+     "Skill",
+     "Condition",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasInterfaceContract",
+     "Skill",
+     "SkillInterface",
+     "",
+     null
+    ],
+    [
+     "hasParameterDef",
+     "Skill",
+     "ParameterDef",
+     "",
+     null
+    ],
+    [
+     "hasParameterDef",
+     "OperationSignature",
+     "ParameterDef",
+     "",
+     null
+    ],
+    [
+     "hasPostcondition",
+     "Skill",
+     "Postcondition",
+     "",
+     "adapted"
+    ],
+    [
+     "hasPrecondition",
+     "Skill",
+     "Precondition",
+     "",
+     "adapted"
+    ],
+    [
+     "hasSubSkill",
+     "CompositeSkill",
+     "Skill",
+     "",
+     "adapted"
+    ],
+    [
+     "parameterDirection",
+     "ParameterDef",
+     "ParameterDirection",
+     "dashed",
+     null
+    ],
+    [
+     "requiredBy",
+     "Capability",
+     "Skill",
+     "dashed",
+     "added"
+    ],
+    [
+     "requiresCapability",
+     "Skill",
+     "Capability",
+     "",
+     null
+    ],
+    [
+     "valueOf",
+     "ParameterValue",
+     "ParameterDef",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "QUDT: unitRef holds a QUDT unit IRI (hook only)",
+    "SOSA observation evidence (hook only)",
+    "CSS / CaSkMan patterns (hook only)",
+    "open-domain datatype properties (drawn on the classes that use them): expression : string"
+   ]
+  },
+  {
+   "id": "recipe",
+   "layer": "core",
+   "title": "Recipe / Planning",
+   "file": "core/recipe.ttl",
+   "color": "#3B82F6",
+   "classes": [
+    [
+     "ControlFlowConstraint",
+     []
+    ],
+    [
+     "ControlFlowType",
+     [
+      "individuals: Alternative, Loop, Optional, Parallel, Precedes"
+     ]
+    ],
+    [
+     "DataBinding",
+     []
+    ],
+    [
+     "PlanStep",
+     [
+      "stepOrder : integer"
+     ]
+    ],
+    [
+     "Recipe",
+     [
+      "version : string  (open domain)"
+     ]
+    ],
+    [
+     "RecipeElement",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "ControlFlowConstraint",
+     "RecipeElement"
+    ],
+    [
+     "ControlFlowType",
+     "ValueSet"
+    ],
+    [
+     "DataBinding",
+     "RecipeElement"
+    ],
+    [
+     "PlanStep",
+     "RecipeElement"
+    ],
+    [
+     "Recipe",
+     "RecipeElement"
+    ]
+   ],
+   "props": [
+    [
+     "bindsFrom",
+     "DataBinding",
+     "ParameterDef",
+     "dashed",
+     null
+    ],
+    [
+     "bindsParameter",
+     "DataBinding",
+     "ParameterDef",
+     "dashed",
+     "added"
+    ],
+    [
+     "bindsTo",
+     "DataBinding",
+     "ParameterDef",
+     "dashed",
+     null
+    ],
+    [
+     "flowType",
+     "ControlFlowConstraint",
+     "ControlFlowType",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasControlFlow",
+     "PlanStep",
+     "ControlFlowConstraint",
+     "",
+     null
+    ],
+    [
+     "hasDataBinding",
+     "PlanStep",
+     "DataBinding",
+     "",
+     null
+    ],
+    [
+     "hasStep",
+     "Recipe",
+     "PlanStep",
+     "",
+     null
+    ],
+    [
+     "realizedBy",
+     "PlanStep",
+     "Skill",
+     "",
+     null
+    ],
+    [
+     "stepOf",
+     "PlanStep",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "targetStep",
+     "ControlFlowConstraint",
+     "PlanStep",
+     "dashed",
+     "added"
+    ]
+   ],
+   "ext": [
+    "ISA-88 procedural model -> ext/isa88.ttl",
+    "ISA-95 / IEC 62264 -> ext/isa95.ttl, maestro:ProductionOrder"
+   ]
+  },
+  {
+   "id": "product",
+   "layer": "core",
+   "title": "Product",
+   "file": "core/product.ttl",
+   "color": "#6E56CF",
+   "classes": [
+    [
+     "BOMItem",
+     [
+      "refDesignator : string",
+      "quantity : decimal  (open domain)"
+     ]
+    ],
+    [
+     "Feature",
+     [
+      "description : string  (open domain)"
+     ]
+    ],
+    [
+     "Identifier",
+     [
+      "identifierScheme : string",
+      "identifierValue : string"
+     ]
+    ],
+    [
+     "Material",
+     []
+    ],
+    [
+     "ProductElement",
+     []
+    ],
+    [
+     "ProductInstance",
+     [
+      "serialNumber : string  (open domain)"
+     ]
+    ],
+    [
+     "ProductType",
+     []
+    ],
+    [
+     "Requirement",
+     [
+      "mandatory : boolean",
+      "requiredValue : string"
+     ]
+    ],
+    [
+     "Variant",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "BOMItem",
+     "ProductElement"
+    ],
+    [
+     "Feature",
+     "ProductElement"
+    ],
+    [
+     "Identifier",
+     "ProductElement"
+    ],
+    [
+     "Material",
+     "ProductElement"
+    ],
+    [
+     "ProductInstance",
+     "ProductElement"
+    ],
+    [
+     "ProductType",
+     "ProductElement"
+    ],
+    [
+     "Requirement",
+     "ProductElement"
+    ],
+    [
+     "Variant",
+     "ProductType"
+    ]
+   ],
+   "props": [
+    [
+     "appliesTo",
+     "Requirement",
+     "Feature",
+     "",
+     null
+    ],
+    [
+     "hasBOMItem",
+     "ProductType",
+     "BOMItem",
+     "",
+     null
+    ],
+    [
+     "hasFeature",
+     "ProductType",
+     "Feature",
+     "",
+     null
+    ],
+    [
+     "hasIdentifier",
+     "ProductType",
+     "Identifier",
+     "",
+     null
+    ],
+    [
+     "hasIdentifier",
+     "ProductInstance",
+     "Identifier",
+     "",
+     null
+    ],
+    [
+     "hasInstance",
+     "ProductType",
+     "ProductInstance",
+     "",
+     "adapted"
+    ],
+    [
+     "hasRequirement",
+     "ProductType",
+     "Requirement",
+     "dashed",
+     null
+    ],
+    [
+     "hasRequirement",
+     "Variant",
+     "Requirement",
+     "dashed",
+     null
+    ],
+    [
+     "hasRequirement",
+     "ServiceRequest",
+     "Requirement",
+     "dashed",
+     null
+    ],
+    [
+     "hasSubItem",
+     "BOMItem",
+     "BOMItem",
+     "",
+     "adapted"
+    ],
+    [
+     "hasVariant",
+     "ProductType",
+     "Variant",
+     "",
+     "adapted"
+    ],
+    [
+     "instanceOfType",
+     "ProductInstance",
+     "ProductType",
+     "dashed",
+     null
+    ],
+    [
+     "madeOf",
+     "BOMItem",
+     "Material",
+     "",
+     "adapted"
+    ],
+    [
+     "nodeFor",
+     "BOMItem",
+     "ProductType",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "requiresOperation",
+     "Feature",
+     "PlanStep",
+     "",
+     null
+    ],
+    [
+     "variantOf",
+     "Variant",
+     "ProductType",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "DPP / product passport view (hook only)",
+    "ECLASS semanticId (hook only)",
+    "PRONTO variant/BOM semantics (hook only)",
+    "open-domain datatype properties (drawn on the classes that use them): quantity : decimal"
+   ]
+  },
+  {
+   "id": "invocation",
+   "layer": "core",
+   "title": "Invocation Hooks",
+   "file": "core/invocation.ttl",
+   "color": "#F59E0B",
+   "classes": [
+    [
+     "Binding",
+     [
+      "mappingSpec : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DataFormat",
+     [
+      "individuals: JSON, OPC UA Binary, Protocol Buffers, XML"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Endpoint",
+     [
+      "address : string",
+      "port : integer"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "EventStream",
+     [
+      "topic : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InterfaceDescriptionLanguage",
+     [
+      "individuals: Asset Administration Shell submodel template, DTDL, OPC UA NodeSet, OpenAPI"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InvocationElement",
+     []
+    ],
+    [
+     "OperationSignature",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Protocol",
+     [
+      "individuals: DDS, EtherCAT, HTTP, MQTT, Modbus, OPC UA, PROFINET"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "SkillService",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "Binding",
+     "InvocationElement"
+    ],
+    [
+     "DataFormat",
+     "ValueSet"
+    ],
+    [
+     "Endpoint",
+     "InvocationElement"
+    ],
+    [
+     "EventStream",
+     "InvocationElement"
+    ],
+    [
+     "InterfaceDescriptionLanguage",
+     "ValueSet"
+    ],
+    [
+     "OperationSignature",
+     "InvocationElement"
+    ],
+    [
+     "Protocol",
+     "ValueSet"
+    ],
+    [
+     "SkillService",
+     "InvocationElement"
+    ]
+   ],
+   "props": [
+    [
+     "describedIn",
+     "SkillInterface",
+     "InterfaceDescriptionLanguage",
+     "dashed",
+     null
+    ],
+    [
+     "describedIn",
+     "Binding",
+     "InterfaceDescriptionLanguage",
+     "dashed",
+     null
+    ],
+    [
+     "emits",
+     "Endpoint",
+     "EventStream",
+     "",
+     null
+    ],
+    [
+     "exposedVia",
+     "SkillInterface",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "exposedVia",
+     "SkillService",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "hasBinding",
+     "Endpoint",
+     "Binding",
+     "",
+     null
+    ],
+    [
+     "hasSignature",
+     "Binding",
+     "OperationSignature",
+     "dashed",
+     null
+    ],
+    [
+     "implementsInterface",
+     "SkillService",
+     "SkillInterface",
+     "dashed",
+     null
+    ],
+    [
+     "returns",
+     "OperationSignature",
+     "ParameterDef",
+     "dashed",
+     null
+    ],
+    [
+     "specializes",
+     "Binding",
+     "SkillInterface",
+     "dashed",
+     "added"
+    ],
+    [
+     "usesDataFormat",
+     "Binding",
+     "DataFormat",
+     "dashed",
+     null
+    ],
+    [
+     "usesProtocol",
+     "Endpoint",
+     "Protocol",
+     "",
+     null
+    ],
+    [
+     "usesProtocol",
+     "Binding",
+     "Protocol",
+     "",
+     null
+    ]
+   ],
+   "ext": [
+    "OPC UA -> ext/opcua.ttl",
+    "REST (WADL) -> ext/rest.ttl",
+    "DTDL -> ext/dtdl.ttl",
+    "AAS submodel publish (hook only)"
+   ]
+  },
+  {
+   "id": "policy",
+   "layer": "core",
+   "title": "Safety / Security / Policy",
+   "file": "core/policy.ttl",
+   "color": "#111827",
+   "classes": [
+    [
+     "Action",
+     [
+      "individuals: Change a configuration, Invoke a skill or service, Read data, Write data"
+     ]
+    ],
+    [
+     "Constraint",
+     [
+      "expression : string  (open domain)"
+     ]
+    ],
+    [
+     "EmergencyStop",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Evidence",
+     [
+      "evidenceRef : anyURI"
+     ]
+    ],
+    [
+     "Hazard",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Mitigation",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OperatingMode",
+     [
+      "individuals: Automatic, Maintenance, Manual"
+     ]
+    ],
+    [
+     "PerformanceLevel",
+     [
+      "individuals: PL a, PL b, PL c, PL d, PL e"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Permission",
+     []
+    ],
+    [
+     "Policy",
+     [
+      "version : string  (open domain)"
+     ]
+    ],
+    [
+     "PolicyElement",
+     []
+    ],
+    [
+     "Risk",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RiskAssessment",
+     [
+      "assumption : string",
+      "riskAssessmentMethod : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RiskLevel",
+     [
+      "individuals: High, Low, Medium"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Role",
+     [
+      "individuals: Customer role, Marketplace role, Provider role"
+     ]
+    ],
+    [
+     "SafetyElement",
+     []
+    ],
+    [
+     "SafetyFunction",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "SafetyIntegrityLevel",
+     [
+      "individuals: SIL 1, SIL 2, SIL 3, SIL 4"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "Action",
+     "ValueSet"
+    ],
+    [
+     "Constraint",
+     "PolicyElement"
+    ],
+    [
+     "EmergencyStop",
+     "SafetyFunction"
+    ],
+    [
+     "Evidence",
+     "SafetyElement"
+    ],
+    [
+     "Hazard",
+     "SafetyElement"
+    ],
+    [
+     "Mitigation",
+     "SafetyElement"
+    ],
+    [
+     "OperatingMode",
+     "ValueSet"
+    ],
+    [
+     "PerformanceLevel",
+     "ValueSet"
+    ],
+    [
+     "Permission",
+     "PolicyElement"
+    ],
+    [
+     "Policy",
+     "PolicyElement"
+    ],
+    [
+     "Risk",
+     "SafetyElement"
+    ],
+    [
+     "RiskAssessment",
+     "SafetyElement"
+    ],
+    [
+     "RiskLevel",
+     "ValueSet"
+    ],
+    [
+     "Role",
+     "PolicyElement"
+    ],
+    [
+     "SafetyFunction",
+     "SafetyElement"
+    ],
+    [
+     "SafetyIntegrityLevel",
+     "ValueSet"
+    ]
+   ],
+   "props": [
+    [
+     "achievedPerformanceLevel",
+     "SafetyFunction",
+     "PerformanceLevel",
+     "dashed",
+     null
+    ],
+    [
+     "achievedSIL",
+     "SafetyFunction",
+     "SafetyIntegrityLevel",
+     "dashed",
+     null
+    ],
+    [
+     "action",
+     "Permission",
+     "Action",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "Skill",
+     "dashed",
+     null
+    ],
+    [
+     "assessedSubject",
+     "RiskAssessment",
+     "PlanStep",
+     "dashed",
+     null
+    ],
+    [
+     "assessesRisk",
+     "RiskAssessment",
+     "Risk",
+     "dashed",
+     null
+    ],
+    [
+     "causesRisk",
+     "Hazard",
+     "Risk",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "Skill",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "PlanStep",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "Module",
+     "",
+     null
+    ],
+    [
+     "constrains",
+     "Constraint",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "grantedTo",
+     "Permission",
+     "Role",
+     "",
+     null
+    ],
+    [
+     "hasConstraint",
+     "Policy",
+     "Constraint",
+     "",
+     null
+    ],
+    [
+     "hasEvidence",
+     "Policy",
+     "Evidence",
+     "",
+     null
+    ],
+    [
+     "hasPermission",
+     "Policy",
+     "Permission",
+     "dashed",
+     null
+    ],
+    [
+     "hasRiskLevel",
+     "RiskAssessment",
+     "RiskLevel",
+     "dashed",
+     null
+    ],
+    [
+     "identifiesHazard",
+     "RiskAssessment",
+     "Hazard",
+     "dashed",
+     null
+    ],
+    [
+     "mitigates",
+     "SafetyFunction",
+     "Hazard",
+     "dashed",
+     null
+    ],
+    [
+     "recommendsMitigation",
+     "RiskAssessment",
+     "Mitigation",
+     "dashed",
+     "added"
+    ],
+    [
+     "reduces",
+     "Mitigation",
+     "Risk",
+     "",
+     null
+    ],
+    [
+     "reliesOnMitigation",
+     "RiskAssessment",
+     "Mitigation",
+     "dashed",
+     null
+    ],
+    [
+     "requiredPerformanceLevel",
+     "SafetyFunction",
+     "PerformanceLevel",
+     "dashed",
+     null
+    ],
+    [
+     "requiredSIL",
+     "SafetyFunction",
+     "SafetyIntegrityLevel",
+     "dashed",
+     null
+    ],
+    [
+     "requiresMode",
+     "Policy",
+     "OperatingMode",
+     "",
+     null
+    ],
+    [
+     "requiresPermission",
+     "Policy",
+     "Permission",
+     "",
+     null
+    ],
+    [
+     "riskEvidence",
+     "RiskAssessment",
+     "Evidence",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "Skill",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "SkillService",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "Endpoint",
+     "dashed",
+     null
+    ],
+    [
+     "target",
+     "Permission",
+     "Module",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "SHACL shapes in shacl/ ; ODRL core profile -> ext/odrl.ttl ; XACML (hook only)"
+   ]
+  },
+  {
+   "id": "execution",
+   "layer": "core",
+   "title": "Minimal Execution (optional)",
+   "file": "core/execution.ttl",
+   "color": "#8B5CF6",
+   "classes": [
+    [
+     "ExecutionElement",
+     []
+    ],
+    [
+     "ExecutionStatus",
+     [
+      "individuals: Aborted, Completed, Executing, Held, Idle"
+     ]
+    ],
+    [
+     "Fault",
+     [
+      "faultCause : string  (open domain)",
+      "faultCode : string  (open domain)",
+      "faultSeverity : string  (open domain)",
+      "timestamp : dateTime  (open domain)"
+     ]
+    ],
+    [
+     "SkillExecution",
+     []
+    ],
+    [
+     "TimeInterval",
+     [
+      "endTime : dateTime",
+      "startTime : dateTime"
+     ]
+    ]
+   ],
+   "sub": [
+    [
+     "Fault",
+     "ExecutionElement"
+    ],
+    [
+     "SkillExecution",
+     "ExecutionElement"
+    ],
+    [
+     "TimeInterval",
+     "ExecutionElement"
+    ]
+   ],
+   "props": [
+    [
+     "executedBy",
+     "Skill",
+     "SkillExecution",
+     "dashed",
+     "added"
+    ],
+    [
+     "executedOn",
+     "SkillExecution",
+     "Module",
+     "",
+     null
+    ],
+    [
+     "executedOn",
+     "SkillExecution",
+     "Station",
+     "",
+     null
+    ],
+    [
+     "executes",
+     "SkillExecution",
+     "Skill",
+     "",
+     null
+    ],
+    [
+     "hasInput",
+     "SkillExecution",
+     "ParameterValue",
+     "",
+     null
+    ],
+    [
+     "hasOutput",
+     "SkillExecution",
+     "ParameterValue",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasStatus",
+     "SkillExecution",
+     "ExecutionStatus",
+     "",
+     null
+    ],
+    [
+     "hasTime",
+     "SkillExecution",
+     "TimeInterval",
+     "",
+     null
+    ],
+    [
+     "hasTime",
+     "MaintenanceAction",
+     "TimeInterval",
+     "",
+     null
+    ],
+    [
+     "invokedVia",
+     "SkillExecution",
+     "Endpoint",
+     "",
+     null
+    ],
+    [
+     "raisedFault",
+     "SkillExecution",
+     "Fault",
+     "",
+     "adapted"
+    ],
+    [
+     "realizesStep",
+     "SkillExecution",
+     "PlanStep",
+     "dashed",
+     "added"
+    ]
+   ],
+   "ext": [
+    "PROV-O -> ext/prov.ttl",
+    "SAREF4INMA traceability (hook only)",
+    "open-domain datatype properties (drawn on the classes that use them): faultCause : string, faultCode : string, faultSeverity : string, timestamp : dateTime"
+   ]
+  },
+  {
+   "id": "runtime",
+   "layer": "module",
+   "title": "Runtime State",
+   "file": "modules/runtime.ttl",
+   "color": "#7C3AED",
+   "classes": [
+    [
+     "ExecutionRecord",
+     [
+      "recordedAt : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "FaultSpecification",
+     [
+      "faultCode : string  (open domain)",
+      "faultSeverity : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RuntimeEvent",
+     [
+      "timestamp : dateTime  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RuntimeStateElement",
+     []
+    ],
+    [
+     "Snapshot",
+     [
+      "snapshotTaken : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "State",
+     [
+      "individuals: Alarm, Available, Busy, Degraded, Failed, Fault, Healthy, Reserved"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateAssertion",
+     [
+      "observedAt : dateTime",
+      "validFrom : dateTime",
+      "validTo : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateDimension",
+     [
+      "individuals: Health, Mode, Operational, Reservation"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateTransition",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "ExecutionRecord",
+     "RuntimeStateElement"
+    ],
+    [
+     "FaultSpecification",
+     "RuntimeStateElement"
+    ],
+    [
+     "RuntimeEvent",
+     "RuntimeStateElement"
+    ],
+    [
+     "Snapshot",
+     "RuntimeStateElement"
+    ],
+    [
+     "State",
+     "ValueSet"
+    ],
+    [
+     "StateAssertion",
+     "RuntimeStateElement"
+    ],
+    [
+     "StateDimension",
+     "ValueSet"
+    ],
+    [
+     "StateTransition",
+     "RuntimeEvent"
+    ],
+    [
+     "ExecutionStatus",
+     "State"
+    ],
+    [
+     "Fault",
+     "RuntimeEvent"
+    ]
+   ],
+   "props": [
+    [
+     "describesExecution",
+     "ExecutionRecord",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "enteredState",
+     "StateTransition",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "eventSubject",
+     "RuntimeEvent",
+     "Module",
+     "dashed",
+     "added"
+    ],
+    [
+     "eventSubject",
+     "RuntimeEvent",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "eventSubject",
+     "RuntimeEvent",
+     "SkillExecution",
+     "dashed",
+     "added"
+    ],
+    [
+     "fromState",
+     "StateTransition",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "hasState",
+     "Module",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "hasState",
+     "Station",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "inDimension",
+     "State",
+     "StateDimension",
+     "dashed",
+     null
+    ],
+    [
+     "instanceOfFault",
+     "Fault",
+     "FaultSpecification",
+     "dashed",
+     null
+    ],
+    [
+     "mayRaiseFault",
+     "Skill",
+     "FaultSpecification",
+     "dashed",
+     null
+    ],
+    [
+     "stateDimension",
+     "StateAssertion",
+     "StateDimension",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "Fault",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "Evidence",
+     "dashed",
+     null
+    ],
+    [
+     "stateSubject",
+     "StateAssertion",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "stateSubject",
+     "StateAssertion",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "stateValue",
+     "StateAssertion",
+     "State",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "ExecutionStatus (core) is a subclass of State"
+   ]
+  },
+  {
+   "id": "energy",
+   "layer": "module",
+   "title": "Energy",
+   "file": "modules/energy.ttl",
+   "color": "#CA8A04",
+   "classes": [
+    [
+     "EnergyConsumer",
+     [],
+     "adapted from MAESTRO 1.0"
+    ],
+    [
+     "EnergyElement",
+     []
+    ],
+    [
+     "EnergyMeasurement",
+     [
+      "energyKwh : number"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "EnergySource",
+     [
+      "carbonGCO2eqPerKwh : number",
+      "individuals: Compressed air, Electrical grid, Solar, Wind"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "PowerMeasurement",
+     [
+      "powerWatts : number",
+      "timestamp : dateTime  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "EnergyConsumer",
+     "Module"
+    ],
+    [
+     "EnergyMeasurement",
+     "EnergyElement"
+    ],
+    [
+     "EnergySource",
+     "ValueSet"
+    ],
+    [
+     "PowerMeasurement",
+     "EnergyElement"
+    ]
+   ],
+   "props": [
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "overInterval",
+     "EnergyMeasurement",
+     "TimeInterval",
+     "dashed",
+     null
+    ],
+    [
+     "suppliedBy",
+     "EnergyConsumer",
+     "EnergySource",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "Bare-number properties carry fixed units (kWh, W, g CO2-eq/kWh)"
+   ]
+  },
+  {
+   "id": "maintenance",
+   "layer": "module",
+   "title": "Maintenance",
+   "file": "modules/maintenance.ttl",
+   "color": "#B91C1C",
+   "classes": [
+    [
+     "ConditionBased",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Corrective",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "FaultDiagnosis",
+     [
+      "description : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Finding",
+     [
+      "findingDescription : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Inspection",
+     [],
+     "adapted from MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceAction",
+     [
+      "performedAt : dateTime",
+      "scheduledFor : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceElement",
+     []
+    ],
+    [
+     "MaintenancePlan",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceTask",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Predictive",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Preventive",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ReturnToServiceAssessment",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ReturnToServiceOutcome",
+     [
+      "individuals: Cleared for service, Cleared with conditions, Not cleared"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "ConditionBased",
+     "Preventive"
+    ],
+    [
+     "Corrective",
+     "MaintenanceAction"
+    ],
+    [
+     "FaultDiagnosis",
+     "MaintenanceElement"
+    ],
+    [
+     "Finding",
+     "MaintenanceElement"
+    ],
+    [
+     "Inspection",
+     "MaintenanceAction"
+    ],
+    [
+     "MaintenanceAction",
+     "MaintenanceElement"
+    ],
+    [
+     "MaintenancePlan",
+     "MaintenanceElement"
+    ],
+    [
+     "MaintenanceTask",
+     "MaintenanceElement"
+    ],
+    [
+     "Predictive",
+     "ConditionBased"
+    ],
+    [
+     "Preventive",
+     "MaintenanceAction"
+    ],
+    [
+     "ReturnToServiceAssessment",
+     "MaintenanceElement"
+    ],
+    [
+     "ReturnToServiceOutcome",
+     "ValueSet"
+    ]
+   ],
+   "props": [
+    [
+     "affectsAsset",
+     "MaintenanceAction",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "assessesWork",
+     "ReturnToServiceAssessment",
+     "MaintenanceAction",
+     "dashed",
+     null
+    ],
+    [
+     "diagnosesFault",
+     "FaultDiagnosis",
+     "Fault",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasFinding",
+     "MaintenanceAction",
+     "Finding",
+     "dashed",
+     null
+    ],
+    [
+     "hasTask",
+     "MaintenancePlan",
+     "MaintenanceTask",
+     "dashed",
+     null
+    ],
+    [
+     "performsTask",
+     "MaintenanceAction",
+     "MaintenanceTask",
+     "dashed",
+     null
+    ],
+    [
+     "planForAsset",
+     "MaintenancePlan",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "rtsEvidence",
+     "ReturnToServiceAssessment",
+     "Evidence",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "rtsOutcome",
+     "ReturnToServiceAssessment",
+     "ReturnToServiceOutcome",
+     "dashed",
+     null
+    ],
+    [
+     "triggeredBy",
+     "MaintenanceAction",
+     "Fault",
+     "dashed",
+     "adapted"
+    ]
+   ],
+   "ext": [
+    "Module also carries mtbfHours and remainingUsefulLifeHours",
+    "datatype properties on classes of other modules: Module.mtbfHours : number, Module.remainingUsefulLifeHours : number"
+   ]
+  },
+  {
+   "id": "maas",
+   "layer": "module",
+   "title": "Manufacturing as a Service",
+   "file": "modules/maas.ttl",
+   "color": "#0369A1",
+   "classes": [
+    [
+     "Actor",
+     [
+      "location : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Contract",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Customer",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaaSElement",
+     []
+    ],
+    [
+     "Marketplace",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "PhysicalResourceProvider",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ProductionOrder",
+     [
+      "dueDate : dateTime",
+      "quantity : decimal  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Quote",
+     [
+      "currency : string",
+      "price : decimal",
+      "validUntil : dateTime",
+      "leadTimeDays : decimal  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ServiceOffer",
+     [
+      "maxQuantity : integer",
+      "leadTimeDays : decimal  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ServiceRequest",
+     [
+      "maxLeadTimeDays : decimal",
+      "requestedQuantity : integer",
+      "submittedOn : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "Contract",
+     "MaaSElement"
+    ],
+    [
+     "Customer",
+     "Actor"
+    ],
+    [
+     "Marketplace",
+     "Actor"
+    ],
+    [
+     "PhysicalResourceProvider",
+     "Actor"
+    ],
+    [
+     "ProductionOrder",
+     "MaaSElement"
+    ],
+    [
+     "Quote",
+     "MaaSElement"
+    ],
+    [
+     "ServiceOffer",
+     "MaaSElement"
+    ],
+    [
+     "ServiceRequest",
+     "MaaSElement"
+    ]
+   ],
+   "props": [
+    [
+     "acceptsQuote",
+     "Contract",
+     "Quote",
+     "dashed",
+     null
+    ],
+    [
+     "basedOnOffer",
+     "Quote",
+     "ServiceOffer",
+     "dashed",
+     null
+    ],
+    [
+     "executesRecipe",
+     "ProductionOrder",
+     "Recipe",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "exposesService",
+     "ServiceOffer",
+     "SkillService",
+     "",
+     null
+    ],
+    [
+     "exposesService",
+     "DigitalTwin",
+     "SkillService",
+     "",
+     null
+    ],
+    [
+     "forProduct",
+     "ServiceRequest",
+     "ProductType",
+     "dashed",
+     null
+    ],
+    [
+     "governedBy",
+     "Contract",
+     "Policy",
+     "dashed",
+     null
+    ],
+    [
+     "listedOn",
+     "ServiceOffer",
+     "Marketplace",
+     "dashed",
+     null
+    ],
+    [
+     "offeredBy",
+     "ServiceOffer",
+     "PhysicalResourceProvider",
+     "dashed",
+     null
+    ],
+    [
+     "offersCapability",
+     "ServiceOffer",
+     "Capability",
+     "dashed",
+     null
+    ],
+    [
+     "operatedBy",
+     "Marketplace",
+     "Actor",
+     "dashed",
+     null
+    ],
+    [
+     "operates",
+     "Actor",
+     "Station",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "ordersProduct",
+     "ProductionOrder",
+     "ProductType",
+     "dashed",
+     null
+    ],
+    [
+     "providedAt",
+     "ServiceOffer",
+     "Station",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "quoteFor",
+     "Quote",
+     "ServiceRequest",
+     "dashed",
+     null
+    ],
+    [
+     "realizedByOrder",
+     "Contract",
+     "ProductionOrder",
+     "dashed",
+     null
+    ],
+    [
+     "requestedBy",
+     "ServiceRequest",
+     "Customer",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "Role individuals CustomerRole, ProviderRole, MarketplaceRole",
+    "schema.org and ISO 22400-2 closeMatch",
+    "open-domain datatype properties (drawn on the classes that use them): leadTimeDays : decimal"
+   ]
+  },
+  {
+   "id": "digital_twin",
+   "layer": "ext",
+   "title": "Digital Twin",
+   "file": "ext/digital-twin.ttl",
+   "color": "#0EA5E9",
+   "classes": [
+    [
+     "DigitalTwin",
+     []
+    ],
+    [
+     "DigitalTwinElement",
+     []
+    ],
+    [
+     "TwinBinding",
+     [
+      "mapsTo : anyURI",
+      "platform : string"
+     ]
+    ]
+   ],
+   "sub": [
+    [
+     "DigitalTwin",
+     "DigitalTwinElement"
+    ],
+    [
+     "TwinBinding",
+     "DigitalTwinElement"
+    ]
+   ],
+   "props": [
+    [
+     "hasExecutionHistory",
+     "DigitalTwin",
+     "SkillExecution",
+     "",
+     "added"
+    ],
+    [
+     "hasTwinBinding",
+     "DigitalTwin",
+     "TwinBinding",
+     "",
+     "added"
+    ],
+    [
+     "representedBy",
+     "ProductInstance",
+     "DigitalTwin",
+     "dashed",
+     "added"
+    ],
+    [
+     "representedBy",
+     "Station",
+     "DigitalTwin",
+     "dashed",
+     "added"
+    ],
+    [
+     "representedBy",
+     "Module",
+     "DigitalTwin",
+     "dashed",
+     "added"
+    ],
+    [
+     "represents",
+     "DigitalTwin",
+     "ProductInstance",
+     "",
+     "added"
+    ],
+    [
+     "represents",
+     "DigitalTwin",
+     "Station",
+     "",
+     "added"
+    ],
+    [
+     "represents",
+     "DigitalTwin",
+     "Module",
+     "",
+     "added"
+    ],
+    [
+     "usesEventStream",
+     "DigitalTwin",
+     "EventStream",
+     "",
+     "added"
+    ]
+   ],
+   "ext": [
+    "AAS packaging, DTDL twin model via mapsTo (hook only)"
+   ]
+  },
+  {
+   "id": "opcua",
+   "layer": "ext",
+   "title": "OPC UA",
+   "file": "ext/opcua.ttl",
+   "color": "#EA580C",
+   "classes": [
+    [
+     "OpcUaBinding",
+     []
+    ],
+    [
+     "OpcUaMethod",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaNode",
+     [
+      "browseName : string",
+      "nodeId : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaObject",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaServer",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaSkillInterface",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "OpcUaVariable",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "OpcUaBinding",
+     "Binding"
+    ],
+    [
+     "OpcUaMethod",
+     "OpcUaNode"
+    ],
+    [
+     "OpcUaNode",
+     "InvocationElement"
+    ],
+    [
+     "OpcUaObject",
+     "OpcUaNode"
+    ],
+    [
+     "OpcUaServer",
+     "InvocationElement"
+    ],
+    [
+     "OpcUaSkillInterface",
+     "OpcUaObject"
+    ],
+    [
+     "OpcUaSkillInterface",
+     "SkillInterface"
+    ],
+    [
+     "OpcUaVariable",
+     "OpcUaNode"
+    ]
+   ],
+   "props": [
+    [
+     "bindsMethod",
+     "OpcUaBinding",
+     "OpcUaMethod",
+     "dashed",
+     "added"
+    ],
+    [
+     "exposes",
+     "OpcUaSkillInterface",
+     "Skill",
+     "dashed",
+     null
+    ],
+    [
+     "hostedOn",
+     "OpcUaServer",
+     "Module",
+     "dashed",
+     "added"
+    ],
+    [
+     "hostsInterface",
+     "OpcUaServer",
+     "OpcUaSkillInterface",
+     "dashed",
+     null
+    ],
+    [
+     "hostsServer",
+     "Module",
+     "OpcUaServer",
+     "dashed",
+     "added"
+    ],
+    [
+     "implementsSkill",
+     "OpcUaMethod",
+     "Skill",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "HSU OPC UA ODP closeMatch"
+   ]
+  },
+  {
+   "id": "isa88",
+   "layer": "ext",
+   "title": "ISA-88 bridge",
+   "file": "ext/isa88.ttl",
+   "color": "#6B7280",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "Documentary closeMatch: Recipe -> ISA88:RecipeProcedure, PlanStep -> ISA88:Phase, Station -> ISA88:Unit, Module -> ISA88:EquipmentModule"
+   ]
+  },
+  {
+   "id": "isa95",
+   "layer": "ext",
+   "title": "ISA-95 hierarchy",
+   "file": "ext/isa95.ttl",
+   "color": "#0F766E",
+   "classes": [
+    [
+     "Area",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Enterprise",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "EquipmentHierarchyElement",
+     []
+    ],
+    [
+     "Site",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "WorkCenter",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "WorkUnit",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "Area",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "Enterprise",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "Site",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "WorkCenter",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "WorkUnit",
+     "EquipmentHierarchyElement"
+    ]
+   ],
+   "props": [
+    [
+     "partOfArea",
+     "WorkCenter",
+     "Area",
+     "dashed",
+     null
+    ],
+    [
+     "partOfEnterprise",
+     "Site",
+     "Enterprise",
+     "dashed",
+     null
+    ],
+    [
+     "partOfSite",
+     "Area",
+     "Site",
+     "dashed",
+     null
+    ],
+    [
+     "partOfWorkCenter",
+     "WorkUnit",
+     "WorkCenter",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOfWorkCenter",
+     "Station",
+     "WorkCenter",
+     "dashed",
+     "added"
+    ]
+   ],
+   "ext": [
+    "HSU DIN EN 62264-2 ODP closeMatch"
+   ]
+  },
+  {
+   "id": "automationml",
+   "layer": "ext",
+   "title": "AutomationML topology",
+   "file": "ext/automationml.ttl",
+   "color": "#4B5563",
+   "classes": [
+    [
+     "ExternalInterface",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InternalElement",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "InternalLink",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "Module",
+     "InternalElement"
+    ]
+   ],
+   "props": [
+    [
+     "hasInterface",
+     "InternalElement",
+     "ExternalInterface",
+     "dashed",
+     null
+    ],
+    [
+     "linksInterface",
+     "InternalLink",
+     "ExternalInterface",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "Module becomes an InternalElement; HSU AutomationML ODP matches"
+   ]
+  },
+  {
+   "id": "dtdl",
+   "layer": "ext",
+   "title": "DTDL",
+   "file": "ext/dtdl.ttl",
+   "color": "#2563EB",
+   "classes": [
+    [
+     "DtdlBinding",
+     []
+    ],
+    [
+     "DtdlCommand",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DtdlInterface",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DtdlProperty",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "DtdlTelemetry",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "DtdlBinding",
+     "Binding"
+    ],
+    [
+     "DtdlCommand",
+     "InvocationElement"
+    ],
+    [
+     "DtdlInterface",
+     "SkillInterface"
+    ],
+    [
+     "DtdlProperty",
+     "InvocationElement"
+    ],
+    [
+     "DtdlTelemetry",
+     "InvocationElement"
+    ]
+   ],
+   "props": [
+    [
+     "bindsInterface",
+     "DtdlBinding",
+     "DtdlInterface",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasCommand",
+     "DtdlInterface",
+     "DtdlCommand",
+     "dashed",
+     null
+    ],
+    [
+     "hasProperty",
+     "DtdlInterface",
+     "DtdlProperty",
+     "dashed",
+     null
+    ],
+    [
+     "hasTelemetry",
+     "DtdlInterface",
+     "DtdlTelemetry",
+     "dashed",
+     null
+    ]
+   ],
+   "ext": [
+    "DTDL v3 metamodel class identifiers"
+   ]
+  },
+  {
+   "id": "rest",
+   "layer": "ext",
+   "title": "REST",
+   "file": "ext/rest.ttl",
+   "color": "#D97706",
+   "classes": [
+    [
+     "RestBinding",
+     [
+      "httpMethod : string",
+      "uriTemplate : string"
+     ]
+    ],
+    [
+     "RestInterface",
+     []
+    ]
+   ],
+   "sub": [
+    [
+     "RestBinding",
+     "Binding"
+    ],
+    [
+     "RestInterface",
+     "SkillInterface"
+    ]
+   ],
+   "props": [],
+   "ext": [
+    "HSU WADL ODP: RestBinding close to WADL:Method"
+   ]
+  },
+  {
+   "id": "prov",
+   "layer": "ext",
+   "title": "PROV-O bridge",
+   "file": "ext/prov.ttl",
+   "color": "#9333EA",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "SkillExecution subClassOf prov:Activity; executes / hasInput / executedOn subPropertyOf prov:used; hasOutput subPropertyOf prov:generated",
+    "datatype properties on classes of other modules: SkillExecution.endedAtTime : dateTime, SkillExecution.startedAtTime : dateTime"
+   ]
+  },
+  {
+   "id": "odrl",
+   "layer": "ext",
+   "title": "ODRL bridge",
+   "file": "ext/odrl.ttl",
+   "color": "#374151",
+   "classes": [],
+   "sub": [],
+   "props": [],
+   "ext": [
+    "Policy, Permission subClassOf odrl:Policy, odrl:Permission; hasPermission / action / target / grantedTo subPropertyOf odrl:"
+   ]
+  }
+ ]
+}

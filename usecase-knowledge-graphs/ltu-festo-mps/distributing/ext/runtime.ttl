@@ -1,0 +1,32 @@
+# MAESTRO example: LTU Festo MPS - Distributing station
+# ext/runtime.ttl: statements that belong to the MAESTRO runtime module (https://w3id.org/maestro/runtime).
+# Umbrella: ../distributing.ttl. Single-file form of the use case: ../distributing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix dis: <https://w3id.org/maestro/examples/ltu-festo-mps/distributing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/runtime> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Distributing station - ext/runtime"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/distributing> ;
+    owl:imports <https://w3id.org/maestro/runtime> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:FaultSpecification (1)
+#################################################################
+
+dis:FS_MagazineEmpty a maestro:FaultSpecification ;
+    rdfs:label "Magazine empty"@en ;
+    maestro:description "GRAFCET step 10: no workpiece in the magazine; the MAG. EMPTY and 'start' lights go on. Refill the magazine and acknowledge with START."@en ;
+    maestro:faultCode "MAG. EMPTY" ;
+    maestro:faultSeverity "operator acknowledgement" .
+
+#################################################################
+# Further statements about individuals described in other files (1)
+#################################################################
+
+dis:DistributeWorkpiece
+    maestro:mayRaiseFault dis:FS_MagazineEmpty .

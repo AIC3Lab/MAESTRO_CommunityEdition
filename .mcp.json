@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "graphdb": {
+      "type": "http",
+      "url": "http://localhost:7200/mcp"
+    }
+  }
+}

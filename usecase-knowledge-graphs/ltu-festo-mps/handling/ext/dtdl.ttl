@@ -1,0 +1,112 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# ext/dtdl.ttl: statements that belong to the MAESTRO dtdl module (https://w3id.org/maestro/dtdl).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/dtdl> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - ext/dtdl"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/dtdl> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:DtdlInterface (2)
+#################################################################
+
+han:ConsoleIO a maestro:DtdlInterface ;
+    rdfs:label "Handling station control console (XMG1)"@en ;
+    maestro:description "Operator signals of the control console."@en ;
+    maestro:exposedVia han:XMG1 ;
+    maestro:hasProperty han:CC_ResetLamp, han:CC_StartLamp ;
+    maestro:hasTelemetry han:CC_AutoMan,
+        han:CC_EmergencyStop,
+        han:CC_Reset,
+        han:CC_Start,
+        han:CC_Stop .
+
+han:StationIO a maestro:DtdlInterface ;
+    rdfs:label "Handling station I/O image (XMA2)"@en ;
+    maestro:description "Digital inputs I0-I7 and outputs O0-O3, O7."@en ;
+    maestro:exposedVia han:XMA2 ;
+    maestro:hasProperty han:DO_ExtendGripper,
+        han:DO_OpenGripper,
+        han:DO_StationOccupied,
+        han:DO_ToDownstream,
+        han:DO_ToUpstream ;
+    maestro:hasTelemetry han:DI_AtDownstream,
+        han:DI_AtSortingPosition,
+        han:DI_AtUpstream,
+        han:DI_DownstreamFree,
+        han:DI_GripperExtended,
+        han:DI_GripperRetracted,
+        han:DI_NotBlack,
+        han:DI_WorkpieceAvailable .
+
+#################################################################
+# maestro:DtdlTelemetry (13)
+#################################################################
+
+han:CC_AutoMan a maestro:DtdlTelemetry .
+
+han:CC_EmergencyStop a maestro:DtdlTelemetry .
+
+han:CC_Reset a maestro:DtdlTelemetry .
+
+han:CC_Start a maestro:DtdlTelemetry .
+
+han:CC_Stop a maestro:DtdlTelemetry .
+
+han:DI_AtDownstream a maestro:DtdlTelemetry .
+
+han:DI_AtSortingPosition a maestro:DtdlTelemetry .
+
+han:DI_AtUpstream a maestro:DtdlTelemetry .
+
+han:DI_DownstreamFree a maestro:DtdlTelemetry .
+
+han:DI_GripperExtended a maestro:DtdlTelemetry .
+
+han:DI_GripperRetracted a maestro:DtdlTelemetry .
+
+han:DI_NotBlack a maestro:DtdlTelemetry .
+
+han:DI_WorkpieceAvailable a maestro:DtdlTelemetry .
+
+#################################################################
+# maestro:DtdlProperty (15)
+#################################################################
+
+han:CC_ResetLamp a maestro:DtdlProperty .
+
+han:CC_StartLamp a maestro:DtdlProperty .
+
+han:DO_ExtendGripper a maestro:DtdlProperty .
+
+han:DO_OpenGripper a maestro:DtdlProperty .
+
+han:DO_StationOccupied a maestro:DtdlProperty .
+
+han:DO_ToDownstream a maestro:DtdlProperty .
+
+han:DO_ToUpstream a maestro:DtdlProperty .
+
+han:TD_AirConsumption a maestro:DtdlProperty .
+
+han:TD_DigitalInputs a maestro:DtdlProperty .
+
+han:TD_DigitalOutputs a maestro:DtdlProperty .
+
+han:TD_MaxPressure a maestro:DtdlProperty .
+
+han:TD_OperatingPressure a maestro:DtdlProperty .
+
+han:TD_SlideCapacity a maestro:DtdlProperty .
+
+han:TD_SupplyCurrent a maestro:DtdlProperty .
+
+han:TD_SupplyVoltage a maestro:DtdlProperty .

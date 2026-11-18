@@ -1,0 +1,69 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix msh: <https://w3id.org/maestro/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE RESOURCE CLUSTER (core/resource.ttl)
+#
+# Stations, modules and capabilities. Completeness rules are advisory
+# (sh:Warning); cardinality of identifying attributes is enforced.
+#
+# Also holds the text contract of maestro:description, which this
+# module declares: its OWL range is rdfs:Literal so that plain and
+# language-tagged descriptions are both admitted, and the shape
+# msh:DescriptionTextShape requires one of those two.
+#################################################################
+
+msh:StationModuleShape a sh:NodeShape ;
+    sh:targetClass maestro:Station ;
+    rdfs:label "A station should be composed of at least one module."@en ;
+    sh:property [
+        sh:path maestro:hasModule ;
+        sh:minCount 1 ;
+        sh:class maestro:Module ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Station should declare at least one maestro:Module via maestro:hasModule." ;
+    ] .
+
+msh:ModuleCapabilityShape a sh:NodeShape ;
+    sh:targetClass maestro:Module ;
+    rdfs:label "A module should provide at least one capability."@en ;
+    sh:property [
+        sh:path maestro:providesCapability ;
+        sh:minCount 1 ;
+        sh:class maestro:Capability ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Module should provide at least one maestro:Capability via maestro:providesCapability." ;
+    ] .
+
+msh:ModuleSerialNumberShape a sh:NodeShape ;
+    sh:targetClass maestro:Module ;
+    rdfs:label "A module carries at most one serial number."@en ;
+    sh:property [
+        sh:path maestro:serialNumber ;
+        sh:maxCount 1 ;
+        sh:message "A maestro:Module carries at most one maestro:serialNumber." ;
+    ] .
+
+msh:ModuleStationShape a sh:NodeShape ;
+    sh:targetClass maestro:Module ;
+    rdfs:label "A module should be carried by at most one station at a time."@en ;
+    sh:property [
+        sh:path [ sh:inversePath maestro:hasModule ] ;
+        sh:maxCount 1 ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:Module should be carried by at most one maestro:Station (maestro:hasModule); a module moved by reconfiguration should be removed from its former station." ;
+    ] .
+
+msh:DescriptionTextShape a sh:NodeShape ;
+    sh:targetObjectsOf maestro:description ;
+    rdfs:label "A description is plain or language-tagged text."@en ;
+    sh:nodeKind sh:Literal ;
+    sh:or (
+        [ sh:datatype xsd:string ]
+        [ sh:datatype rdf:langString ]
+    ) ;
+    sh:message "maestro:description must be an xsd:string or a language-tagged (rdf:langString) literal." .

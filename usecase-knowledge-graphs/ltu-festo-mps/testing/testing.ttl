@@ -1,0 +1,96 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+#
+# Umbrella of this use case: the ontology header, which imports the module files under core/ and ext/.
+# Single-file form: testing-merged.ttl (written by tools/merge_usecases.py).
+#
+# Notes carried over from the former plant.ttl, product.ttl, which this use case was split from;
+# section titles and file names in them refer to those files.
+#
+# [plant.ttl]
+# LTU FESTO MPS - TESTING STATION - PLANT (DESIGN TIME)
+#
+# Sources (FESTO CD/02_Testing): 648812_Manual_Testing (DE/EN 04/06
+# R2.2),
+# Electric_Circuit_Diagram_Testing (drawing 195781, 05.04.06),
+# Pneumatic_Circuit_Diagram_Testing, 526881_Parts_list_Testing, assembly
+# instructions, data sheets, operating instructions, 02_Testing_GRAFCET.
+#
+# I/O bits, XMA2 pins and BMKs are from the electric circuit diagram.
+# Documents disagree on: 7 digital inputs in the technical data vs 8
+# wired;
+# BMK 3A1 = comparator (electric) and air slide (pneumatic); the COLOUR
+# lamp polarity (manual: off for black; GRAFCET: on for black).
+#
+# STATION
+#
+# Material number 526881 (parts list) and manual order number 648812. The
+# circuit wires 8 inputs although the technical data says 7.
+#
+# TECHNICAL DATA
+#
+# Static values from the manual's technical-data table and commissioning
+# section.
+#
+# BILL OF MATERIALS
+#
+# Parts list 526881 (11.11.2002) with the components of the circuit
+# diagrams below each assembly.
+#
+# SIGNALS (DATA POINTS)
+#
+# Bits, XMA2 pins and BMKs from the electric circuit diagram, pages 4-6.
+# Sensor = maestro:Output / maestro:DtdlTelemetry; actuator command = maestro:Input /
+# maestro:DtdlProperty.
+#
+# I/O PATH: SYSLINK ENDPOINTS AND DATA INTERFACES
+#
+# XMA2 digital, XMA3 analogue (height), XMG1 console. The URNs only name
+# the connectors.
+#
+# MAINTENANCE
+#
+# Plus the cylinder and CPV notes of the operating instructions 391172
+# and 165200. Displacement sensor service life 100 million operations
+# (data sheet 326498).
+#
+# [product.ttl]
+# LTU FESTO MPS - TESTING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Testing station
+# (02_Testing_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty step 6 and the flag-only steps 5 and 18 are
+# folded into the transition expressions. Step 12 is drawn empty but is
+# the 2 s measuring dwell, so it is kept and realised by MeasureHeight.
+# Colour is not a reject criterion: it only switches the 'material'
+# light.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station"@en ;
+    rdfs:comment "The Festo MPS Testing station of the LTU line: modules, parts list, I/O allocation, skills, safety and care. The GRAFCET control sequence is an HHM-Core recipe in core/recipe.ttl. Built from manual 648812, the electric and pneumatic circuit diagrams, parts list 526881, data sheets and the GRAFCET."@en ;
+    owl:imports <https://w3id.org/maestro/examples/ltu-festo-mps/shared>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/invocation>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/maas>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/policy>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/product>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/recipe>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/resource>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/core/skill>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/automationml>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/dtdl>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/energy>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/isa95>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/maintenance> ;
+    owl:versionIRI <https://w3id.org/maestro/examples/ltu-festo-mps/testing/0.1.0> ;
+    owl:versionInfo "0.1.0" .

@@ -1,0 +1,40 @@
+# Build output (tools/build.py writes dist/ locally; never committed)
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Office / LibreOffice lock and temp files
+~$*
+~WRL*.tmp
+.~lock.*#
+
+# macOS / Windows / Linux
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+*~
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ontology tooling backups (Protege autosaves and merge leftovers)
+*.bak
+*.orig
+
+# Local secrets and per-user tool settings
+.env
+.env.*
+.claude/settings.local.json

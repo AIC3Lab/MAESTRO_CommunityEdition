@@ -1,4 +1,4 @@
-<title>MAESTRO HHM-Core Graph</title>
+<title>MAESTRO Graph</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   /* Layout: a technical drawing sheet. Sticky tab bar, then one wide graph panel that scrolls sideways
@@ -84,13 +84,13 @@
 
 <div class="wrap">
   <header>
-    <h1>MAESTRO HHM-Core Graph</h1>
+    <h1>MAESTRO Graph</h1>
     <p>Generated from the Turtle modules of the package by tools/gen_graph.py. One namespace (<code style="font-family:var(--font-mono)">maestro:</code>), one file per module. Classes list their datatype properties; arrows are object properties. Blue-tinted classes come from the nine MAESTRO modules you asked to add.</p>
     <div class="stats" id="stats"></div>
   </header>
 
   <div class="tabs" role="tablist">
-    <button class="tab" role="tab" aria-selected="true" data-view="proposed">Proposed MAESTRO HHM-Core</button>
+    <button class="tab" role="tab" aria-selected="true" data-view="proposed">Proposed MAESTRO</button>
     <button class="tab" role="tab" aria-selected="false" data-view="placement">Where your 9 modules go</button>
     <button class="tab" role="tab" aria-selected="false" data-view="terms">Term list by module</button>
     <button class="tab" role="tab" aria-selected="false" data-view="given">Your HHM Core (as given)</button>
@@ -101,7 +101,7 @@
     <div class="toolbar">
       <div class="layers" id="layers">
         <label><input type="checkbox" id="layer-core" checked disabled> core (HHM clusters)</label>
-        <label><input type="checkbox" id="layer-module" checked> modules (telemetry, energy, maintenance, MaaS)</label>
+        <label><input type="checkbox" id="layer-module" checked> modules (runtime, energy, maintenance, MaaS)</label>
         <label><input type="checkbox" id="layer-ext"> extensions (OPC UA, digital twin)</label>
       </div>
       <label>Zoom <input type="range" id="zoom" min="40" max="160" value="100"> <span id="zoomv">100%</span></label>
@@ -121,7 +121,7 @@
   <section id="view-placement" hidden>
     <div class="summary" id="summary"></div>
     <div class="place" id="place"></div>
-    <p class="note">"Fold in" means the terms join an HHM cluster file because the cluster already owns that concern. "New module" means no HHM cluster covers the concern, so it becomes its own file under <code>modules/</code>. "Realises extension point" means the HHM diagram already reserves a hook for it, so it becomes that <code>ext/</code> file. "Removed" records your decision to leave unit and sensor out. Dropped terms are those whose parent classes (Plant, Site, Process, Agent, Quality, Quantity) do not exist in the HHM-core version.</p>
+    <p class="note">"Fold in" means the terms join an HHM cluster file because the cluster already owns that concern. "New module" means no HHM cluster covers the concern, so it becomes its own file (<code>core/maas.ttl</code>, or under <code>experimental-extensions/</code> for runtime, energy and maintenance). "Realises extension point" means the HHM diagram already reserves a hook for it, so it becomes that <code>experimental-extensions/</code> file. "Removed" records your decision to leave unit and sensor out. Dropped terms are those whose parent classes (Plant, Site, Process, Agent, Quality, Quantity) do not exist in the HHM-core version.</p>
   </section>
 
   <section id="view-terms" hidden>
@@ -148,7 +148,7 @@ const MODEL = {
     [
      "Capability",
      [
-      "description : string  (open domain)"
+      "description : text  (open domain)"
      ]
     ],
     [
@@ -160,13 +160,30 @@ const MODEL = {
      ]
     ],
     [
+     "Resource",
+     []
+    ],
+    [
      "Station",
      [
       "location : string  (open domain)"
      ]
+    ],
+    [
+     "ValueSet",
+     []
     ]
    ],
-   "sub": [],
+   "sub": [
+    [
+     "Module",
+     "Resource"
+    ],
+    [
+     "Station",
+     "Resource"
+    ]
+   ],
    "props": [
     [
      "hasModule",
@@ -174,6 +191,244 @@ const MODEL = {
      "Module",
      "",
      null
+    ],
+    [
+     "hasPart",
+     "Station",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Station",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Station",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Station",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "Recipe",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "CompositeSkill",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "Module",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "PlanStep",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "Skill",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "hasPart",
+     "BOMItem",
+     "BOMItem",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "moduleOf",
+     "Module",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Module",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "PlanStep",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "Skill",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "CompositeSkill",
+     "dashed",
+     "added"
+    ],
+    [
+     "partOf",
+     "BOMItem",
+     "BOMItem",
+     "dashed",
+     "added"
+    ],
+    [
+     "providedBy",
+     "Capability",
+     "Module",
+     "dashed",
+     "added"
     ],
     [
      "providesCapability",
@@ -184,9 +439,10 @@ const MODEL = {
     ]
    ],
    "ext": [
-    "AutomationML / CAEX topology -> ext/automationml.ttl",
-    "ISA-88 equipment model -> ext/isa88.ttl",
-    "open-domain datatype properties (drawn on the classes that use them): description : string, location : string, manufacturer : string, model : string, serialNumber : string, version : string"
+    "AutomationML / CAEX topology -> experimental-extensions/automationml.ttl",
+    "ISA-88 equipment model -> experimental-extensions/isa88.ttl",
+    "Package-wide: ValueSet, transitive hasPart / partOf (super-property of hasModule, hasStep, hasSubSkill, hasSubItem)",
+    "open-domain datatype properties (drawn on the classes that use them): description : text, location : string, manufacturer : string, model : string, serialNumber : string, version : string"
    ]
   },
   {
@@ -205,10 +461,15 @@ const MODEL = {
      []
     ],
     [
+     "Condition",
+     []
+    ],
+    [
      "ParameterDef",
      [
       "maxValue : number",
       "minValue : number",
+      "paramName : string",
       "paramType : anyURI",
       "unitRef : anyURI"
      ]
@@ -216,7 +477,7 @@ const MODEL = {
     [
      "ParameterDirection",
      [
-      "individuals: Input, Output"
+      "individuals: In-out, Input, Output"
      ]
     ],
     [
@@ -240,9 +501,13 @@ const MODEL = {
     [
      "Skill",
      [
-      "description : string  (open domain)",
+      "description : text  (open domain)",
       "version : string  (open domain)"
      ]
+    ],
+    [
+     "SkillElement",
+     []
     ],
     [
      "SkillInterface",
@@ -257,9 +522,48 @@ const MODEL = {
     [
      "CompositeSkill",
      "Skill"
+    ],
+    [
+     "Condition",
+     "SkillElement"
+    ],
+    [
+     "ParameterDef",
+     "SkillElement"
+    ],
+    [
+     "ParameterDirection",
+     "ValueSet"
+    ],
+    [
+     "ParameterValue",
+     "SkillElement"
+    ],
+    [
+     "Postcondition",
+     "Condition"
+    ],
+    [
+     "Precondition",
+     "Condition"
+    ],
+    [
+     "Skill",
+     "SkillElement"
+    ],
+    [
+     "SkillInterface",
+     "SkillElement"
     ]
    ],
    "props": [
+    [
+     "hasCondition",
+     "Skill",
+     "Condition",
+     "dashed",
+     "added"
+    ],
     [
      "hasInterfaceContract",
      "Skill",
@@ -296,18 +600,11 @@ const MODEL = {
      "adapted"
     ],
     [
-     "hasSubSkillLink",
+     "hasSubSkill",
      "CompositeSkill",
      "Skill",
      "",
      "adapted"
-    ],
-    [
-     "instanceOf",
-     "ParameterValue",
-     "ParameterDef",
-     "",
-     null
     ],
     [
      "parameterDirection",
@@ -317,9 +614,23 @@ const MODEL = {
      null
     ],
     [
+     "requiredBy",
+     "Capability",
+     "Skill",
+     "dashed",
+     "added"
+    ],
+    [
      "requiresCapability",
      "Skill",
      "Capability",
+     "",
+     null
+    ],
+    [
+     "valueOf",
+     "ParameterValue",
+     "ParameterDef",
      "",
      null
     ]
@@ -363,9 +674,34 @@ const MODEL = {
      [
       "version : string  (open domain)"
      ]
+    ],
+    [
+     "RecipeElement",
+     []
     ]
    ],
-   "sub": [],
+   "sub": [
+    [
+     "ControlFlowConstraint",
+     "RecipeElement"
+    ],
+    [
+     "ControlFlowType",
+     "ValueSet"
+    ],
+    [
+     "DataBinding",
+     "RecipeElement"
+    ],
+    [
+     "PlanStep",
+     "RecipeElement"
+    ],
+    [
+     "Recipe",
+     "RecipeElement"
+    ]
+   ],
    "props": [
     [
      "bindsFrom",
@@ -373,6 +709,13 @@ const MODEL = {
      "ParameterDef",
      "dashed",
      null
+    ],
+    [
+     "bindsParameter",
+     "DataBinding",
+     "ParameterDef",
+     "dashed",
+     "added"
     ],
     [
      "bindsTo",
@@ -417,7 +760,14 @@ const MODEL = {
      null
     ],
     [
-     "relatedStep",
+     "stepOf",
+     "PlanStep",
+     "Recipe",
+     "dashed",
+     "added"
+    ],
+    [
+     "targetStep",
      "ControlFlowConstraint",
      "PlanStep",
      "dashed",
@@ -425,8 +775,8 @@ const MODEL = {
     ]
    ],
    "ext": [
-    "ISA-88 procedural model -> ext/isa88.ttl",
-    "ISA-95 / IEC 62264 -> ext/isa95.ttl, maestro:ProductionOrder"
+    "ISA-88 procedural model -> experimental-extensions/isa88.ttl",
+    "ISA-95 / IEC 62264 -> experimental-extensions/isa95.ttl, maestro:ProductionOrder"
    ]
   },
   {
@@ -437,7 +787,7 @@ const MODEL = {
    "color": "#6E56CF",
    "classes": [
     [
-     "BOMNode",
+     "BOMItem",
      [
       "refDesignator : string",
       "quantity : decimal  (open domain)"
@@ -446,7 +796,7 @@ const MODEL = {
     [
      "Feature",
      [
-      "description : string  (open domain)"
+      "description : text  (open domain)"
      ]
     ],
     [
@@ -458,6 +808,10 @@ const MODEL = {
     ],
     [
      "Material",
+     []
+    ],
+    [
+     "ProductElement",
      []
     ],
     [
@@ -484,6 +838,34 @@ const MODEL = {
    ],
    "sub": [
     [
+     "BOMItem",
+     "ProductElement"
+    ],
+    [
+     "Feature",
+     "ProductElement"
+    ],
+    [
+     "Identifier",
+     "ProductElement"
+    ],
+    [
+     "Material",
+     "ProductElement"
+    ],
+    [
+     "ProductInstance",
+     "ProductElement"
+    ],
+    [
+     "ProductType",
+     "ProductElement"
+    ],
+    [
+     "Requirement",
+     "ProductElement"
+    ],
+    [
      "Variant",
      "ProductType"
     ]
@@ -497,9 +879,9 @@ const MODEL = {
      null
     ],
     [
-     "hasBOM",
+     "hasBOMItem",
      "ProductType",
-     "BOMNode",
+     "BOMItem",
      "",
      null
     ],
@@ -532,13 +914,6 @@ const MODEL = {
      "adapted"
     ],
     [
-     "hasPart",
-     "BOMNode",
-     "BOMNode",
-     "",
-     "adapted"
-    ],
-    [
      "hasRequirement",
      "ProductType",
      "Requirement",
@@ -560,6 +935,13 @@ const MODEL = {
      null
     ],
     [
+     "hasSubItem",
+     "BOMItem",
+     "BOMItem",
+     "",
+     "adapted"
+    ],
+    [
      "hasVariant",
      "ProductType",
      "Variant",
@@ -567,15 +949,22 @@ const MODEL = {
      "adapted"
     ],
     [
+     "instanceOfType",
+     "ProductInstance",
+     "ProductType",
+     "dashed",
+     null
+    ],
+    [
      "madeOf",
-     "BOMNode",
+     "BOMItem",
      "Material",
      "",
      "adapted"
     ],
     [
      "nodeFor",
-     "BOMNode",
+     "BOMItem",
      "ProductType",
      "dashed",
      "adapted"
@@ -585,6 +974,13 @@ const MODEL = {
      "Feature",
      "PlanStep",
      "",
+     null
+    ],
+    [
+     "variantOf",
+     "Variant",
+     "ProductType",
+     "dashed",
      null
     ]
    ],
@@ -604,7 +1000,9 @@ const MODEL = {
    "classes": [
     [
      "Binding",
-     [],
+     [
+      "mappingSpec : string"
+     ],
      "MAESTRO 1.0"
     ],
     [
@@ -616,12 +1014,17 @@ const MODEL = {
     ],
     [
      "Endpoint",
-     [],
+     [
+      "address : string",
+      "port : integer"
+     ],
      "MAESTRO 1.0"
     ],
     [
      "EventStream",
-     [],
+     [
+      "topic : string"
+     ],
      "MAESTRO 1.0"
     ],
     [
@@ -630,6 +1033,10 @@ const MODEL = {
       "individuals: Asset Administration Shell submodel template, DTDL, OPC UA NodeSet, OpenAPI"
      ],
      "MAESTRO 1.0"
+    ],
+    [
+     "InvocationElement",
+     []
     ],
     [
      "OperationSignature",
@@ -648,7 +1055,40 @@ const MODEL = {
      []
     ]
    ],
-   "sub": [],
+   "sub": [
+    [
+     "Binding",
+     "InvocationElement"
+    ],
+    [
+     "DataFormat",
+     "ValueSet"
+    ],
+    [
+     "Endpoint",
+     "InvocationElement"
+    ],
+    [
+     "EventStream",
+     "InvocationElement"
+    ],
+    [
+     "InterfaceDescriptionLanguage",
+     "ValueSet"
+    ],
+    [
+     "OperationSignature",
+     "InvocationElement"
+    ],
+    [
+     "Protocol",
+     "ValueSet"
+    ],
+    [
+     "SkillService",
+     "InvocationElement"
+    ]
+   ],
    "props": [
     [
      "describedIn",
@@ -686,13 +1126,6 @@ const MODEL = {
      null
     ],
     [
-     "exposesInterface",
-     "SkillService",
-     "SkillInterface",
-     "dashed",
-     null
-    ],
-    [
      "hasBinding",
      "Endpoint",
      "Binding",
@@ -707,6 +1140,13 @@ const MODEL = {
      null
     ],
     [
+     "implementsInterface",
+     "SkillService",
+     "SkillInterface",
+     "dashed",
+     null
+    ],
+    [
      "returns",
      "OperationSignature",
      "ParameterDef",
@@ -714,11 +1154,11 @@ const MODEL = {
      null
     ],
     [
-     "specializesAs",
+     "specializes",
      "Binding",
-     "Protocol",
+     "SkillInterface",
      "dashed",
-     null
+     "added"
     ],
     [
      "usesDataFormat",
@@ -733,19 +1173,19 @@ const MODEL = {
      "Protocol",
      "",
      null
+    ],
+    [
+     "usesProtocol",
+     "Binding",
+     "Protocol",
+     "",
+     null
     ]
    ],
    "ext": [
-    "address, port, topic -> ext/addressing.ttl",
-    "JSON, XML, Protobuf data formats -> ext/data-formats.ttl",
-    "OPC UA -> ext/opcua.ttl",
-    "HTTP / REST (WADL) -> ext/rest.ttl",
-    "MQTT -> ext/mqtt.ttl",
-    "DDS -> ext/dds.ttl",
-    "Modbus -> ext/modbus.ttl",
-    "PROFINET -> ext/profinet.ttl",
-    "EtherCAT -> ext/ethercat.ttl",
-    "DTDL -> ext/dtdl.ttl",
+    "OPC UA -> experimental-extensions/opcua.ttl",
+    "REST (WADL) -> experimental-extensions/rest.ttl",
+    "DTDL -> experimental-extensions/dtdl.ttl",
     "AAS submodel publish (hook only)"
    ]
   },
@@ -782,19 +1222,19 @@ const MODEL = {
     [
      "Hazard",
      [
-      "description : string  (open domain)"
+      "description : text  (open domain)"
      ],
      "MAESTRO 1.0"
     ],
     [
      "Mitigation",
      [
-      "description : string  (open domain)"
+      "description : text  (open domain)"
      ],
      "MAESTRO 1.0"
     ],
     [
-     "Mode",
+     "OperatingMode",
      [
       "individuals: Automatic, Maintenance, Manual"
      ]
@@ -817,9 +1257,13 @@ const MODEL = {
      ]
     ],
     [
+     "PolicyElement",
+     []
+    ],
+    [
      "Risk",
      [
-      "description : string  (open domain)"
+      "description : text  (open domain)"
      ],
      "MAESTRO 1.0"
     ],
@@ -845,9 +1289,13 @@ const MODEL = {
      ]
     ],
     [
+     "SafetyElement",
+     []
+    ],
+    [
      "SafetyFunction",
      [
-      "description : string  (open domain)"
+      "description : text  (open domain)"
      ],
      "MAESTRO 1.0"
     ],
@@ -861,8 +1309,68 @@ const MODEL = {
    ],
    "sub": [
     [
+     "Action",
+     "ValueSet"
+    ],
+    [
+     "Constraint",
+     "PolicyElement"
+    ],
+    [
      "EmergencyStop",
      "SafetyFunction"
+    ],
+    [
+     "Evidence",
+     "SafetyElement"
+    ],
+    [
+     "Hazard",
+     "SafetyElement"
+    ],
+    [
+     "Mitigation",
+     "SafetyElement"
+    ],
+    [
+     "OperatingMode",
+     "ValueSet"
+    ],
+    [
+     "PerformanceLevel",
+     "ValueSet"
+    ],
+    [
+     "Permission",
+     "PolicyElement"
+    ],
+    [
+     "Policy",
+     "PolicyElement"
+    ],
+    [
+     "Risk",
+     "SafetyElement"
+    ],
+    [
+     "RiskAssessment",
+     "SafetyElement"
+    ],
+    [
+     "RiskLevel",
+     "ValueSet"
+    ],
+    [
+     "Role",
+     "PolicyElement"
+    ],
+    [
+     "SafetyFunction",
+     "SafetyElement"
+    ],
+    [
+     "SafetyIntegrityLevel",
+     "ValueSet"
     ]
    ],
    "props": [
@@ -923,6 +1431,13 @@ const MODEL = {
      null
     ],
     [
+     "causesRisk",
+     "Hazard",
+     "Risk",
+     "",
+     null
+    ],
+    [
      "constrains",
      "Constraint",
      "Skill",
@@ -951,16 +1466,16 @@ const MODEL = {
      null
     ],
     [
-     "contains",
-     "Policy",
-     "Constraint",
+     "grantedTo",
+     "Permission",
+     "Role",
      "",
      null
     ],
     [
-     "grantedTo",
-     "Permission",
-     "Role",
+     "hasConstraint",
+     "Policy",
+     "Constraint",
      "",
      null
     ],
@@ -979,17 +1494,17 @@ const MODEL = {
      null
     ],
     [
-     "identifiesHazard",
+     "hasRiskLevel",
      "RiskAssessment",
-     "Hazard",
+     "RiskLevel",
      "dashed",
      null
     ],
     [
-     "increases",
+     "identifiesHazard",
+     "RiskAssessment",
      "Hazard",
-     "Risk",
-     "",
+     "dashed",
      null
     ],
     [
@@ -998,6 +1513,13 @@ const MODEL = {
      "Hazard",
      "dashed",
      null
+    ],
+    [
+     "recommendsMitigation",
+     "RiskAssessment",
+     "Mitigation",
+     "dashed",
+     "added"
     ],
     [
      "reduces",
@@ -1030,7 +1552,7 @@ const MODEL = {
     [
      "requiresMode",
      "Policy",
-     "Mode",
+     "OperatingMode",
      "",
      null
     ],
@@ -1045,13 +1567,6 @@ const MODEL = {
      "riskEvidence",
      "RiskAssessment",
      "Evidence",
-     "dashed",
-     null
-    ],
-    [
-     "riskLevel",
-     "RiskAssessment",
-     "RiskLevel",
      "dashed",
      null
     ],
@@ -1085,7 +1600,7 @@ const MODEL = {
     ]
    ],
    "ext": [
-    "SHACL shapes in shapes/ ; ODRL core profile -> ext/odrl.ttl ; XACML (hook only)"
+    "SHACL shapes in shacl/ ; ODRL core profile -> experimental-extensions/odrl.ttl ; XACML (hook only)"
    ]
   },
   {
@@ -1095,6 +1610,10 @@ const MODEL = {
    "file": "core/execution.ttl",
    "color": "#8B5CF6",
    "classes": [
+    [
+     "ExecutionElement",
+     []
+    ],
     [
      "ExecutionStatus",
      [
@@ -1122,8 +1641,28 @@ const MODEL = {
      ]
     ]
    ],
-   "sub": [],
+   "sub": [
+    [
+     "Fault",
+     "ExecutionElement"
+    ],
+    [
+     "SkillExecution",
+     "ExecutionElement"
+    ],
+    [
+     "TimeInterval",
+     "ExecutionElement"
+    ]
+   ],
    "props": [
+    [
+     "executedBy",
+     "Skill",
+     "SkillExecution",
+     "dashed",
+     "added"
+    ],
     [
      "executedOn",
      "SkillExecution",
@@ -1151,6 +1690,13 @@ const MODEL = {
      "ParameterValue",
      "",
      null
+    ],
+    [
+     "hasOutput",
+     "SkillExecution",
+     "ParameterValue",
+     "dashed",
+     "added"
     ],
     [
      "hasStatus",
@@ -1181,515 +1727,31 @@ const MODEL = {
      null
     ],
     [
-     "mayRaise",
+     "raisedFault",
      "SkillExecution",
      "Fault",
      "",
      "adapted"
+    ],
+    [
+     "realizesStep",
+     "SkillExecution",
+     "PlanStep",
+     "dashed",
+     "added"
     ]
    ],
    "ext": [
-    "PROV-O -> ext/prov.ttl",
+    "PROV-O -> experimental-extensions/prov.ttl",
     "SAREF4INMA traceability (hook only)",
     "open-domain datatype properties (drawn on the classes that use them): faultCause : string, faultCode : string, faultSeverity : string, timestamp : dateTime"
-   ]
-  },
-  {
-   "id": "telemetry",
-   "layer": "module",
-   "title": "Telemetry",
-   "file": "modules/telemetry.ttl",
-   "color": "#7C3AED",
-   "classes": [
-    [
-     "ExecutionRecord",
-     [
-      "recordedAt : dateTime"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "FaultSpecification",
-     [
-      "faultCode : string  (open domain)",
-      "faultSeverity : string  (open domain)"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "Snapshot",
-     [
-      "snapshotTaken : dateTime"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "State",
-     [
-      "individuals: Alarm, Available, Busy, Degraded, Failed, Fault, Healthy, Reserved"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "StateAssertion",
-     [
-      "observedAt : dateTime",
-      "validFrom : dateTime",
-      "validTo : dateTime"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "StateDimension",
-     [
-      "individuals: Health, Mode, Operational, Reservation"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "StateTransition",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "TelemetryEvent",
-     [
-      "timestamp : dateTime  (open domain)"
-     ],
-     "MAESTRO 1.0"
-    ]
-   ],
-   "sub": [
-    [
-     "StateTransition",
-     "TelemetryEvent"
-    ],
-    [
-     "ExecutionStatus",
-     "State"
-    ],
-    [
-     "Fault",
-     "TelemetryEvent"
-    ]
-   ],
-   "props": [
-    [
-     "describesExecution",
-     "ExecutionRecord",
-     "SkillExecution",
-     "dashed",
-     null
-    ],
-    [
-     "enteredState",
-     "StateTransition",
-     "State",
-     "dashed",
-     null
-    ],
-    [
-     "eventSubject",
-     "TelemetryEvent",
-     "Module",
-     "dashed",
-     "added"
-    ],
-    [
-     "eventSubject",
-     "TelemetryEvent",
-     "Station",
-     "dashed",
-     "added"
-    ],
-    [
-     "eventSubject",
-     "TelemetryEvent",
-     "SkillExecution",
-     "dashed",
-     "added"
-    ],
-    [
-     "fromState",
-     "StateTransition",
-     "State",
-     "dashed",
-     null
-    ],
-    [
-     "hasState",
-     "Module",
-     "State",
-     "dashed",
-     null
-    ],
-    [
-     "hasState",
-     "Station",
-     "State",
-     "dashed",
-     null
-    ],
-    [
-     "inDimension",
-     "State",
-     "StateDimension",
-     "dashed",
-     null
-    ],
-    [
-     "instanceOfFault",
-     "Fault",
-     "FaultSpecification",
-     "dashed",
-     null
-    ],
-    [
-     "mayRaiseFault",
-     "Skill",
-     "FaultSpecification",
-     "dashed",
-     null
-    ],
-    [
-     "stateDimension",
-     "StateAssertion",
-     "StateDimension",
-     "dashed",
-     null
-    ],
-    [
-     "stateEvidence",
-     "StateAssertion",
-     "SkillExecution",
-     "dashed",
-     null
-    ],
-    [
-     "stateEvidence",
-     "StateAssertion",
-     "Fault",
-     "dashed",
-     null
-    ],
-    [
-     "stateEvidence",
-     "StateAssertion",
-     "Evidence",
-     "dashed",
-     null
-    ],
-    [
-     "stateSubject",
-     "StateAssertion",
-     "Module",
-     "dashed",
-     null
-    ],
-    [
-     "stateSubject",
-     "StateAssertion",
-     "Station",
-     "dashed",
-     null
-    ],
-    [
-     "stateValue",
-     "StateAssertion",
-     "State",
-     "dashed",
-     null
-    ]
-   ],
-   "ext": [
-    "ExecutionStatus (core) is a subclass of State"
-   ]
-  },
-  {
-   "id": "energy",
-   "layer": "module",
-   "title": "Energy",
-   "file": "modules/energy.ttl",
-   "color": "#CA8A04",
-   "classes": [
-    [
-     "EnergyConsumer",
-     [],
-     "adapted from MAESTRO 1.0"
-    ],
-    [
-     "EnergyMeasurement",
-     [
-      "energyKwh : number"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "EnergySource",
-     [
-      "carbonGCO2eqPerKwh : number",
-      "individuals: Compressed air, Electrical grid, Solar, Wind"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "PowerMeasurement",
-     [
-      "powerWatts : number",
-      "timestamp : dateTime  (open domain)"
-     ],
-     "MAESTRO 1.0"
-    ]
-   ],
-   "sub": [
-    [
-     "EnergyConsumer",
-     "Module"
-    ]
-   ],
-   "props": [
-    [
-     "measuredSubject",
-     "EnergyMeasurement",
-     "Module",
-     "dashed",
-     null
-    ],
-    [
-     "measuredSubject",
-     "EnergyMeasurement",
-     "Station",
-     "dashed",
-     null
-    ],
-    [
-     "measuredSubject",
-     "EnergyMeasurement",
-     "SkillExecution",
-     "dashed",
-     null
-    ],
-    [
-     "measuredSubject",
-     "PowerMeasurement",
-     "Module",
-     "dashed",
-     null
-    ],
-    [
-     "measuredSubject",
-     "PowerMeasurement",
-     "Station",
-     "dashed",
-     null
-    ],
-    [
-     "measuredSubject",
-     "PowerMeasurement",
-     "SkillExecution",
-     "dashed",
-     null
-    ],
-    [
-     "overInterval",
-     "EnergyMeasurement",
-     "TimeInterval",
-     "dashed",
-     null
-    ],
-    [
-     "suppliedBy",
-     "EnergyConsumer",
-     "EnergySource",
-     "dashed",
-     null
-    ]
-   ],
-   "ext": [
-    "Bare-number properties carry fixed units (kWh, W, g CO2-eq/kWh)"
-   ]
-  },
-  {
-   "id": "maintenance",
-   "layer": "module",
-   "title": "Maintenance",
-   "file": "modules/maintenance.ttl",
-   "color": "#B91C1C",
-   "classes": [
-    [
-     "ConditionBased",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "Corrective",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "FaultDiagnosis",
-     [
-      "description : string  (open domain)"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "Finding",
-     [
-      "findingDescription : string"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "Inspection",
-     [],
-     "adapted from MAESTRO 1.0"
-    ],
-    [
-     "MaintenanceAction",
-     [
-      "performedAt : dateTime",
-      "scheduledFor : dateTime"
-     ],
-     "MAESTRO 1.0"
-    ],
-    [
-     "MaintenancePlan",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "MaintenanceTask",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "Predictive",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "Preventive",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "ReturnToServiceAssessment",
-     [],
-     "MAESTRO 1.0"
-    ],
-    [
-     "ReturnToServiceOutcome",
-     [
-      "individuals: Cleared for service, Cleared with conditions, Not cleared"
-     ],
-     "MAESTRO 1.0"
-    ]
-   ],
-   "sub": [
-    [
-     "ConditionBased",
-     "Preventive"
-    ],
-    [
-     "Corrective",
-     "MaintenanceAction"
-    ],
-    [
-     "Inspection",
-     "MaintenanceAction"
-    ],
-    [
-     "Predictive",
-     "ConditionBased"
-    ],
-    [
-     "Preventive",
-     "MaintenanceAction"
-    ]
-   ],
-   "props": [
-    [
-     "affectsAsset",
-     "MaintenanceAction",
-     "Module",
-     "dashed",
-     null
-    ],
-    [
-     "assessesWork",
-     "ReturnToServiceAssessment",
-     "MaintenanceAction",
-     "dashed",
-     null
-    ],
-    [
-     "diagnosesFault",
-     "FaultDiagnosis",
-     "Fault",
-     "dashed",
-     "added"
-    ],
-    [
-     "hasFinding",
-     "MaintenanceAction",
-     "Finding",
-     "dashed",
-     null
-    ],
-    [
-     "hasTask",
-     "MaintenancePlan",
-     "MaintenanceTask",
-     "dashed",
-     null
-    ],
-    [
-     "performsTask",
-     "MaintenanceAction",
-     "MaintenanceTask",
-     "dashed",
-     null
-    ],
-    [
-     "planForAsset",
-     "MaintenancePlan",
-     "Module",
-     "dashed",
-     null
-    ],
-    [
-     "rtsEvidence",
-     "ReturnToServiceAssessment",
-     "Evidence",
-     "dashed",
-     "adapted"
-    ],
-    [
-     "rtsOutcome",
-     "ReturnToServiceAssessment",
-     "ReturnToServiceOutcome",
-     "dashed",
-     null
-    ],
-    [
-     "triggeredBy",
-     "MaintenanceAction",
-     "Fault",
-     "dashed",
-     "adapted"
-    ]
-   ],
-   "ext": [
-    "Module also carries mtbfHours and remainingUsefulLifeHours",
-    "datatype properties on classes of other modules: Module.mtbfHours : number, Module.remainingUsefulLifeHours : number"
    ]
   },
   {
    "id": "maas",
    "layer": "module",
    "title": "Manufacturing as a Service",
-   "file": "modules/maas.ttl",
+   "file": "core/maas.ttl",
    "color": "#0369A1",
    "classes": [
     [
@@ -1708,6 +1770,10 @@ const MODEL = {
      "Customer",
      [],
      "MAESTRO 1.0"
+    ],
+    [
+     "MaaSElement",
+     []
     ],
     [
      "Marketplace",
@@ -1757,6 +1823,10 @@ const MODEL = {
    ],
    "sub": [
     [
+     "Contract",
+     "MaaSElement"
+    ],
+    [
      "Customer",
      "Actor"
     ],
@@ -1767,6 +1837,22 @@ const MODEL = {
     [
      "PhysicalResourceProvider",
      "Actor"
+    ],
+    [
+     "ProductionOrder",
+     "MaaSElement"
+    ],
+    [
+     "Quote",
+     "MaaSElement"
+    ],
+    [
+     "ServiceOffer",
+     "MaaSElement"
+    ],
+    [
+     "ServiceRequest",
+     "MaaSElement"
     ]
    ],
    "props": [
@@ -1897,41 +1983,589 @@ const MODEL = {
    ]
   },
   {
-   "id": "addressing",
-   "layer": "ext",
-   "title": "Addressing",
-   "file": "ext/addressing.ttl",
-   "color": "#78716C",
-   "classes": [],
-   "sub": [],
-   "props": [],
+   "id": "runtime",
+   "layer": "module",
+   "title": "Runtime State",
+   "file": "experimental-extensions/runtime.ttl",
+   "color": "#7C3AED",
+   "classes": [
+    [
+     "ExecutionRecord",
+     [
+      "recordedAt : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "FaultSpecification",
+     [
+      "faultCode : string  (open domain)",
+      "faultSeverity : string  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RuntimeEvent",
+     [
+      "timestamp : dateTime  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "RuntimeStateElement",
+     []
+    ],
+    [
+     "Snapshot",
+     [
+      "snapshotTaken : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "State",
+     [
+      "individuals: Alarm, Available, Busy, Degraded, Failed, Fault, Healthy, Reserved"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateAssertion",
+     [
+      "observedAt : dateTime",
+      "validFrom : dateTime",
+      "validTo : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateDimension",
+     [
+      "individuals: Health, Mode, Operational, Reservation"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "StateTransition",
+     [],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "ExecutionRecord",
+     "RuntimeStateElement"
+    ],
+    [
+     "FaultSpecification",
+     "RuntimeStateElement"
+    ],
+    [
+     "RuntimeEvent",
+     "RuntimeStateElement"
+    ],
+    [
+     "Snapshot",
+     "RuntimeStateElement"
+    ],
+    [
+     "State",
+     "ValueSet"
+    ],
+    [
+     "StateAssertion",
+     "RuntimeStateElement"
+    ],
+    [
+     "StateDimension",
+     "ValueSet"
+    ],
+    [
+     "StateTransition",
+     "RuntimeEvent"
+    ],
+    [
+     "ExecutionStatus",
+     "State"
+    ],
+    [
+     "Fault",
+     "RuntimeEvent"
+    ]
+   ],
+   "props": [
+    [
+     "describesExecution",
+     "ExecutionRecord",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "enteredState",
+     "StateTransition",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "eventSubject",
+     "RuntimeEvent",
+     "Module",
+     "dashed",
+     "added"
+    ],
+    [
+     "eventSubject",
+     "RuntimeEvent",
+     "Station",
+     "dashed",
+     "added"
+    ],
+    [
+     "eventSubject",
+     "RuntimeEvent",
+     "SkillExecution",
+     "dashed",
+     "added"
+    ],
+    [
+     "fromState",
+     "StateTransition",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "hasState",
+     "Module",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "hasState",
+     "Station",
+     "State",
+     "dashed",
+     null
+    ],
+    [
+     "inDimension",
+     "State",
+     "StateDimension",
+     "dashed",
+     null
+    ],
+    [
+     "instanceOfFault",
+     "Fault",
+     "FaultSpecification",
+     "dashed",
+     null
+    ],
+    [
+     "mayRaiseFault",
+     "Skill",
+     "FaultSpecification",
+     "dashed",
+     null
+    ],
+    [
+     "stateDimension",
+     "StateAssertion",
+     "StateDimension",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "Fault",
+     "dashed",
+     null
+    ],
+    [
+     "stateEvidence",
+     "StateAssertion",
+     "Evidence",
+     "dashed",
+     null
+    ],
+    [
+     "stateSubject",
+     "StateAssertion",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "stateSubject",
+     "StateAssertion",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "stateValue",
+     "StateAssertion",
+     "State",
+     "dashed",
+     null
+    ]
+   ],
    "ext": [
-    "Imported by every protocol module; mqttTopic, ddsTopic subPropertyOf topic",
-    "datatype properties on classes of other modules: Endpoint.address : string, Endpoint.port : integer, Binding.topic : string"
+    "ExecutionStatus (core) is a subclass of State"
    ]
   },
   {
-   "id": "data_formats",
-   "layer": "ext",
-   "title": "Data formats",
-   "file": "ext/data-formats.ttl",
-   "color": "#A8A29E",
-   "classes": [],
-   "sub": [],
-   "props": [],
+   "id": "energy",
+   "layer": "module",
+   "title": "Energy",
+   "file": "experimental-extensions/energy.ttl",
+   "color": "#CA8A04",
+   "classes": [
+    [
+     "EnergyConsumer",
+     [],
+     "adapted from MAESTRO 1.0"
+    ],
+    [
+     "EnergyElement",
+     []
+    ],
+    [
+     "EnergyMeasurement",
+     [
+      "energyKwh : number"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "EnergySource",
+     [
+      "carbonGCO2eqPerKwh : number",
+      "individuals: Compressed air, Electrical grid, Solar, Wind"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "PowerMeasurement",
+     [
+      "powerWatts : number",
+      "timestamp : dateTime  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "EnergyConsumer",
+     "Module"
+    ],
+    [
+     "EnergyMeasurement",
+     "EnergyElement"
+    ],
+    [
+     "EnergySource",
+     "ValueSet"
+    ],
+    [
+     "PowerMeasurement",
+     "EnergyElement"
+    ]
+   ],
+   "props": [
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "EnergyMeasurement",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "Station",
+     "dashed",
+     null
+    ],
+    [
+     "measuredSubject",
+     "PowerMeasurement",
+     "SkillExecution",
+     "dashed",
+     null
+    ],
+    [
+     "overInterval",
+     "EnergyMeasurement",
+     "TimeInterval",
+     "dashed",
+     null
+    ],
+    [
+     "suppliedBy",
+     "EnergyConsumer",
+     "EnergySource",
+     "dashed",
+     null
+    ]
+   ],
    "ext": [
-    "Protocol-specific encodings live in their protocol module (OpcUaBinaryFormat in ext/opcua.ttl)"
+    "Bare-number properties carry fixed units (kWh, W, g CO2-eq/kWh)"
+   ]
+  },
+  {
+   "id": "maintenance",
+   "layer": "module",
+   "title": "Maintenance",
+   "file": "experimental-extensions/maintenance.ttl",
+   "color": "#B91C1C",
+   "classes": [
+    [
+     "ConditionBased",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Corrective",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "FaultDiagnosis",
+     [
+      "description : text  (open domain)"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Finding",
+     [
+      "findingDescription : string"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Inspection",
+     [],
+     "adapted from MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceAction",
+     [
+      "performedAt : dateTime",
+      "scheduledFor : dateTime"
+     ],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceElement",
+     []
+    ],
+    [
+     "MaintenancePlan",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "MaintenanceTask",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Predictive",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "Preventive",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ReturnToServiceAssessment",
+     [],
+     "MAESTRO 1.0"
+    ],
+    [
+     "ReturnToServiceOutcome",
+     [
+      "individuals: Cleared for service, Cleared with conditions, Not cleared"
+     ],
+     "MAESTRO 1.0"
+    ]
+   ],
+   "sub": [
+    [
+     "ConditionBased",
+     "Preventive"
+    ],
+    [
+     "Corrective",
+     "MaintenanceAction"
+    ],
+    [
+     "FaultDiagnosis",
+     "MaintenanceElement"
+    ],
+    [
+     "Finding",
+     "MaintenanceElement"
+    ],
+    [
+     "Inspection",
+     "MaintenanceAction"
+    ],
+    [
+     "MaintenanceAction",
+     "MaintenanceElement"
+    ],
+    [
+     "MaintenancePlan",
+     "MaintenanceElement"
+    ],
+    [
+     "MaintenanceTask",
+     "MaintenanceElement"
+    ],
+    [
+     "Predictive",
+     "ConditionBased"
+    ],
+    [
+     "Preventive",
+     "MaintenanceAction"
+    ],
+    [
+     "ReturnToServiceAssessment",
+     "MaintenanceElement"
+    ],
+    [
+     "ReturnToServiceOutcome",
+     "ValueSet"
+    ]
+   ],
+   "props": [
+    [
+     "affectsAsset",
+     "MaintenanceAction",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "assessesWork",
+     "ReturnToServiceAssessment",
+     "MaintenanceAction",
+     "dashed",
+     null
+    ],
+    [
+     "diagnosesFault",
+     "FaultDiagnosis",
+     "Fault",
+     "dashed",
+     "added"
+    ],
+    [
+     "hasFinding",
+     "MaintenanceAction",
+     "Finding",
+     "dashed",
+     null
+    ],
+    [
+     "hasTask",
+     "MaintenancePlan",
+     "MaintenanceTask",
+     "dashed",
+     null
+    ],
+    [
+     "performsTask",
+     "MaintenanceAction",
+     "MaintenanceTask",
+     "dashed",
+     null
+    ],
+    [
+     "planForAsset",
+     "MaintenancePlan",
+     "Module",
+     "dashed",
+     null
+    ],
+    [
+     "rtsEvidence",
+     "ReturnToServiceAssessment",
+     "Evidence",
+     "dashed",
+     "adapted"
+    ],
+    [
+     "rtsOutcome",
+     "ReturnToServiceAssessment",
+     "ReturnToServiceOutcome",
+     "dashed",
+     null
+    ],
+    [
+     "triggeredBy",
+     "MaintenanceAction",
+     "Fault",
+     "dashed",
+     "adapted"
+    ]
+   ],
+   "ext": [
+    "Module also carries mtbfHours and remainingUsefulLifeHours",
+    "datatype properties on classes of other modules: Module.mtbfHours : number, Module.remainingUsefulLifeHours : number"
    ]
   },
   {
    "id": "digital_twin",
    "layer": "ext",
    "title": "Digital Twin",
-   "file": "ext/digital-twin.ttl",
+   "file": "experimental-extensions/digital-twin.ttl",
    "color": "#0EA5E9",
    "classes": [
     [
      "DigitalTwin",
+     []
+    ],
+    [
+     "DigitalTwinElement",
      []
     ],
     [
@@ -1942,7 +2576,16 @@ const MODEL = {
      ]
     ]
    ],
-   "sub": [],
+   "sub": [
+    [
+     "DigitalTwin",
+     "DigitalTwinElement"
+    ],
+    [
+     "TwinBinding",
+     "DigitalTwinElement"
+    ]
+   ],
    "props": [
     [
      "hasExecutionHistory",
@@ -1956,6 +2599,27 @@ const MODEL = {
      "DigitalTwin",
      "TwinBinding",
      "",
+     "added"
+    ],
+    [
+     "representedBy",
+     "ProductInstance",
+     "DigitalTwin",
+     "dashed",
+     "added"
+    ],
+    [
+     "representedBy",
+     "Station",
+     "DigitalTwin",
+     "dashed",
+     "added"
+    ],
+    [
+     "representedBy",
+     "Module",
+     "DigitalTwin",
+     "dashed",
      "added"
     ],
     [
@@ -1995,7 +2659,7 @@ const MODEL = {
    "id": "opcua",
    "layer": "ext",
    "title": "OPC UA",
-   "file": "ext/opcua.ttl",
+   "file": "experimental-extensions/opcua.ttl",
    "color": "#EA580C",
    "classes": [
     [
@@ -2046,8 +2710,16 @@ const MODEL = {
      "OpcUaNode"
     ],
     [
+     "OpcUaNode",
+     "InvocationElement"
+    ],
+    [
      "OpcUaObject",
      "OpcUaNode"
+    ],
+    [
+     "OpcUaServer",
+     "InvocationElement"
     ],
     [
      "OpcUaSkillInterface",
@@ -2092,6 +2764,13 @@ const MODEL = {
      null
     ],
     [
+     "hostsServer",
+     "Module",
+     "OpcUaServer",
+     "dashed",
+     "added"
+    ],
+    [
      "implementsSkill",
      "OpcUaMethod",
      "Skill",
@@ -2107,7 +2786,7 @@ const MODEL = {
    "id": "isa88",
    "layer": "ext",
    "title": "ISA-88 bridge",
-   "file": "ext/isa88.ttl",
+   "file": "experimental-extensions/isa88.ttl",
    "color": "#6B7280",
    "classes": [],
    "sub": [],
@@ -2120,7 +2799,7 @@ const MODEL = {
    "id": "isa95",
    "layer": "ext",
    "title": "ISA-95 hierarchy",
-   "file": "ext/isa95.ttl",
+   "file": "experimental-extensions/isa95.ttl",
    "color": "#0F766E",
    "classes": [
     [
@@ -2132,6 +2811,10 @@ const MODEL = {
      "Enterprise",
      [],
      "MAESTRO 1.0"
+    ],
+    [
+     "EquipmentHierarchyElement",
+     []
     ],
     [
      "Site",
@@ -2149,7 +2832,28 @@ const MODEL = {
      "MAESTRO 1.0"
     ]
    ],
-   "sub": [],
+   "sub": [
+    [
+     "Area",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "Enterprise",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "Site",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "WorkCenter",
+     "EquipmentHierarchyElement"
+    ],
+    [
+     "WorkUnit",
+     "EquipmentHierarchyElement"
+    ]
+   ],
    "props": [
     [
      "partOfArea",
@@ -2195,7 +2899,7 @@ const MODEL = {
    "id": "automationml",
    "layer": "ext",
    "title": "AutomationML topology",
-   "file": "ext/automationml.ttl",
+   "file": "experimental-extensions/automationml.ttl",
    "color": "#4B5563",
    "classes": [
     [
@@ -2244,7 +2948,7 @@ const MODEL = {
    "id": "dtdl",
    "layer": "ext",
    "title": "DTDL",
-   "file": "ext/dtdl.ttl",
+   "file": "experimental-extensions/dtdl.ttl",
    "color": "#2563EB",
    "classes": [
     [
@@ -2278,8 +2982,20 @@ const MODEL = {
      "Binding"
     ],
     [
+     "DtdlCommand",
+     "InvocationElement"
+    ],
+    [
      "DtdlInterface",
      "SkillInterface"
+    ],
+    [
+     "DtdlProperty",
+     "InvocationElement"
+    ],
+    [
+     "DtdlTelemetry",
+     "InvocationElement"
     ]
    ],
    "props": [
@@ -2320,14 +3036,14 @@ const MODEL = {
    "id": "rest",
    "layer": "ext",
    "title": "REST",
-   "file": "ext/rest.ttl",
+   "file": "experimental-extensions/rest.ttl",
    "color": "#D97706",
    "classes": [
     [
      "RestBinding",
      [
       "httpMethod : string",
-      "urlTemplate : string"
+      "uriTemplate : string"
      ]
     ],
     [
@@ -2351,163 +3067,16 @@ const MODEL = {
    ]
   },
   {
-   "id": "mqtt",
-   "layer": "ext",
-   "title": "MQTT",
-   "file": "ext/mqtt.ttl",
-   "color": "#65A30D",
-   "classes": [
-    [
-     "MqttBinding",
-     [
-      "mqttQos : integer",
-      "mqttRetain : boolean",
-      "mqttTopic : string"
-     ]
-    ],
-    [
-     "MqttBroker",
-     []
-    ]
-   ],
-   "sub": [
-    [
-     "MqttBinding",
-     "Binding"
-    ],
-    [
-     "MqttBroker",
-     "Endpoint"
-    ]
-   ],
-   "props": [],
-   "ext": []
-  },
-  {
-   "id": "dds",
-   "layer": "ext",
-   "title": "DDS",
-   "file": "ext/dds.ttl",
-   "color": "#0891B2",
-   "classes": [
-    [
-     "DdsBinding",
-     [
-      "ddsDomainId : integer",
-      "ddsTopic : string",
-      "ddsTypeName : string"
-     ]
-    ]
-   ],
-   "sub": [
-    [
-     "DdsBinding",
-     "Binding"
-    ]
-   ],
-   "props": [],
-   "ext": []
-  },
-  {
-   "id": "modbus",
-   "layer": "ext",
-   "title": "Modbus",
-   "file": "ext/modbus.ttl",
-   "color": "#A16207",
-   "classes": [
-    [
-     "ModbusBinding",
-     [
-      "modbusAddress : integer",
-      "modbusCount : integer",
-      "modbusUnitId : integer"
-     ]
-    ],
-    [
-     "ModbusDataTable",
-     [
-      "individuals: Coil, Discrete input, Holding register, Input register"
-     ]
-    ]
-   ],
-   "sub": [
-    [
-     "ModbusBinding",
-     "Binding"
-    ]
-   ],
-   "props": [
-    [
-     "modbusDataTable",
-     "ModbusBinding",
-     "ModbusDataTable",
-     "dashed",
-     "added"
-    ]
-   ],
-   "ext": []
-  },
-  {
-   "id": "profinet",
-   "layer": "ext",
-   "title": "PROFINET",
-   "file": "ext/profinet.ttl",
-   "color": "#059669",
-   "classes": [
-    [
-     "ProfinetBinding",
-     [
-      "profinetSlot : integer",
-      "profinetStationName : string",
-      "profinetSubslot : integer"
-     ]
-    ]
-   ],
-   "sub": [
-    [
-     "ProfinetBinding",
-     "Binding"
-    ]
-   ],
-   "props": [],
-   "ext": []
-  },
-  {
-   "id": "ethercat",
-   "layer": "ext",
-   "title": "EtherCAT",
-   "file": "ext/ethercat.ttl",
-   "color": "#DC2626",
-   "classes": [
-    [
-     "EthercatBinding",
-     [
-      "ethercatIndex : integer",
-      "ethercatPosition : integer",
-      "ethercatSubindex : integer"
-     ]
-    ]
-   ],
-   "sub": [
-    [
-     "EthercatBinding",
-     "Binding"
-    ]
-   ],
-   "props": [],
-   "ext": []
-  },
-  {
    "id": "prov",
    "layer": "ext",
    "title": "PROV-O bridge",
-   "file": "ext/prov.ttl",
+   "file": "experimental-extensions/prov.ttl",
    "color": "#9333EA",
    "classes": [],
    "sub": [],
    "props": [],
    "ext": [
-    "SkillExecution subClassOf prov:Activity; executes / hasInput / executedOn subPropertyOf prov:used",
+    "SkillExecution subClassOf prov:Activity; executes / hasInput / executedOn subPropertyOf prov:used; hasOutput subPropertyOf prov:generated",
     "datatype properties on classes of other modules: SkillExecution.endedAtTime : dateTime, SkillExecution.startedAtTime : dateTime"
    ]
   },
@@ -2515,13 +3084,13 @@ const MODEL = {
    "id": "odrl",
    "layer": "ext",
    "title": "ODRL bridge",
-   "file": "ext/odrl.ttl",
+   "file": "experimental-extensions/odrl.ttl",
    "color": "#374151",
    "classes": [],
    "sub": [],
    "props": [],
    "ext": [
-    "Policy, Permission subClassOf odrl:Policy, odrl:Permission; hasPermission / action / target subPropertyOf odrl:"
+    "Policy, Permission subClassOf odrl:Policy, odrl:Permission; hasPermission / action / target / grantedTo subPropertyOf odrl:"
    ]
   }
  ]
@@ -2530,38 +3099,38 @@ const MODEL = {
 // ---------- where the nine MAESTRO files go ----------
 const PLACEMENT = [
   { src: "cross-cutting/communication.ttl", kind: "fold", target: "core/invocation.ttl",
-    keep: "Protocol (+7 individuals), Endpoint (address, port: ext/addressing.ttl), Binding, EventStream, OperationSignature, DataFormat (4 individuals: ext/data-formats.ttl, ext/opcua.ttl), InterfaceDescriptionLanguage (4 individuals: ext/opcua.ttl, ext/dtdl.ttl, ext/rest.ttl, ext/digital-twin.ttl); usesProtocol, hasBinding, exposedVia, hasSignature, hasParameterDef, returns, specializesAs, usesDataFormat, describedIn. WADL relatedMatch/closeMatch kept.",
+    keep: "Protocol (+7 individuals), Endpoint (address, port), Binding, EventStream, OperationSignature, DataFormat (+4), InterfaceDescriptionLanguage (+4); usesProtocol, hasBinding, exposedVia, hasSignature, hasParameterDef, returns, specializesAs, usesDataFormat, describedIn. WADL relatedMatch/closeMatch kept.",
     drop: "Channel and hasEndpoint (unused indirection), bindsEndpoint (inverse of hasBinding), deprecated DtdlProtocol, conformsToStream (needs a generic Event class the HHM core does not have).",
     why: "Every term belongs to the HHM Invocation Hooks cluster, which already owns Endpoint, Protocol and Binding. Adding a second file would split one concern." },
   { src: "cross-cutting/safety.ttl", kind: "fold", target: "core/policy.ttl",
     keep: "SafetyFunction, EmergencyStop, SafetyIntegrityLevel (SIL1–4), PerformanceLevel (PLa–e), RiskLevel (Low/Medium/High), RiskAssessment; mitigates, requiredSIL, achievedSIL, requiredPerformanceLevel, achievedPerformanceLevel, assessedSubject, assessesRisk, identifiesHazard, reliesOnMitigation, riskLevel, riskEvidence, riskAssessmentMethod, assumption.",
     drop: "Deprecated hasSIL and hasPerformanceLevel.",
     why: "Hazard, Risk and Mitigation are already HHM core in the Safety/Security/Policy cluster; the rest extends the same cluster. If the file grows uncomfortable it can later split into policy.ttl and safety.ttl inside the same cluster without changing any IRI." },
-  { src: "runtime/runtime.ttl", kind: "split", target: "core/execution.ttl (already) + modules/telemetry.ttl (new)",
-    keep: "Core already has SkillExecution, TimeInterval, Fault, executes, executedOn, invokedVia, hasInput, hasStatus, hasTime, mayRaise. New module: State (+12 values, 4 PackML closeMatch), StateDimension (+4), StateAssertion, TelemetryEvent, StateTransition, FaultSpecification, ExecutionRecord, Snapshot; hasState, inDimension, stateSubject, stateDimension, stateValue, stateEvidence, fromState, enteredState, mayRaiseFault, instanceOfFault, describesExecution, faultCause, faultSeverity.",
+  { src: "runtime/runtime.ttl", kind: "split", target: "core/execution.ttl (already) + experimental-extensions/runtime.ttl (new)",
+    keep: "Core already has SkillExecution, TimeInterval, Fault, executes, executedOn, invokedVia, hasInput, hasStatus, hasTime, mayRaise. New module: State (+12 values, 4 PackML closeMatch), StateDimension (+4), StateAssertion, RuntimeEvent, StateTransition, FaultSpecification, ExecutionRecord, Snapshot; hasState, inDimension, stateSubject, stateDimension, stateValue, stateEvidence, fromState, enteredState, mayRaiseFault, instanceOfFault, describesExecution, faultCause, faultSeverity.",
     drop: "performedBy and recordedBy (no Agent class in the HHM core; MaaS Actor could take that role later), the deprecated mayRaise-as-state reading (HHM mayRaise keeps its name and means the Fault actually raised).",
     why: "HHM's Minimal Execution cluster covers one execution. The live state model (dimensions, assertions, transitions, snapshots) is a separate concern that no HHM cluster owns, so it becomes its own module that depends on execution." },
   { src: "cross-cutting/unit.ttl", kind: "removed", target: "not included",
     keep: "Nothing. ParameterDef.unitRef stays an anyURI pointing at a QUDT unit IRI, as the HHM diagram shows; energyKwh, powerWatts, leadTimeDays and maxLeadTimeDays carry their unit in the name.",
     drop: "Unit, Quantity, the unit individuals and conversions; energyValue, powerValue, leadTime, maxLeadTime (all needed a Quantity).",
     why: "Removed at your request. Can be re-added later as modules/unit.ttl without changing any core IRI." },
-  { src: "cross-cutting/energy.ttl", kind: "new", target: "modules/energy.ttl",
+  { src: "cross-cutting/energy.ttl", kind: "new", target: "experimental-extensions/energy.ttl",
     keep: "All: EnergyConsumer (⊑ Module), EnergyMeasurement, PowerMeasurement, EnergySource (+4 individuals); suppliedBy, measuredSubject, overInterval, energyValue, powerValue, energyKwh, powerWatts, carbonGCO2eqPerKwh.",
     drop: "Nothing. core:Resource ranges become Module (and Station where sensible).",
     why: "No HHM cluster covers energy. Depends on modules/unit.ttl (Quantity) and core/execution.ttl (TimeInterval, SkillExecution)." },
-  { src: "cross-cutting/maintenance.ttl", kind: "new", target: "modules/maintenance.ttl",
+  { src: "cross-cutting/maintenance.ttl", kind: "new", target: "experimental-extensions/maintenance.ttl",
     keep: "All 12 classes and their properties; mtbfHours and remainingUsefulLifeHours declared on Module.",
     drop: "The qa:Inspection parent (there is no quality module); Inspection stays a MaintenanceAction only. triggeredBy is narrowed to Fault.",
     why: "No HHM cluster covers maintenance. Depends on core/resource.ttl, core/execution.ttl (Fault) and core/policy.ttl (Evidence)." },
-  { src: "logical/maas.ttl", kind: "new", target: "modules/maas.ttl",
+  { src: "logical/maas.ttl", kind: "new", target: "core/maas.ttl",
     keep: "Actor, Customer, PhysicalResourceProvider, Marketplace, ServiceOffer, ServiceRequest, Quote, Contract and all offer/request/quote/contract properties; the three Role individuals; schema.org closeMatch. ProductionOrder added so realizedByOrder has a target.",
     drop: "fulfilledByProcess (no process module), locatedAt → plan:Site (no Site; Actor gets a location literal), the agent:Organization and plan:Enterprise parents.",
     why: "No HHM cluster covers the market tier. providedAt and operates point at Station, the top physical unit in HHM, instead of Plant." },
   { src: "cross-cutting/sensor.ttl", kind: "removed", target: "not included",
     keep: "Nothing. The HHM SOSA/SSN extension point on Skill stays a documented hook.",
     drop: "Sensor and its 7 subtypes, Observation, ObservableProperty, FeatureOfInterest, hasObservationEvidence.",
-    why: "Removed at your request. Can be re-added later as ext/sensor.ttl." },
-  { src: "execution/opcua.ttl", kind: "ext", target: "ext/opcua.ttl",
+    why: "Removed at your request. Can be re-added later as experimental-extensions/sensor.ttl." },
+  { src: "execution/opcua.ttl", kind: "ext", target: "experimental-extensions/opcua.ttl",
     keep: "OpcUaServer, OpcUaNode, OpcUaObject, OpcUaVariable, OpcUaMethod, OpcUaSkillInterface (⊑ SkillInterface); nodeId, browseName, hostsInterface, exposes, implementsSkill; HSU OpcUa closeMatch. OpcUaBinding (⊑ Binding) added to realise the HHM Binding specialisation.",
     drop: "accessibleThrough (inverse of exposes; inverses are avoided for OWL 2 RL simplicity).",
     why: "The HHM diagram reserves the OPC UA extension point on Binding. This file realises it." },

@@ -1,0 +1,11 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic, valid): a plain and a language-tagged
+# description. Expected: no result. See shacl/probes/README.md.
+
+probe:Capability a maestro:Capability ;
+    maestro:description "Move a workpiece along a linear axis." ,
+        "Ein Werkstück entlang einer Linearachse bewegen."@de .

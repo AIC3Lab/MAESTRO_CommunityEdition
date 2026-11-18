@@ -1,0 +1,503 @@
+# MAESTRO example: LTU Festo MPS - Processing station
+# core/skill.ttl: statements that belong to the MAESTRO skill module (https://w3id.org/maestro/skill).
+# Umbrella: ../processing.ttl. Single-file form of the use case: ../processing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix pro: <https://w3id.org/maestro/examples/ltu-festo-mps/processing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/processing/core/skill> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Processing station - core/skill"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/processing> ;
+    owl:imports <https://w3id.org/maestro/skill> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:AtomicSkill (10)
+#################################################################
+
+pro:CheckOrientation a maestro:AtomicSkill ;
+    rdfs:label "Check workpiece orientation"@en ;
+    maestro:description "Macro step M20: switch the testing solenoid on for 3 s, read B4, switch it off and store the result in bit 1 of flag 'workpiece orientation'."@en ;
+    maestro:hasParameterDef pro:DI_OrientationOK,
+        pro:DI_WorkpieceAtChecking,
+        pro:DO_TestSolenoid,
+        pro:P_OrientationResult,
+        pro:T_CheckDwell ;
+    maestro:hasPostcondition pro:Post_CheckOrientation ;
+    maestro:hasPrecondition pro:Pre_CheckOrientation ;
+    maestro:requiresCapability ltu:OrientationCheckingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:ClampWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Clamp workpiece"@en ;
+    maestro:description "Switch clamping solenoid M4 on."@en ;
+    maestro:hasParameterDef pro:DI_WorkpieceAtDrilling, pro:DO_Clamp ;
+    maestro:hasPostcondition pro:Post_ClampWorkpiece ;
+    maestro:hasPrecondition pro:Pre_ClampWorkpiece ;
+    maestro:requiresCapability ltu:ClampingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:EjectWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Eject workpiece"@en ;
+    maestro:description "Macro step M40: switch ejector solenoid M6 on for 1 s."@en ;
+    maestro:hasParameterDef pro:DO_Eject, pro:P_OrientationAtOutput, pro:T_EjectDuration ;
+    maestro:hasPostcondition pro:Post_EjectWorkpiece ;
+    maestro:hasPrecondition pro:Pre_EjectWorkpiece ;
+    maestro:requiresCapability ltu:EjectingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:IndexTable a maestro:AtomicSkill ;
+    rdfs:label "Turn rotary indexing table one step (60 degrees)"@en ;
+    maestro:description "Pulse O1; relay K2 keeps the motor running until K5 stops the table at the next positioning screw."@en ;
+    maestro:hasParameterDef pro:DI_DownstreamFree,
+        pro:DI_TablePositioned,
+        pro:DO_IndexTable,
+        pro:T_TableSettle ;
+    maestro:hasPostcondition pro:Post_IndexTable ;
+    maestro:hasPrecondition pro:Pre_IndexTable ;
+    maestro:requiresCapability ltu:IndexingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:LowerDrill a maestro:AtomicSkill ;
+    rdfs:label "Lower drilling unit with drill on"@en ;
+    maestro:description "Switch the drilling machine on and lower the linear axis to 1B2."@en ;
+    maestro:hasParameterDef pro:DI_DrillDown,
+        pro:DO_DrillMotor,
+        pro:DO_LowerDrill,
+        pro:P_OrientationAtDrilling ;
+    maestro:hasPostcondition pro:Post_LowerDrill ;
+    maestro:hasPrecondition pro:Pre_LowerDrill ;
+    maestro:requiresCapability ltu:DrillingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:RaiseDrill a maestro:AtomicSkill ;
+    rdfs:label "Raise drilling unit with drill off"@en ;
+    maestro:description "Switch the drilling machine off and raise the linear axis to 1B1."@en ;
+    maestro:hasParameterDef pro:DI_DrillUp, pro:DO_DrillMotor, pro:DO_RaiseDrill ;
+    maestro:hasPostcondition pro:Post_RaiseDrill ;
+    maestro:requiresCapability ltu:DrillingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:ReleaseWorkpiece a maestro:AtomicSkill ;
+    rdfs:label "Release workpiece"@en ;
+    maestro:description "Switch clamping solenoid M4 off."@en ;
+    maestro:hasParameterDef pro:DO_Clamp ;
+    maestro:hasPostcondition pro:Post_ReleaseWorkpiece ;
+    maestro:requiresCapability ltu:ClampingCapability ;
+    maestro:version "DE 01/04" .
+
+pro:ResetStation a maestro:AtomicSkill ;
+    rdfs:label "Reset to initial position"@en ;
+    maestro:description "GRAFCET step 3: move the station to its initial position (drill up); step 4 turns the table to its initial position; step 5 sets flag 'reset finished'."@en ;
+    maestro:hasParameterDef pro:CC_Reset, pro:DI_DrillUp, pro:DI_TablePositioned ;
+    maestro:hasPostcondition pro:Post_ResetStation ;
+    maestro:hasPrecondition pro:Pre_ResetStation ;
+    maestro:requiresCapability ltu:StationControlCapability ;
+    maestro:version "DE 01/04" .
+
+pro:SetStationLinkSignal a maestro:AtomicSkill ;
+    rdfs:label "Signal 'station occupied' / 'not occupied'"@en ;
+    maestro:description "Switch the StationLink transmitter towards the upstream station."@en ;
+    maestro:hasParameterDef pro:DO_StationOccupied, pro:T_OccupiedDelay ;
+    maestro:requiresCapability ltu:StationLinkCapability ;
+    maestro:version "DE 01/04" .
+
+pro:SwitchIndicatorLight a maestro:AtomicSkill ;
+    rdfs:label "Switch indicator light"@en ;
+    maestro:description "Turn the 'reset', 'start' or WORKPIECE NOK light on or off."@en ;
+    maestro:hasParameterDef pro:CC_ResetLamp, pro:CC_StartLamp, pro:CC_WorkpieceNokLamp ;
+    maestro:requiresCapability ltu:OperatorInterfaceCapability ;
+    maestro:version "DE 01/04" .
+
+#################################################################
+# maestro:CompositeSkill (1)
+#################################################################
+
+pro:ProcessWorkpiece a maestro:CompositeSkill ;
+    rdfs:label "Process workpiece (station cycle)"@en ;
+    maestro:description "Index the table, then in parallel check the orientation of the workpiece at the testing position, drill (simulated polishing) the workpiece at the drilling position and eject the workpiece at the output position (GRAFCET steps 8-14 with macro steps M20, M30, M40). Wrongly inserted workpieces are not drilled and raise WORKPIECE NOK at the output."@en ;
+    maestro:hasInterfaceContract pro:StationIO ;
+    maestro:hasPostcondition pro:Post_ProcessWorkpiece ;
+    maestro:hasPrecondition pro:Pre_ProcessWorkpiece ;
+    maestro:hasSubSkill pro:CheckOrientation,
+        pro:ClampWorkpiece,
+        pro:EjectWorkpiece,
+        pro:IndexTable,
+        pro:LowerDrill,
+        pro:RaiseDrill,
+        pro:ReleaseWorkpiece ;
+    maestro:requiresCapability ltu:ClampingCapability,
+        ltu:DrillingCapability,
+        ltu:EjectingCapability,
+        ltu:IndexingCapability,
+        ltu:OrientationCheckingCapability ;
+    maestro:version "DE 01/04" .
+
+#################################################################
+# maestro:ParameterDef (37)
+#################################################################
+
+pro:CC_AutoMan a maestro:ParameterDef ;
+    rdfs:label "Key-operated switch AUTO/MAN"@en ;
+    maestro:description "AUTO = continuous cycle, MAN = individual cycle. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:CC_EmergencyStop a maestro:ParameterDef ;
+    rdfs:label "EMERGENCY-STOP pushbutton (if available)"@en ;
+    maestro:description "Interrupts the sequence at any time; must be released before a program is loaded. Whether it is a PLC input or a hard-wired safety circuit is not stated. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:CC_Reset a maestro:ParameterDef ;
+    rdfs:label "RESET pushbutton (illuminated)"@en ;
+    maestro:description "The reset sequence is prompted by the illuminated RESET pushbutton and runs when it is pressed. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:CC_ResetLamp a maestro:ParameterDef ;
+    rdfs:label "'reset' indicator light"@en ;
+    maestro:description "Lamp of the RESET pushbutton; on while the station is not reset. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:CC_Start a maestro:ParameterDef ;
+    rdfs:label "START pushbutton (illuminated)"@en ;
+    maestro:description "Starts the sequence; also acknowledges an error after the operator has removed its cause. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:CC_StartLamp a maestro:ParameterDef ;
+    rdfs:label "'start' indicator light"@en ;
+    maestro:description "Lamp of the START pushbutton; on while the station waits for START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:CC_Stop a maestro:ParameterDef ;
+    rdfs:label "STOP pushbutton"@en ;
+    maestro:description "Interrupts the sequence at any time. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:CC_WorkpieceNokLamp a maestro:ParameterDef ;
+    rdfs:label "Warning light WORKPIECE NOK"@en ;
+    maestro:description "Lit when a workpiece was inserted the wrong way up; remove it by hand and acknowledge with START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DI_DownstreamFree a maestro:ParameterDef ;
+    rdfs:label "Downstream station free"@en ;
+    maestro:description "StationLink receiver; 1 = downstream station free."@en ;
+    maestro:hasIdentifier pro:ID_DI_DownstreamFree_BMK,
+        pro:ID_DI_DownstreamFree_Bit,
+        pro:ID_DI_DownstreamFree_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_DrillDown a maestro:ParameterDef ;
+    rdfs:label "Drilling unit in lower position"@en ;
+    maestro:description "Micro switch NO contact; reads 1 only while 'lower' (O2) is on (reading of the drawing)."@en ;
+    maestro:hasIdentifier pro:ID_DI_DrillDown_BMK, pro:ID_DI_DrillDown_Bit, pro:ID_DI_DrillDown_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_DrillUp a maestro:ParameterDef ;
+    rdfs:label "Drilling unit in upper position"@en ;
+    maestro:description "Micro switch NO contact; its common is fed from O3, so it reads 1 only while 'raise' is on (reading of the drawing)."@en ;
+    maestro:hasIdentifier pro:ID_DI_DrillUp_BMK, pro:ID_DI_DrillUp_Bit, pro:ID_DI_DrillUp_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_OrientationOK a maestro:ParameterDef ;
+    rdfs:label "Checking drill hole o.k."@en ;
+    maestro:description "Inductive sensor at the testing-solenoid armature; 1 = armature at its lower end = workpiece opening upwards."@en ;
+    maestro:hasIdentifier pro:ID_DI_OrientationOK_BMK,
+        pro:ID_DI_OrientationOK_Bit,
+        pro:ID_DI_OrientationOK_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_TablePositioned a maestro:ParameterDef ;
+    rdfs:label "Indexing table positioned"@en ;
+    maestro:description "Inductive sensor at the positioning screws; also drives relay K5 that stops the table."@en ;
+    maestro:hasIdentifier pro:ID_DI_TablePositioned_BMK,
+        pro:ID_DI_TablePositioned_Bit,
+        pro:ID_DI_TablePositioned_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_WorkpieceAtChecking a maestro:ParameterDef ;
+    rdfs:label "Workpiece at checking unit"@en ;
+    maestro:description "Capacitive sensor at the testing position."@en ;
+    maestro:hasIdentifier pro:ID_DI_WorkpieceAtChecking_BMK,
+        pro:ID_DI_WorkpieceAtChecking_Bit,
+        pro:ID_DI_WorkpieceAtChecking_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_WorkpieceAtDrilling a maestro:ParameterDef ;
+    rdfs:label "Workpiece at drilling unit"@en ;
+    maestro:description "Capacitive sensor at the drilling position."@en ;
+    maestro:hasIdentifier pro:ID_DI_WorkpieceAtDrilling_BMK,
+        pro:ID_DI_WorkpieceAtDrilling_Bit,
+        pro:ID_DI_WorkpieceAtDrilling_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DI_WorkpieceAvailable a maestro:ParameterDef ;
+    rdfs:label "Workpiece available"@en ;
+    maestro:description "Capacitive sensor at the material input (retainer 1); detects workpieces independent of colour and material."@en ;
+    maestro:hasIdentifier pro:ID_DI_WorkpieceAvailable_BMK,
+        pro:ID_DI_WorkpieceAvailable_Bit,
+        pro:ID_DI_WorkpieceAvailable_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:DO_Clamp a maestro:ParameterDef ;
+    rdfs:label "Fixing workpiece"@en ;
+    maestro:description "Clamping solenoid M4."@en ;
+    maestro:hasIdentifier pro:ID_DO_Clamp_BMK, pro:ID_DO_Clamp_Bit, pro:ID_DO_Clamp_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_DrillMotor a maestro:ParameterDef ;
+    rdfs:label "Drilling unit motor on"@en ;
+    maestro:description "Relay K1 switches drilling machine M3."@en ;
+    maestro:hasIdentifier pro:ID_DO_DrillMotor_BMK,
+        pro:ID_DO_DrillMotor_Bit,
+        pro:ID_DO_DrillMotor_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_Eject a maestro:ParameterDef ;
+    rdfs:label "Push out workpiece"@en ;
+    maestro:description "Ejector solenoid M6 via R3 56 Ohm."@en ;
+    maestro:hasIdentifier pro:ID_DO_Eject_BMK, pro:ID_DO_Eject_Bit, pro:ID_DO_Eject_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_IndexTable a maestro:ParameterDef ;
+    rdfs:label "Indexing table motor on (pulse)"@en ;
+    maestro:description "A pulse energises K2, which holds itself until K5 (driven by B3) stops the table in the next position."@en ;
+    maestro:hasIdentifier pro:ID_DO_IndexTable_BMK,
+        pro:ID_DO_IndexTable_Bit,
+        pro:ID_DO_IndexTable_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_LowerDrill a maestro:ParameterDef ;
+    rdfs:label "Lower drilling unit"@en ;
+    maestro:description "Relay K4 through the NC contact of 1B2."@en ;
+    maestro:hasIdentifier pro:ID_DO_LowerDrill_BMK,
+        pro:ID_DO_LowerDrill_Bit,
+        pro:ID_DO_LowerDrill_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_RaiseDrill a maestro:ParameterDef ;
+    rdfs:label "Raise drilling unit"@en ;
+    maestro:description "Relay K3 through the NC contact of 1B1."@en ;
+    maestro:hasIdentifier pro:ID_DO_RaiseDrill_BMK,
+        pro:ID_DO_RaiseDrill_Bit,
+        pro:ID_DO_RaiseDrill_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_StationOccupied a maestro:ParameterDef ;
+    rdfs:label "Station occupied"@en ;
+    maestro:description "StationLink transmitter towards the upstream station."@en ;
+    maestro:hasIdentifier pro:ID_DO_StationOccupied_BMK,
+        pro:ID_DO_StationOccupied_Bit,
+        pro:ID_DO_StationOccupied_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:DO_TestSolenoid a maestro:ParameterDef ;
+    rdfs:label "Proofing workpiece"@en ;
+    maestro:description "Testing solenoid ('verifying magnet') M5."@en ;
+    maestro:hasIdentifier pro:ID_DO_TestSolenoid_BMK,
+        pro:ID_DO_TestSolenoid_Bit,
+        pro:ID_DO_TestSolenoid_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:P_OrientationAtDrilling a maestro:ParameterDef ;
+    rdfs:label "Flag 'workpiece orientation' bit 2 (workpiece at drilling)"@en ;
+    maestro:description "Bit 1 shifted by one table step in step 14; a set bit skips drilling."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:P_OrientationAtOutput a maestro:ParameterDef ;
+    rdfs:label "Flag 'workpiece orientation' bit 3 (workpiece at output)"@en ;
+    maestro:description "Bit shifted by two table steps; a set bit lights WORKPIECE NOK instead of ejecting."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:P_OrientationResult a maestro:ParameterDef ;
+    rdfs:label "Flag 'workpiece orientation' bit 1 (result of the check)"@en ;
+    maestro:description "0 = orientation ok, 1 = not ok; set in step 23, reset in step 22."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+pro:TD_DigitalInputs a maestro:ParameterDef ;
+    rdfs:label "Digital inputs: 8"@en ;
+    maestro:description "Number of digital inputs in the technical-data table."@en ;
+    maestro:maxValue 8.0 ;
+    maestro:minValue 8.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:TD_DigitalOutputs a maestro:ParameterDef ;
+    rdfs:label "Digital outputs: 8"@en ;
+    maestro:description "Number of digital outputs in the technical-data table."@en ;
+    maestro:maxValue 8.0 ;
+    maestro:minValue 8.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:TD_IndexingAngle a maestro:ParameterDef ;
+    rdfs:label "Indexing step 60 degrees"@en ;
+    maestro:description "The rotary indexing table turns 60 degrees per step."@en ;
+    maestro:maxValue 60.0 ;
+    maestro:minValue 60.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/DEG"^^xsd:anyURI .
+
+pro:TD_Retainers a maestro:ParameterDef ;
+    rdfs:label "Workpiece retainers on the indexing table: 6"@en ;
+    maestro:description "Semi-circular retainers, each with a centre hole for capacitive sensing."@en ;
+    maestro:maxValue 6.0 ;
+    maestro:minValue 6.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+pro:TD_SupplyCurrent a maestro:ParameterDef ;
+    rdfs:label "Supply current 4.5 A"@en ;
+    maestro:description "Technical data 4.5 A; section 'voltage supply' says max. 5 A."@en ;
+    maestro:maxValue 4.5 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/A"^^xsd:anyURI .
+
+pro:TD_SupplyVoltage a maestro:ParameterDef ;
+    rdfs:label "Supply voltage 24 V DC"@en ;
+    maestro:description "Power supply unit 24 V DC; the whole station is supplied through the PLC board."@en ;
+    maestro:maxValue 24.0 ;
+    maestro:minValue 24.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI .
+
+pro:T_CheckDwell a maestro:ParameterDef ;
+    rdfs:label "Testing-solenoid on time 3 s (3s/X21)"@en ;
+    maestro:description "The orientation is evaluated after 3 s."@en ;
+    maestro:maxValue 3.0 ;
+    maestro:minValue 3.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+pro:T_EjectDuration a maestro:ParameterDef ;
+    rdfs:label "Eject duration 1 s (1s/X41)"@en ;
+    maestro:description "Ejector solenoid on time."@en ;
+    maestro:maxValue 1.0 ;
+    maestro:minValue 1.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+pro:T_OccupiedDelay a maestro:ParameterDef ;
+    rdfs:label "Delay 3 s after 'station occupied' (3s/X9)"@en ;
+    maestro:description "GRAFCET timer before 'downstream station free' is checked."@en ;
+    maestro:maxValue 3.0 ;
+    maestro:minValue 3.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+pro:T_TableSettle a maestro:ParameterDef ;
+    rdfs:label "Delay 1 s after the table is positioned (1s/X13)"@en ;
+    maestro:description "GRAFCET timer before the three parallel branches start."@en ;
+    maestro:maxValue 1.0 ;
+    maestro:minValue 1.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+#################################################################
+# maestro:Precondition (7)
+#################################################################
+
+pro:Pre_CheckOrientation a maestro:Precondition ;
+    rdfs:label "Workpiece at checking unit"@en ;
+    maestro:expression "DI_WorkpieceAtChecking == 1" .
+
+pro:Pre_ClampWorkpiece a maestro:Precondition ;
+    rdfs:label "Workpiece at drilling unit"@en ;
+    maestro:expression "DI_WorkpieceAtDrilling == 1" .
+
+pro:Pre_EjectWorkpiece a maestro:Precondition ;
+    rdfs:label "Orientation ok"@en ;
+    maestro:expression "P_OrientationAtOutput == 0" .
+
+pro:Pre_IndexTable a maestro:Precondition ;
+    rdfs:label "Downstream station free"@en ;
+    maestro:expression "DI_DownstreamFree == 1" .
+
+pro:Pre_LowerDrill a maestro:Precondition ;
+    rdfs:label "Workpiece fixed and orientation ok"@en ;
+    maestro:expression "DO_Clamp == 1 && P_OrientationAtDrilling == 0" .
+
+pro:Pre_ProcessWorkpiece a maestro:Precondition ;
+    rdfs:label "Workpiece in retainer 1, START pressed, downstream station free"@en ;
+    maestro:expression "DI_WorkpieceAvailable == 1 && CC_Start == 1 && DI_DownstreamFree == 1" .
+
+pro:Pre_ResetStation a maestro:Precondition ;
+    rdfs:label "RESET pressed"@en ;
+    maestro:expression "CC_Reset == 1" .
+
+#################################################################
+# maestro:Postcondition (9)
+#################################################################
+
+pro:Post_CheckOrientation a maestro:Postcondition ;
+    rdfs:label "Orientation stored, solenoid off"@en ;
+    maestro:expression "P_OrientationResult := !DI_OrientationOK && DO_TestSolenoid == 0" .
+
+pro:Post_ClampWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece is fixed"@en ;
+    maestro:expression "DO_Clamp == 1 (no clamp sensor)" .
+
+pro:Post_EjectWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece pushed to the transfer position"@en ;
+    maestro:expression "DO_Eject was 1 for 1 s" .
+
+pro:Post_IndexTable a maestro:Postcondition ;
+    rdfs:label "Indexing table positioned"@en ;
+    maestro:expression "DI_TablePositioned == 1" .
+
+pro:Post_LowerDrill a maestro:Postcondition ;
+    rdfs:label "Drilling unit lowered"@en ;
+    maestro:expression "DI_DrillDown == 1" .
+
+pro:Post_ProcessWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece checked, drilled and ejected (or reported NOK)"@en ;
+    maestro:expression "orientation ok ? ejected : WORKPIECE NOK" .
+
+pro:Post_RaiseDrill a maestro:Postcondition ;
+    rdfs:label "Drilling unit raised"@en ;
+    maestro:expression "DI_DrillUp == 1" .
+
+pro:Post_ReleaseWorkpiece a maestro:Postcondition ;
+    rdfs:label "Workpiece is unfixed"@en ;
+    maestro:expression "DO_Clamp == 0 (no clamp sensor)" .
+
+pro:Post_ResetStation a maestro:Postcondition ;
+    rdfs:label "Initial position: table positioned, plunger raised, drill raised and off, clamp retracted, ejector not actuated"@en ;
+    maestro:expression "DI_TablePositioned == 1 && DI_DrillUp == 1 && DO_DrillMotor == 0 && DO_TestSolenoid == 0 && DO_Clamp == 0 && DO_Eject == 0" .

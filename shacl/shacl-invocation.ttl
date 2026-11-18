@@ -1,0 +1,95 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix msh: <https://w3id.org/maestro/shapes#> .
+
+#################################################################
+# SHACL SHAPES - HHM-CORE INVOCATION CLUSTER (core/invocation.ttl)
+#
+# Endpoints with protocol and address, protocol bindings with their
+# operation signatures, skill interfaces and skill services.
+#################################################################
+
+msh:EndpointStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Endpoint ;
+    rdfs:label "An endpoint uses a protocol, has an address and at most one integer port."@en ;
+    sh:property [
+        sh:path maestro:usesProtocol ;
+        sh:minCount 1 ;
+        sh:class maestro:Protocol ;
+        sh:message "A maestro:Endpoint must use at least one maestro:Protocol via maestro:usesProtocol." ;
+    ] ;
+    sh:property [
+        sh:path maestro:address ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:Endpoint must carry at least one maestro:address as an xsd:string literal." ;
+    ] ;
+    sh:property [
+        sh:path maestro:port ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:integer ;
+        sh:message "maestro:port on a maestro:Endpoint is at most one xsd:integer literal." ;
+    ] .
+
+msh:BindingStructureShape a sh:NodeShape ;
+    sh:targetClass maestro:Binding ;
+    rdfs:label "A binding's signatures are operation signatures, it uses a protocol and it specialises a skill interface."@en ;
+    sh:property [
+        sh:path maestro:hasSignature ;
+        sh:class maestro:OperationSignature ;
+        sh:message "maestro:hasSignature on a maestro:Binding must point to a maestro:OperationSignature." ;
+    ] ;
+    sh:property [
+        sh:path maestro:usesProtocol ;
+        sh:class maestro:Protocol ;
+        sh:message "maestro:usesProtocol on a maestro:Binding must name a maestro:Protocol." ;
+    ] ;
+    sh:property [
+        sh:path maestro:specializes ;
+        sh:class maestro:SkillInterface ;
+        sh:message "maestro:specializes on a maestro:Binding must point to a maestro:SkillInterface." ;
+    ] ;
+    sh:property [
+        sh:path maestro:mappingSpec ;
+        sh:datatype xsd:string ;
+        sh:message "maestro:mappingSpec on a maestro:Binding must be an xsd:string literal." ;
+    ] .
+
+msh:SkillInterfaceExposureShape a sh:NodeShape ;
+    sh:targetClass maestro:SkillInterface ;
+    rdfs:label "A skill interface should be exposed via at least one endpoint."@en ;
+    sh:property [
+        sh:path maestro:exposedVia ;
+        sh:minCount 1 ;
+        sh:class maestro:Endpoint ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:SkillInterface should be exposed via at least one maestro:Endpoint (maestro:exposedVia)." ;
+    ] .
+
+msh:SkillServiceInterfaceShape a sh:NodeShape ;
+    sh:targetClass maestro:SkillService ;
+    rdfs:label "A skill service should expose at least one skill interface."@en ;
+    sh:property [
+        sh:path maestro:implementsInterface ;
+        sh:minCount 1 ;
+        sh:class maestro:SkillInterface ;
+        sh:severity sh:Warning ;
+        sh:message "A maestro:SkillService should expose at least one maestro:SkillInterface via maestro:implementsInterface." ;
+    ] .
+
+msh:OperationSignatureParameterShape a sh:NodeShape ;
+    sh:targetClass maestro:OperationSignature ;
+    rdfs:label "An operation signature's parameters and returns are parameter definitions."@en ;
+    sh:property [
+        sh:path maestro:hasParameterDef ;
+        sh:class maestro:ParameterDef ;
+        sh:message "maestro:hasParameterDef on a maestro:OperationSignature must point to a maestro:ParameterDef." ;
+    ] ;
+    sh:property [
+        sh:path maestro:returns ;
+        sh:class maestro:ParameterDef ;
+        sh:message "maestro:returns on a maestro:OperationSignature must point to a maestro:ParameterDef." ;
+    ] .

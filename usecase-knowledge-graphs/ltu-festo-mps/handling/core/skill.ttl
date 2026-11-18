@@ -1,0 +1,424 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# core/skill.ttl: statements that belong to the MAESTRO skill module (https://w3id.org/maestro/skill).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/skill> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - core/skill"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/skill> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:AtomicSkill (11)
+#################################################################
+
+han:CloseGripper a maestro:AtomicSkill ;
+    rdfs:label "Close gripper"@en ;
+    maestro:description "De-energise 3M1."@en ;
+    maestro:hasParameterDef han:DO_OpenGripper ;
+    maestro:hasPostcondition han:Post_CloseGripper ;
+    maestro:requiresCapability ltu:MechanicalGrippingCapability ;
+    maestro:version "DE 01/04" .
+
+han:DetectMaterial a maestro:AtomicSkill ;
+    rdfs:label "Detect material class in the gripper"@en ;
+    maestro:description "Read 3B1 while the workpiece is held: black or red/silver."@en ;
+    maestro:hasParameterDef han:DI_NotBlack ;
+    maestro:hasPostcondition han:Post_DetectMaterial ;
+    maestro:requiresCapability ltu:MaterialRecognitionCapability ;
+    maestro:version "DE 01/04" .
+
+han:ExtendGripper a maestro:AtomicSkill ;
+    rdfs:label "Extend gripper (lower)"@en ;
+    maestro:description "Energise 2M1: the lifting cylinder lowers the gripper."@en ;
+    maestro:hasParameterDef han:DI_GripperExtended, han:DO_ExtendGripper ;
+    maestro:hasPostcondition han:Post_ExtendGripper ;
+    maestro:requiresCapability ltu:LiftingCapability ;
+    maestro:version "DE 01/04" .
+
+han:MoveToSlideBlack a maestro:AtomicSkill ;
+    rdfs:label "Move linear drive to 'slide black'"@en ;
+    maestro:description "Move the axis to the sorting position 1B3 (slide 1). That the axis stops there by de-energising both 1M1 and 1M2 (closed-centre 1V1) is inferred."@en ;
+    maestro:hasParameterDef han:DI_AtSortingPosition ;
+    maestro:hasPostcondition han:Post_MoveToSlideBlack ;
+    maestro:requiresCapability ltu:SortingCapability, ltu:TransferCapability ;
+    maestro:version "DE 01/04" .
+
+han:MoveToSlideRedSilver a maestro:AtomicSkill ;
+    rdfs:label "Move linear drive to 'slide red/silver' (or 'downstream station')"@en ;
+    maestro:description "Energise 1M2: the axis runs to the slide-2 end stop."@en ;
+    maestro:hasParameterDef han:DI_AtDownstream, han:DO_ToDownstream ;
+    maestro:hasPostcondition han:Post_MoveToSlideRedSilver ;
+    maestro:requiresCapability ltu:SortingCapability, ltu:TransferCapability ;
+    maestro:version "DE 01/04" .
+
+han:MoveToUpstream a maestro:AtomicSkill ;
+    rdfs:label "Move linear drive to 'upstream station'"@en ;
+    maestro:description "Energise 1M1: the axis returns to the receptacle."@en ;
+    maestro:hasParameterDef han:DI_AtUpstream, han:DO_ToUpstream ;
+    maestro:hasPostcondition han:Post_MoveToUpstream ;
+    maestro:requiresCapability ltu:TransferCapability ;
+    maestro:version "DE 01/04" .
+
+han:OpenGripper a maestro:AtomicSkill ;
+    rdfs:label "Open gripper"@en ;
+    maestro:description "Energise 3M1."@en ;
+    maestro:hasParameterDef han:DO_OpenGripper ;
+    maestro:hasPostcondition han:Post_OpenGripper ;
+    maestro:requiresCapability ltu:MechanicalGrippingCapability ;
+    maestro:version "DE 01/04" .
+
+han:ResetStation a maestro:AtomicSkill ;
+    rdfs:label "Reset to initial position"@en ;
+    maestro:description "GRAFCET steps 3-4: move to the initial position and set flag 'reset finished'."@en ;
+    maestro:hasParameterDef han:CC_Reset, han:DI_AtUpstream, han:DI_GripperRetracted ;
+    maestro:hasPostcondition han:Post_ResetStation ;
+    maestro:hasPrecondition han:Pre_ResetStation ;
+    maestro:requiresCapability ltu:StationControlCapability ;
+    maestro:version "DE 01/04" .
+
+han:RetractGripper a maestro:AtomicSkill ;
+    rdfs:label "Retract gripper (raise)"@en ;
+    maestro:description "De-energise 2M1."@en ;
+    maestro:hasParameterDef han:DI_GripperRetracted, han:DO_ExtendGripper ;
+    maestro:hasPostcondition han:Post_RetractGripper ;
+    maestro:requiresCapability ltu:LiftingCapability ;
+    maestro:version "DE 01/04" .
+
+han:SetStationLinkSignal a maestro:AtomicSkill ;
+    rdfs:label "Signal 'station occupied' / 'not occupied'"@en ;
+    maestro:description "Switch the StationLink transmitter towards the upstream station."@en ;
+    maestro:hasParameterDef han:DO_StationOccupied, han:T_PickDelay ;
+    maestro:requiresCapability ltu:StationLinkCapability ;
+    maestro:version "DE 01/04" .
+
+han:SwitchIndicatorLight a maestro:AtomicSkill ;
+    rdfs:label "Switch indicator light"@en ;
+    maestro:description "Turn the 'reset' or 'start' light on or off."@en ;
+    maestro:hasParameterDef han:CC_ResetLamp, han:CC_StartLamp ;
+    maestro:requiresCapability ltu:OperatorInterfaceCapability ;
+    maestro:version "DE 01/04" .
+
+#################################################################
+# maestro:CompositeSkill (1)
+#################################################################
+
+han:PickAndSortWorkpiece a maestro:CompositeSkill ;
+    rdfs:label "Pick and sort workpiece (station cycle)"@en ;
+    maestro:description "Pick the workpiece from the receptacle, recognise black / non-black in the gripper and deposit it on slide 1 (black) or slide 2 (red/silver) (manual section 5, GRAFCET steps 7-18)."@en ;
+    maestro:hasInterfaceContract han:StationIO ;
+    maestro:hasPostcondition han:Post_PickAndSortWorkpiece ;
+    maestro:hasPrecondition han:Pre_PickAndSortWorkpiece ;
+    maestro:hasSubSkill han:CloseGripper,
+        han:DetectMaterial,
+        han:ExtendGripper,
+        han:MoveToSlideBlack,
+        han:MoveToSlideRedSilver,
+        han:MoveToUpstream,
+        han:OpenGripper,
+        han:RetractGripper ;
+    maestro:requiresCapability ltu:LiftingCapability,
+        ltu:MaterialRecognitionCapability,
+        ltu:MechanicalGrippingCapability,
+        ltu:SortingCapability,
+        ltu:TransferCapability ;
+    maestro:version "DE 01/04" .
+
+#################################################################
+# maestro:ParameterDef (29)
+#################################################################
+
+han:CC_AutoMan a maestro:ParameterDef ;
+    rdfs:label "Key-operated switch AUTO/MAN"@en ;
+    maestro:description "AUTO = continuous cycle, MAN = individual cycle. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_EmergencyStop a maestro:ParameterDef ;
+    rdfs:label "EMERGENCY-STOP pushbutton (if available)"@en ;
+    maestro:description "Interrupts the sequence at any time; must be released before a program is loaded. Whether it is a PLC input or a hard-wired safety circuit is not stated. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_Reset a maestro:ParameterDef ;
+    rdfs:label "RESET pushbutton (illuminated)"@en ;
+    maestro:description "The reset sequence is prompted by the illuminated RESET pushbutton and runs when it is pressed. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_ResetLamp a maestro:ParameterDef ;
+    rdfs:label "'reset' indicator light"@en ;
+    maestro:description "Lamp of the RESET pushbutton; on while the station is not reset. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:CC_Start a maestro:ParameterDef ;
+    rdfs:label "START pushbutton (illuminated)"@en ;
+    maestro:description "Starts the sequence; also acknowledges an error after the operator has removed its cause. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:CC_StartLamp a maestro:ParameterDef ;
+    rdfs:label "'start' indicator light"@en ;
+    maestro:description "Lamp of the START pushbutton; on while the station waits for START. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:CC_Stop a maestro:ParameterDef ;
+    rdfs:label "STOP pushbutton"@en ;
+    maestro:description "Interrupts the sequence at any time. PLC address not stated in the station documents (only the connector XMG1 is named)."@en ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_AtDownstream a maestro:ParameterDef ;
+    rdfs:label "Handling at downstream station"@en ;
+    maestro:description "Linear axis at slide 2 (or at the downstream station after re-fitting)."@en ;
+    maestro:hasIdentifier han:ID_DI_AtDownstream_BMK,
+        han:ID_DI_AtDownstream_Bit,
+        han:ID_DI_AtDownstream_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_AtSortingPosition a maestro:ParameterDef ;
+    rdfs:label "Handling at sorting position"@en ;
+    maestro:description "Linear axis at the sorting position (slide 1, inferred)."@en ;
+    maestro:hasIdentifier han:ID_DI_AtSortingPosition_BMK,
+        han:ID_DI_AtSortingPosition_Bit,
+        han:ID_DI_AtSortingPosition_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_AtUpstream a maestro:ParameterDef ;
+    rdfs:label "Handling at upstream station"@en ;
+    maestro:description "Linear axis at the pick-up (receptacle) position."@en ;
+    maestro:hasIdentifier han:ID_DI_AtUpstream_BMK,
+        han:ID_DI_AtUpstream_Bit,
+        han:ID_DI_AtUpstream_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_DownstreamFree a maestro:ParameterDef ;
+    rdfs:label "Downstream station free"@en ;
+    maestro:description "StationLink receiver."@en ;
+    maestro:hasIdentifier han:ID_DI_DownstreamFree_BMK,
+        han:ID_DI_DownstreamFree_Bit,
+        han:ID_DI_DownstreamFree_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_GripperExtended a maestro:ParameterDef ;
+    rdfs:label "Gripper extended"@en ;
+    maestro:description "Lifting cylinder advanced (gripper lowered)."@en ;
+    maestro:hasIdentifier han:ID_DI_GripperExtended_BMK,
+        han:ID_DI_GripperExtended_Bit,
+        han:ID_DI_GripperExtended_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_GripperRetracted a maestro:ParameterDef ;
+    rdfs:label "Gripper retracted"@en ;
+    maestro:description "Lifting cylinder retracted (gripper raised)."@en ;
+    maestro:hasIdentifier han:ID_DI_GripperRetracted_BMK,
+        han:ID_DI_GripperRetracted_Bit,
+        han:ID_DI_GripperRetracted_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_NotBlack a maestro:ParameterDef ;
+    rdfs:label "Workpiece is not black"@en ;
+    maestro:description "Fibre-optic diffuse sensor in the gripper jaw; 1 = red or metallic, 0 = black (or no workpiece)."@en ;
+    maestro:hasIdentifier han:ID_DI_NotBlack_BMK, han:ID_DI_NotBlack_Bit, han:ID_DI_NotBlack_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DI_WorkpieceAvailable a maestro:ParameterDef ;
+    rdfs:label "Workpiece available"@en ;
+    maestro:description "Fibre-optic diffuse sensor in the receptacle; 1 = workpiece in the receptacle."@en ;
+    maestro:hasIdentifier han:ID_DI_WorkpieceAvailable_BMK,
+        han:ID_DI_WorkpieceAvailable_Bit,
+        han:ID_DI_WorkpieceAvailable_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Output .
+
+han:DO_ExtendGripper a maestro:ParameterDef ;
+    rdfs:label "Extend gripper"@en ;
+    maestro:description "Lifting cylinder extends; de-energised = retract."@en ;
+    maestro:hasIdentifier han:ID_DO_ExtendGripper_BMK,
+        han:ID_DO_ExtendGripper_Bit,
+        han:ID_DO_ExtendGripper_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:DO_OpenGripper a maestro:ParameterDef ;
+    rdfs:label "Open gripper"@en ;
+    maestro:description "De-energised = close (monostable valve, inferred)."@en ;
+    maestro:hasIdentifier han:ID_DO_OpenGripper_BMK,
+        han:ID_DO_OpenGripper_Bit,
+        han:ID_DO_OpenGripper_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:DO_StationOccupied a maestro:ParameterDef ;
+    rdfs:label "Station occupied"@en ;
+    maestro:description "StationLink transmitter towards the upstream station."@en ;
+    maestro:hasIdentifier han:ID_DO_StationOccupied_BMK,
+        han:ID_DO_StationOccupied_Bit,
+        han:ID_DO_StationOccupied_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:DO_ToDownstream a maestro:ParameterDef ;
+    rdfs:label "Handling to downstream station"@en ;
+    maestro:description "Linear axis towards slide 2 / downstream station."@en ;
+    maestro:hasIdentifier han:ID_DO_ToDownstream_BMK,
+        han:ID_DO_ToDownstream_Bit,
+        han:ID_DO_ToDownstream_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:DO_ToUpstream a maestro:ParameterDef ;
+    rdfs:label "Handling to upstream station"@en ;
+    maestro:description "Linear axis towards the pick-up position."@en ;
+    maestro:hasIdentifier han:ID_DO_ToUpstream_BMK,
+        han:ID_DO_ToUpstream_Bit,
+        han:ID_DO_ToUpstream_Pin ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#boolean"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:TD_AirConsumption a maestro:ParameterDef ;
+    rdfs:label "Compressed-air supply, suction capacity approx. 50 l/min"@en ;
+    maestro:description "Compressed-air supply named for commissioning (approximate value)."@en ;
+    maestro:maxValue 50.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/L-PER-MIN"^^xsd:anyURI .
+
+han:TD_DigitalInputs a maestro:ParameterDef ;
+    rdfs:label "Digital inputs: 8"@en ;
+    maestro:description "Number of digital inputs in the technical-data table."@en ;
+    maestro:maxValue 8.0 ;
+    maestro:minValue 8.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:TD_DigitalOutputs a maestro:ParameterDef ;
+    rdfs:label "Digital outputs: 7"@en ;
+    maestro:description "Number of digital outputs in the technical-data table."@en ;
+    maestro:maxValue 7.0 ;
+    maestro:minValue 7.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:TD_MaxPressure a maestro:ParameterDef ;
+    rdfs:label "Maximum permissible pressure 8 bar"@en ;
+    maestro:description "'Do not exceed' limit of the safety chapter."@en ;
+    maestro:maxValue 8.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI .
+
+han:TD_OperatingPressure a maestro:ParameterDef ;
+    rdfs:label "Operating pressure 4 bar"@en ;
+    maestro:description "Service unit setting. Operating pressure 4 bar (400 kPa), the maximum operating pressure of the Handling station."@en ;
+    maestro:maxValue 4.0 ;
+    maestro:minValue 4.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/BAR"^^xsd:anyURI .
+
+han:TD_SlideCapacity a maestro:ParameterDef ;
+    rdfs:label "Slide capacity: 5 workpieces each"@en ;
+    maestro:description "Each of the two slides holds 5 workpieces; the slides have no fill-level sensor."@en ;
+    maestro:maxValue 5.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+han:TD_SupplyCurrent a maestro:ParameterDef ;
+    rdfs:label "Supply current 4.5 A"@en ;
+    maestro:description "Technical data 4.5 A; section 'voltage supply' says max. 5 A."@en ;
+    maestro:maxValue 4.5 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/A"^^xsd:anyURI .
+
+han:TD_SupplyVoltage a maestro:ParameterDef ;
+    rdfs:label "Supply voltage 24 V DC"@en ;
+    maestro:description "Power supply unit 24 V DC; the whole station is supplied through the PLC board."@en ;
+    maestro:maxValue 24.0 ;
+    maestro:minValue 24.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/V"^^xsd:anyURI .
+
+han:T_PickDelay a maestro:ParameterDef ;
+    rdfs:label "Delay 3 s after 'station occupied' (3s/X8)"@en ;
+    maestro:description "The only GRAFCET timer of the station; the pick-up starts 3 s after step 8."@en ;
+    maestro:maxValue 3.0 ;
+    maestro:minValue 3.0 ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#double"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input ;
+    maestro:unitRef "http://qudt.org/vocab/unit/SEC"^^xsd:anyURI .
+
+#################################################################
+# maestro:Precondition (2)
+#################################################################
+
+han:Pre_PickAndSortWorkpiece a maestro:Precondition ;
+    rdfs:label "Workpiece in the receptacle, START pressed"@en ;
+    maestro:expression "DI_WorkpieceAvailable == 1 && CC_Start == 1" .
+
+han:Pre_ResetStation a maestro:Precondition ;
+    rdfs:label "RESET pressed"@en ;
+    maestro:expression "CC_Reset == 1" .
+
+#################################################################
+# maestro:Postcondition (10)
+#################################################################
+
+han:Post_CloseGripper a maestro:Postcondition ;
+    rdfs:label "Gripper closed"@en ;
+    maestro:expression "DO_OpenGripper == 0 (gripper state is not sensed)" .
+
+han:Post_DetectMaterial a maestro:Postcondition ;
+    rdfs:label "Material class known"@en ;
+    maestro:expression "black := !DI_NotBlack" .
+
+han:Post_ExtendGripper a maestro:Postcondition ;
+    rdfs:label "Gripper extended"@en ;
+    maestro:expression "DI_GripperExtended == 1" .
+
+han:Post_MoveToSlideBlack a maestro:Postcondition ;
+    rdfs:label "Linear drive at 'slide black'"@en ;
+    maestro:expression "DI_AtSortingPosition == 1" .
+
+han:Post_MoveToSlideRedSilver a maestro:Postcondition ;
+    rdfs:label "Linear drive at 'slide red/silver' resp. 'downstream station'"@en ;
+    maestro:expression "DI_AtDownstream == 1" .
+
+han:Post_MoveToUpstream a maestro:Postcondition ;
+    rdfs:label "Linear drive at 'upstream station'"@en ;
+    maestro:expression "DI_AtUpstream == 1" .
+
+han:Post_OpenGripper a maestro:Postcondition ;
+    rdfs:label "Gripper opened"@en ;
+    maestro:expression "DO_OpenGripper == 1 (gripper state is not sensed)" .
+
+han:Post_PickAndSortWorkpiece a maestro:Postcondition ;
+    rdfs:label "Black workpiece on slide 1, red/silver workpiece on slide 2"@en ;
+    maestro:expression "DI_AtUpstream == 1 && DI_GripperRetracted == 1" .
+
+han:Post_ResetStation a maestro:Postcondition ;
+    rdfs:label "Initial position: linear axis at 'upstream station', lifting cylinder retracted, gripper open"@en ;
+    maestro:expression "DI_AtUpstream == 1 && DI_GripperRetracted == 1 && DO_OpenGripper == 1" .
+
+han:Post_RetractGripper a maestro:Postcondition ;
+    rdfs:label "Gripper retracted"@en ;
+    maestro:expression "DI_GripperRetracted == 1" .

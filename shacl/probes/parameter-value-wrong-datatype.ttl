@@ -1,0 +1,16 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic, deliberately invalid): a string supplied for a
+# parameter declared xsd:integer. Expected: one sh:Violation from
+# msh:ParameterValueDatatypeShape. See shacl/probes/README.md.
+
+probe:Count a maestro:ParameterDef ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+probe:CountValue a maestro:ParameterValue ;
+    maestro:valueOf probe:Count ;
+    maestro:value "not an integer" .

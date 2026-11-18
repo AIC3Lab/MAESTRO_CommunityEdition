@@ -1,4 +1,4 @@
-PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX maestro:   <https://w3id.org/maestro#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 # CQ14 - Which maintenance plan and tasks apply to an asset, which action performed a task, what did it find, and may the asset return to service?

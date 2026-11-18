@@ -1,0 +1,394 @@
+# MAESTRO example: LTU Festo MPS - Processing station
+# core/product.ttl: statements that belong to the MAESTRO product module (https://w3id.org/maestro/product).
+# Umbrella: ../processing.ttl. Single-file form of the use case: ../processing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix pro: <https://w3id.org/maestro/examples/ltu-festo-mps/processing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/processing/core/product> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Processing station - core/product"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/processing> ;
+    owl:imports <https://w3id.org/maestro/product> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:ProductType (1)
+#################################################################
+
+pro:StationType a maestro:ProductType ;
+    rdfs:label "Festo MPS Processing station (equipment type)"@en ;
+    maestro:description "The station as a Festo product; its bill of materials follows the parts list and the component tables of the documents."@en ;
+    maestro:hasBOMItem pro:BOM_Accessories,
+        pro:BOM_BranchModule,
+        pro:BOM_ClampingModule,
+        pro:BOM_Connectors,
+        pro:BOM_DrillingModule,
+        pro:BOM_Holder,
+        pro:BOM_IOTerminal,
+        pro:BOM_IndexingTable,
+        pro:BOM_MountingSystem,
+        pro:BOM_ProfilePlate,
+        pro:BOM_Relays,
+        pro:BOM_StationLinkReceiver,
+        pro:BOM_StationLinkTransmitter,
+        pro:BOM_TerminalBlock,
+        pro:BOM_TestingModule ;
+    maestro:hasIdentifier pro:ID_ManualOrderNo, pro:ID_StationMaterialNo ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Processing station (BE)" .
+
+#################################################################
+# maestro:Identifier (50)
+#################################################################
+
+pro:ID_DI_DownstreamFree_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "IP_FI" .
+
+pro:ID_DI_DownstreamFree_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I7" .
+
+pro:ID_DI_DownstreamFree_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "20" .
+
+pro:ID_DI_DrillDown_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B2" .
+
+pro:ID_DI_DrillDown_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I4" .
+
+pro:ID_DI_DrillDown_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "17" .
+
+pro:ID_DI_DrillUp_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B1" .
+
+pro:ID_DI_DrillUp_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I3" .
+
+pro:ID_DI_DrillUp_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "16" .
+
+pro:ID_DI_OrientationOK_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "B4" .
+
+pro:ID_DI_OrientationOK_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I6" .
+
+pro:ID_DI_OrientationOK_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "19" .
+
+pro:ID_DI_TablePositioned_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "B3" .
+
+pro:ID_DI_TablePositioned_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I5" .
+
+pro:ID_DI_TablePositioned_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "18" .
+
+pro:ID_DI_WorkpieceAtChecking_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "B1" .
+
+pro:ID_DI_WorkpieceAtChecking_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I1" .
+
+pro:ID_DI_WorkpieceAtChecking_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "14" .
+
+pro:ID_DI_WorkpieceAtDrilling_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "B2" .
+
+pro:ID_DI_WorkpieceAtDrilling_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I2" .
+
+pro:ID_DI_WorkpieceAtDrilling_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "15" .
+
+pro:ID_DI_WorkpieceAvailable_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "PART_AV" .
+
+pro:ID_DI_WorkpieceAvailable_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I0" .
+
+pro:ID_DI_WorkpieceAvailable_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "13" .
+
+pro:ID_DO_Clamp_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "M4" .
+
+pro:ID_DO_Clamp_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O4" .
+
+pro:ID_DO_Clamp_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "5" .
+
+pro:ID_DO_DrillMotor_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "K1" .
+
+pro:ID_DO_DrillMotor_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O0" .
+
+pro:ID_DO_DrillMotor_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "1" .
+
+pro:ID_DO_Eject_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "M6" .
+
+pro:ID_DO_Eject_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O6" .
+
+pro:ID_DO_Eject_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "7" .
+
+pro:ID_DO_IndexTable_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "K2" .
+
+pro:ID_DO_IndexTable_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O1" .
+
+pro:ID_DO_IndexTable_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "2" .
+
+pro:ID_DO_LowerDrill_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "K4" .
+
+pro:ID_DO_LowerDrill_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O2" .
+
+pro:ID_DO_LowerDrill_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "3" .
+
+pro:ID_DO_RaiseDrill_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "K3" .
+
+pro:ID_DO_RaiseDrill_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O3" .
+
+pro:ID_DO_RaiseDrill_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "4" .
+
+pro:ID_DO_StationOccupied_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "IP_N_FO" .
+
+pro:ID_DO_StationOccupied_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O7" .
+
+pro:ID_DO_StationOccupied_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "8" .
+
+pro:ID_DO_TestSolenoid_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "M5" .
+
+pro:ID_DO_TestSolenoid_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O5" .
+
+pro:ID_DO_TestSolenoid_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "6" .
+
+pro:ID_ManualOrderNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo order number (technical documentation)" ;
+    maestro:identifierValue "648813" .
+
+pro:ID_StationMaterialNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo material number (station)" ;
+    maestro:identifierValue "526882" .
+
+#################################################################
+# maestro:BOMItem (25)
+#################################################################
+
+pro:BOM_1B1_1B2 a maestro:BOMItem ;
+    rdfs:label "Micro switch"@en ;
+    maestro:nodeFor ltu:PT_007347 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "1B1, 1B2" .
+
+pro:BOM_Accessories a maestro:BOMItem ;
+    rdfs:label "Accessories, Processing"@en ;
+    maestro:nodeFor ltu:PT_526858 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_B3 a maestro:BOMItem ;
+    rdfs:label "Inductive sensor assembly"@en ;
+    maestro:nodeFor ltu:PT_526198 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "B3" .
+
+pro:BOM_B4 a maestro:BOMItem ;
+    rdfs:label "Inductive sensor assembly"@en ;
+    maestro:description "Inductive sensor of the same type as B3 (the manual cites data sheet 150395 for both); not a separate parts-list item."@en ;
+    maestro:nodeFor ltu:PT_526198 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "B4" .
+
+pro:BOM_BranchModule a maestro:BOMItem ;
+    rdfs:label "Branch module (electrical ejector)"@en ;
+    maestro:nodeFor ltu:PT_526873 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "M6" .
+
+pro:BOM_CapacitiveSensors a maestro:BOMItem ;
+    rdfs:label "Capacitive sensor assembly"@en ;
+    maestro:nodeFor ltu:PT_196980 ;
+    maestro:quantity 3.0 ;
+    maestro:refDesignator "PART_AV, B1, B2" .
+
+pro:BOM_ClampingModule a maestro:BOMItem ;
+    rdfs:label "Clamping module"@en ;
+    maestro:nodeFor ltu:PT_526218 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "M4" .
+
+pro:BOM_Connectors a maestro:BOMItem ;
+    rdfs:label "Connector"@en ;
+    maestro:nodeFor ltu:PT_162228 ;
+    maestro:quantity 2.0 .
+
+pro:BOM_DrillingModule a maestro:BOMItem ;
+    rdfs:label "Drilling module"@en ;
+    maestro:hasSubItem pro:BOM_1B1_1B2, pro:BOM_LinearAxis, pro:BOM_M1, pro:BOM_M3 ;
+    maestro:nodeFor ltu:PT_196974 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_Holder a maestro:BOMItem ;
+    rdfs:label "Holder TM-BG"@en ;
+    maestro:nodeFor ltu:PT_196965 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_IOTerminal a maestro:BOMItem ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:nodeFor ltu:PT_034035 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_IP_FI a maestro:BOMItem ;
+    rdfs:label "Through-beam sensor, receiver"@en ;
+    maestro:nodeFor ltu:PT_165323 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "IP_FI" .
+
+pro:BOM_IP_N_FO a maestro:BOMItem ;
+    rdfs:label "Through-beam sensor, transmitter"@en ;
+    maestro:nodeFor ltu:PT_165353 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "IP_N_FO" .
+
+pro:BOM_IndexingTable a maestro:BOMItem ;
+    rdfs:label "Rotary indexing table module"@en ;
+    maestro:hasSubItem pro:BOM_B3, pro:BOM_CapacitiveSensors, pro:BOM_M2 ;
+    maestro:nodeFor ltu:PT_654972 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_LinearAxis a maestro:BOMItem ;
+    rdfs:label "Toothed-belt linear axis DGEL-12"@en ;
+    maestro:nodeFor ltu:PT_654152 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_M1 a maestro:BOMItem ;
+    rdfs:label "Gear motor (drilling axis)"@en ;
+    maestro:nodeFor ltu:PT_526867 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "M1" .
+
+pro:BOM_M2 a maestro:BOMItem ;
+    rdfs:label "Gear motor (indexing table)"@en ;
+    maestro:nodeFor ltu:PT_652345 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "M2" .
+
+pro:BOM_M3 a maestro:BOMItem ;
+    rdfs:label "Drilling machine"@en ;
+    maestro:nodeFor ltu:PT_326395 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "M3" .
+
+pro:BOM_MountingSystem a maestro:BOMItem ;
+    rdfs:label "Mounting system E"@en ;
+    maestro:nodeFor ltu:PT_196958 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_ProfilePlate a maestro:BOMItem ;
+    rdfs:label "Profile plate"@en ;
+    maestro:nodeFor ltu:PT_170395 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_Relays a maestro:BOMItem ;
+    rdfs:label "Relay"@en ;
+    maestro:nodeFor ltu:PT_268327 ;
+    maestro:quantity 5.0 ;
+    maestro:refDesignator "K1, K2, K3, K4, K5" .
+
+pro:BOM_StationLinkReceiver a maestro:BOMItem ;
+    rdfs:label "StationLink receiver assembly"@en ;
+    maestro:hasSubItem pro:BOM_IP_FI ;
+    maestro:nodeFor ltu:PT_196964 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_StationLinkTransmitter a maestro:BOMItem ;
+    rdfs:label "StationLink transmitter assembly"@en ;
+    maestro:hasSubItem pro:BOM_IP_N_FO ;
+    maestro:nodeFor ltu:PT_196963 ;
+    maestro:quantity 1.0 .
+
+pro:BOM_TerminalBlock a maestro:BOMItem ;
+    rdfs:label "Terminal block"@en ;
+    maestro:nodeFor ltu:PT_526229 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "XA1" .
+
+pro:BOM_TestingModule a maestro:BOMItem ;
+    rdfs:label "Testing module (Processing)"@en ;
+    maestro:hasSubItem pro:BOM_B4 ;
+    maestro:nodeFor ltu:PT_195773 ;
+    maestro:quantity 1.0 .

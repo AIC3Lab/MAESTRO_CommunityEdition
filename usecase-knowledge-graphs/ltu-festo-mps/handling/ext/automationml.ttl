@@ -1,0 +1,49 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# ext/automationml.ttl: statements that belong to the MAESTRO automationml module (https://w3id.org/maestro/automationml).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/automationml> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - ext/automationml"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/automationml> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:ExternalInterface (4)
+#################################################################
+
+han:Port_MaterialIn a maestro:ExternalInterface ;
+    rdfs:label "Material input: receptacle (pick-up position 'upstream station')"@en ;
+    maestro:description "The upstream station delivers the workpiece here; how it does so is not stated."@en .
+
+han:Port_MaterialOut a maestro:ExternalInterface ;
+    rdfs:label "Transfer point to a downstream station"@en ;
+    maestro:description "Only after the slide-2 end stop is moved to the downstream 'material input' and 1B2 to 'downstream station'; not used in the LTU line, where Handling is last."@en .
+
+han:Port_StationLinkRx a maestro:ExternalInterface ;
+    rdfs:label "StationLink receiver (outgoing-material side)"@en .
+
+han:Port_StationLinkTx a maestro:ExternalInterface ;
+    rdfs:label "StationLink transmitter (incoming-material side)"@en .
+
+#################################################################
+# Further statements about individuals described in other files (4)
+#################################################################
+
+han:PicAlfaModule
+    maestro:hasInterface han:Port_MaterialOut .
+
+han:ReceptacleModule
+    maestro:hasInterface han:Port_MaterialIn .
+
+han:StationLinkReceiver
+    maestro:hasInterface han:Port_StationLinkRx .
+
+han:StationLinkTransmitter
+    maestro:hasInterface han:Port_StationLinkTx .

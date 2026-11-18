@@ -1,0 +1,80 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix WADL: <http://www.w3id.org/hsu-aut/WADL#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+
+#################################################################
+# MAESTRO extension : REST (HSU WADL ODP)
+#
+# Realises the HHM extension point "REST / OpenAPI" on Binding: a
+# REST interface and a REST binding with URL template and HTTP verb.
+# WADL is the REST description in the listed standards basis; OpenAPI
+# is named as an interface description language only.
+#################################################################
+
+<https://w3id.org/maestro/rest> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/rest/0.2.0> ;
+    owl:versionInfo "0.2.0" ;
+    dct:title "MAESTRO: REST" ;
+    rdfs:label "MAESTRO: REST"@en ;
+    dct:description "REST-style realisation of the invocation hooks: a REST interface and a REST binding carrying URL template and HTTP method."@en ;
+    rdfs:comment "Apart from documentary links to the HSU WADL ontology design pattern (references/hsu-wadl.ttl), this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard."@en ;
+    dct:creator "Melwin Xavier" ;
+    dct:license <https://opensource.org/licenses/MIT> ;
+    dct:created "2026-09-30"^^xsd:date ;
+    dct:modified "2026-10-14"^^xsd:date ;
+    dct:source <https://github.com/melwinxavier/MAESTRO> ;
+    rdfs:seeAlso <https://github.com/hsu-aut/IndustrialStandard-ODP-WADL> ;
+    dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
+    dct:isPartOf <https://w3id.org/maestro> ;
+    vann:preferredNamespacePrefix "maestro" ;
+    vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
+    owl:imports <https://w3id.org/maestro/invocation> .
+
+maestro:RestInterface a owl:Class ;
+    rdfs:label "REST interface"@en ;
+    skos:definition "A skill interface exposed as an HTTP resource with REST-style operations."@en ;
+    rdfs:comment "Related to WADL:Resource of the HSU WADL ODP, the URI pattern under which the operations are reached."@en ;
+    rdfs:subClassOf maestro:SkillInterface ;
+    skos:relatedMatch WADL:Resource ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/rest> .
+
+maestro:RestBinding a owl:Class ;
+    rdfs:label "REST binding"@en ;
+    skos:definition "A binding that maps an endpoint onto an HTTP method applied to a URL template."@en ;
+    rdfs:comment "Specialises maestro:Binding, realising the HHM extension point on Binding. Close match to WADL:Method of the HSU WADL ODP, which pairs an HTTP method with the request and response it carries."@en ;
+    rdfs:subClassOf maestro:Binding ;
+    skos:closeMatch WADL:Method ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/rest> .
+
+maestro:httpMethod a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "HTTP method"@en ;
+    skos:definition "The HTTP method of a REST binding, for example GET, POST or PUT."@en ;
+    rdfs:domain maestro:RestBinding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/rest> .
+
+maestro:uriTemplate a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:comment "An RFC 6570 URI template. 0.1.0 name maestro:urlTemplate."@en ;
+    rdfs:label "URI template"@en ;
+    skos:definition "The path template, relative to the endpoint address, a REST binding applies its HTTP method to."@en ;
+    rdfs:domain maestro:RestBinding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/rest> .
+
+#################################################################
+# DEPRECATED (0.1.0 names)
+#################################################################
+
+maestro:urlTemplate a owl:DatatypeProperty ;
+    rdfs:label "URL template (deprecated)"@en ;
+    skos:definition "Deprecated since 0.2.0: replaced by maestro:uriTemplate, which has the same meaning. Kept as an equivalent so that data written against 0.1.0 still reasons and validates."@en ;
+    owl:deprecated true ;
+    owl:equivalentProperty maestro:uriTemplate ;
+    dct:isReplacedBy maestro:uriTemplate ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/rest> .

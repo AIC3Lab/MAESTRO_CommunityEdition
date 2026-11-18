@@ -1,0 +1,380 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# core/product.ttl: statements that belong to the MAESTRO product module (https://w3id.org/maestro/product).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/product> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - core/product"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/product> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:ProductType (1)
+#################################################################
+
+han:StationType a maestro:ProductType ;
+    rdfs:label "Festo MPS Handling station (equipment type)"@en ;
+    maestro:description "The station as a Festo product; its bill of materials follows the parts list and the component tables of the documents."@en ;
+    maestro:hasBOMItem han:BOM_Accessories,
+        han:BOM_Connectors,
+        han:BOM_DiffuseSensors,
+        han:BOM_Holder,
+        han:BOM_IOTerminal,
+        han:BOM_MountingSystem,
+        han:BOM_PicAlfa,
+        han:BOM_ProfilePlate,
+        han:BOM_Receptacle,
+        han:BOM_ServiceUnit,
+        han:BOM_Slides,
+        han:BOM_StationLinkReceiver,
+        han:BOM_StationLinkTransmitter,
+        han:BOM_ValveTerminal ;
+    maestro:hasIdentifier han:ID_ManualOrderNo, han:ID_StationMaterialNo ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Handling station (HA, PicAlfa)" .
+
+#################################################################
+# maestro:Identifier (41)
+#################################################################
+
+han:ID_DI_AtDownstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B2" .
+
+han:ID_DI_AtDownstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I2" .
+
+han:ID_DI_AtDownstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "15" .
+
+han:ID_DI_AtSortingPosition_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B3" .
+
+han:ID_DI_AtSortingPosition_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I3" .
+
+han:ID_DI_AtSortingPosition_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "16" .
+
+han:ID_DI_AtUpstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1B1" .
+
+han:ID_DI_AtUpstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I1" .
+
+han:ID_DI_AtUpstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "14" .
+
+han:ID_DI_DownstreamFree_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "IP_FI" .
+
+han:ID_DI_DownstreamFree_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I7" .
+
+han:ID_DI_DownstreamFree_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "20" .
+
+han:ID_DI_GripperExtended_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "2B1" .
+
+han:ID_DI_GripperExtended_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I4" .
+
+han:ID_DI_GripperExtended_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "17" .
+
+han:ID_DI_GripperRetracted_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "2B2" .
+
+han:ID_DI_GripperRetracted_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I5" .
+
+han:ID_DI_GripperRetracted_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "18" .
+
+han:ID_DI_NotBlack_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "3B1" .
+
+han:ID_DI_NotBlack_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I6" .
+
+han:ID_DI_NotBlack_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "19" .
+
+han:ID_DI_WorkpieceAvailable_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "PART_AV" .
+
+han:ID_DI_WorkpieceAvailable_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "I0" .
+
+han:ID_DI_WorkpieceAvailable_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "13" .
+
+han:ID_DO_ExtendGripper_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "2M1" .
+
+han:ID_DO_ExtendGripper_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O2" .
+
+han:ID_DO_ExtendGripper_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "3" .
+
+han:ID_DO_OpenGripper_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "3M1" .
+
+han:ID_DO_OpenGripper_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O3" .
+
+han:ID_DO_OpenGripper_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "4" .
+
+han:ID_DO_StationOccupied_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "IP_N_FO" .
+
+han:ID_DO_StationOccupied_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O7" .
+
+han:ID_DO_StationOccupied_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "8" .
+
+han:ID_DO_ToDownstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1M2" .
+
+han:ID_DO_ToDownstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O1" .
+
+han:ID_DO_ToDownstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "2" .
+
+han:ID_DO_ToUpstream_BMK a maestro:Identifier ;
+    maestro:identifierScheme "Festo circuit-diagram equipment designation (BMK)" ;
+    maestro:identifierValue "1M1" .
+
+han:ID_DO_ToUpstream_Bit a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 bit" ;
+    maestro:identifierValue "O0" .
+
+han:ID_DO_ToUpstream_Pin a maestro:Identifier ;
+    maestro:identifierScheme "XMA2 pin" ;
+    maestro:identifierValue "1" .
+
+han:ID_ManualOrderNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo order number (technical documentation)" ;
+    maestro:identifierValue "655633" .
+
+han:ID_StationMaterialNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo material number (station)" ;
+    maestro:identifierValue "526883" .
+
+#################################################################
+# maestro:BOMItem (27)
+#################################################################
+
+han:BOM_1A1 a maestro:BOMItem ;
+    rdfs:label "Rodless linear drive DGPL-12"@en ;
+    maestro:description "Linear axis (X)."@en ;
+    maestro:nodeFor ltu:PT_161973 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "1A1" .
+
+han:BOM_1M1_1M2 a maestro:BOMItem ;
+    rdfs:label "Solenoid valve 2x 3/2-way, normally closed"@en ;
+    maestro:description "Mapping inferred."@en ;
+    maestro:nodeFor ltu:PT_161416 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "1M1, 1M2" .
+
+han:BOM_1V1 a maestro:BOMItem ;
+    rdfs:label "Valve kit 5/3-way, mid position closed"@en ;
+    maestro:description "Mapping inferred."@en ;
+    maestro:nodeFor ltu:PT_176055 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "1V1" .
+
+han:BOM_2A1 a maestro:BOMItem ;
+    rdfs:label "Flat cylinder DZF-18-80"@en ;
+    maestro:description "Lifting cylinder (Z)."@en ;
+    maestro:nodeFor ltu:PT_164019 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "2A1" .
+
+han:BOM_2M1_3M1 a maestro:BOMItem ;
+    rdfs:label "Solenoid valve 5/2-way, single solenoid"@en ;
+    maestro:description "Mapping inferred."@en ;
+    maestro:nodeFor ltu:PT_161414 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "2M1, 3M1" .
+
+han:BOM_3A1 a maestro:BOMItem ;
+    rdfs:label "Parallel gripper HGP-10"@en ;
+    maestro:description "Parallel gripper."@en ;
+    maestro:nodeFor ltu:PT_197542 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "3A1" .
+
+han:BOM_Accessories a maestro:BOMItem ;
+    rdfs:label "Accessories, Handling"@en ;
+    maestro:nodeFor ltu:PT_526866 ;
+    maestro:quantity 1.0 .
+
+han:BOM_Connectors a maestro:BOMItem ;
+    rdfs:label "Connector"@en ;
+    maestro:nodeFor ltu:PT_162228 ;
+    maestro:quantity 2.0 .
+
+han:BOM_DiffuseSensors a maestro:BOMItem ;
+    rdfs:label "Diffuse sensor assembly"@en ;
+    maestro:hasSubItem han:BOM_FibreOpticCables, han:BOM_FibreOpticDevices ;
+    maestro:nodeFor ltu:PT_526212 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "PART_AV, 3B1" .
+
+han:BOM_FibreOpticCables a maestro:BOMItem ;
+    rdfs:label "Fibre-optic cable, diffuse"@en ;
+    maestro:nodeFor ltu:PT_165358 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "PART_AV, 3B1" .
+
+han:BOM_FibreOpticDevices a maestro:BOMItem ;
+    rdfs:label "Fibre-optic device"@en ;
+    maestro:nodeFor ltu:PT_165327 ;
+    maestro:quantity 2.0 ;
+    maestro:refDesignator "PART_AV, 3B1" .
+
+han:BOM_FlowControlValves a maestro:BOMItem ;
+    rdfs:label "One-way flow control valve, type C"@en ;
+    maestro:description "Type C 175056; the manual also lists type B 162991. Which BMK has which type is not stated."@en ;
+    maestro:nodeFor ltu:PT_175056 ;
+    maestro:quantity 4.0 ;
+    maestro:refDesignator "1V2, 1V3, 2V2, 2V3" .
+
+han:BOM_Holder a maestro:BOMItem ;
+    rdfs:label "Holder TM-BG"@en ;
+    maestro:nodeFor ltu:PT_196965 ;
+    maestro:quantity 1.0 .
+
+han:BOM_IOTerminal a maestro:BOMItem ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:nodeFor ltu:PT_034035 ;
+    maestro:quantity 1.0 .
+
+han:BOM_IP_FI a maestro:BOMItem ;
+    rdfs:label "Through-beam sensor, receiver"@en ;
+    maestro:nodeFor ltu:PT_165323 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "IP_FI" .
+
+han:BOM_IP_N_FO a maestro:BOMItem ;
+    rdfs:label "Through-beam sensor, transmitter"@en ;
+    maestro:nodeFor ltu:PT_165353 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "IP_N_FO" .
+
+han:BOM_MountingSystem a maestro:BOMItem ;
+    rdfs:label "Mounting system E"@en ;
+    maestro:nodeFor ltu:PT_196958 ;
+    maestro:quantity 1.0 .
+
+han:BOM_PicAlfa a maestro:BOMItem ;
+    rdfs:label "PicAlfa module"@en ;
+    maestro:hasSubItem han:BOM_1A1,
+        han:BOM_2A1,
+        han:BOM_3A1,
+        han:BOM_FlowControlValves,
+        han:BOM_ProximitySensors,
+        han:BOM_ShockAbsorbers ;
+    maestro:nodeFor ltu:PT_526215 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ProfilePlate a maestro:BOMItem ;
+    rdfs:label "Profile plate"@en ;
+    maestro:nodeFor ltu:PT_170395 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ProximitySensors a maestro:BOMItem ;
+    rdfs:label "Proximity sensor SME-8"@en ;
+    maestro:nodeFor ltu:PT_150857 ;
+    maestro:quantity 5.0 ;
+    maestro:refDesignator "1B1, 1B2, 1B3, 2B1, 2B2" .
+
+han:BOM_Receptacle a maestro:BOMItem ;
+    rdfs:label "Holder (receptacle) module"@en ;
+    maestro:nodeFor ltu:PT_195777 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ServiceUnit a maestro:BOMItem ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:nodeFor ltu:PT_152894 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ShockAbsorbers a maestro:BOMItem ;
+    rdfs:label "Shock absorber"@en ;
+    maestro:description "End stops 'receptacle' and 'slide 2'; quantity not stated."@en ;
+    maestro:nodeFor ltu:PT_158981 .
+
+han:BOM_Slides a maestro:BOMItem ;
+    rdfs:label "Slide module"@en ;
+    maestro:description "Parts list quantity 1; the manual and assembly instructions use 2 slide modules."@en ;
+    maestro:nodeFor ltu:PT_653393 ;
+    maestro:quantity 1.0 .
+
+han:BOM_StationLinkReceiver a maestro:BOMItem ;
+    rdfs:label "StationLink receiver assembly"@en ;
+    maestro:hasSubItem han:BOM_IP_FI ;
+    maestro:nodeFor ltu:PT_196964 ;
+    maestro:quantity 1.0 .
+
+han:BOM_StationLinkTransmitter a maestro:BOMItem ;
+    rdfs:label "StationLink transmitter assembly"@en ;
+    maestro:hasSubItem han:BOM_IP_N_FO ;
+    maestro:nodeFor ltu:PT_196963 ;
+    maestro:quantity 1.0 .
+
+han:BOM_ValveTerminal a maestro:BOMItem ;
+    rdfs:label "CP valve terminal, Handling"@en ;
+    maestro:hasSubItem han:BOM_1M1_1M2, han:BOM_1V1, han:BOM_2M1_3M1 ;
+    maestro:nodeFor ltu:PT_526872 ;
+    maestro:quantity 1.0 ;
+    maestro:refDesignator "0V1" .

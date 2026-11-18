@@ -1,4 +1,4 @@
-PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX maestro:   <https://w3id.org/maestro#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 # CQ09 - Through which endpoint, protocol, binding and operation signature is a skill interface invoked?

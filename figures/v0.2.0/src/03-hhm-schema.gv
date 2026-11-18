@@ -1,0 +1,341 @@
+// MAESTRO schema - class-relationship overview of the seven HHM-Core v1
+// clusters (core/*.ttl) and the minimal digital-twin extension (ext/digital-twin.ttl),
+// drawn with the package's own maestro: names. Companion of figures/src/14-maestro-core-schema.gv
+// at the repository root, which shows the same concerns in the MAESTRO 1.0 module stack.
+//
+// Gold double border = class drawn in the HHM-Core v1 diagram (43 of 43 covered).
+// Plain box          = class folded in from MAESTRO 1.0 or added by the package.
+// Solid edge         = relation drawn in the HHM-Core v1 diagram (47 of 47 covered).
+// Dashed edge        = relation added by the package (implied by the diagram, or folded in).
+// Dotted edge        = rdfs:subClassOf.
+// «EXT» note         = ext/ file realising an extension point (pinned reference, CHG-023).
+// Grey dashed note   = hook named in a module comment; no IRI, no mapping.
+//
+// Hand-authored (0.2.0 names; additions made in 0.2.0 are green). When a class or relation
+// changes in core/, modules/ or ext/, edit this file. `python figures/v0.2.0/scripts/render_figures.py --check`
+// verifies that every maestro: name and edge label here is declared and not a deprecated 0.1.0 name.
+digraph HHM_Schema {
+  rankdir=LR;
+  labelloc="t";
+  fontname="Helvetica";
+  nodesep=0.28; ranksep=0.7;
+  label="MAESTRO 0.2.0  ·  the seven HHM-Core v1 clusters and the digital-twin extension  (maestro: = https://w3id.org/maestro#)\nGold double border = HHM-Core v1 class · plain = folded in / added · solid edge = HHM-Core v1 relation · dashed = added · «EXT» = ext/ file · grey = hook only · green = new in 0.2.0";
+
+  node [shape=box, style="rounded,filled", fillcolor="#f9f9fb", fontname="Helvetica", fontsize=10, color="#1F2A36", penwidth=0.8];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.8];
+
+  // =========================
+  // PRODUCT  (core/product.ttl)
+  // =========================
+  subgraph cluster_product {
+    label="Product  (core/product.ttl)";
+    color="#6E56CF"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    p_Type     [label="maestro:ProductType",     fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_Instance [label="maestro:ProductInstance", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_Variant  [label="maestro:Variant",         fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_Feature  [label="maestro:Feature",         fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_Req      [label="maestro:Requirement\nrequiredValue · mandatory", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_Id       [label="maestro:Identifier\nidentifierScheme · identifierValue", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_BOM      [label="maestro:BOMItem\nquantity · refDesignator", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    p_Material [label="maestro:Material",        fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+
+    ep_61360 [label="«EXT» DIN EN 61360 (HSU ODP)\nmaestro:Requirement closeMatch Instance_Description", shape=note, fillcolor="#fff7ed"];
+    hk_prod  [label="hooks only: ECLASS · DPP / DPPO · PRONTO", shape=note, fillcolor="#F3F4F6", style="filled,dashed", color="#5C6B7A", fontcolor="#5C6B7A"];
+  }
+
+  // =========================
+  // PHYSICAL RESOURCES  (core/resource.ttl)
+  // =========================
+  subgraph cluster_resource {
+    label="Physical Resources  (core/resource.ttl)";
+    color="#12A594"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    r_Station [label="maestro:Station\nlocation", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    r_Module  [label="maestro:Module\nmanufacturer · model · serialNumber", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    r_Cap     [label="maestro:Capability", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+
+    ep_isa88r [label="«EXT» ext/isa88.ttl → ISA-88.01 (HSU ODP)\nmaestro:Station closeMatch Unit · maestro:Module closeMatch EquipmentModule", shape=note, fillcolor="#fff7ed"];
+    ep_isa95  [label="«EXT» ext/isa95.ttl → DIN EN 62264-2 (HSU ODP)\nmaestro:WorkUnit partOfWorkCenter maestro:WorkCenter partOfArea maestro:Area partOfSite maestro:Site partOfEnterprise maestro:Enterprise", shape=note, fillcolor="#fff7ed"];
+    ep_aml    [label="«EXT» ext/automationml.ttl → AutomationML (HSU ODP)\nmaestro:InternalElement hasInterface maestro:ExternalInterface · maestro:InternalLink linksInterface", shape=note, fillcolor="#fff7ed"];
+    ep_vdi    [label="«EXT» VDI 2206 (HSU ODP)\nmaestro:Module closeMatch VDI2206:Module", shape=note, fillcolor="#fff7ed"];
+  }
+
+  // =========================
+  // SKILLS  (core/skill.ttl)
+  // =========================
+  subgraph cluster_skill {
+    label="Skills  (core/skill.ttl)";
+    color="#E54D2E"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    s_Skill     [label="maestro:Skill\nversion · description", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_Atomic    [label="maestro:AtomicSkill",    fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_Composite [label="maestro:CompositeSkill", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_ParamDef  [label="maestro:ParameterDef\nparamName · paramType · unitRef (QUDT IRI) · minValue · maxValue", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_ParamVal  [label="maestro:ParameterValue\nvalue", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_Dir       [label="maestro:ParameterDirection\n{ Input · Output · InOut }"];
+    s_Pre       [label="maestro:Precondition\nexpression",  fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_Post      [label="maestro:Postcondition\nexpression", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    s_Iface     [label="maestro:SkillInterface\n(protocol-neutral contract)", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+
+    hk_skill [label="hooks only: SOSA/SSN observation evidence · CaSkMan / CSS\nQUDT pinned but not pointed at (unitRef is an xsd:anyURI literal)", shape=note, fillcolor="#F3F4F6", style="filled,dashed", color="#5C6B7A", fontcolor="#5C6B7A"];
+  }
+
+  // =========================
+  // RECIPE / PLANNING  (core/recipe.ttl)
+  // =========================
+  subgraph cluster_recipe {
+    label="Recipe / Planning  (core/recipe.ttl)";
+    color="#3B82F6"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    c_Recipe [label="maestro:Recipe\n(alt label ProcessPlan)", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    c_Step   [label="maestro:PlanStep\nstepOrder", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    c_CFC    [label="maestro:ControlFlowConstraint", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    c_CFT    [label="maestro:ControlFlowType\n{ Precedes · Parallel · Alternative · Loop · Optional }"];
+    c_DB     [label="maestro:DataBinding", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+
+    ep_isa88p [label="«EXT» ext/isa88.ttl → ISA-88.01 (HSU ODP)\nmaestro:Recipe closeMatch RecipeProcedure · maestro:PlanStep closeMatch Phase", shape=note, fillcolor="#fff7ed"];
+  }
+
+  // =========================
+  // SAFETY / SECURITY / POLICY  (core/policy.ttl)
+  // =========================
+  subgraph cluster_policy {
+    label="Safety / Security / Policy  (core/policy.ttl)";
+    color="#111827"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    y_Policy     [label="maestro:Policy",     fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Constraint [label="maestro:Constraint\nexpression", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Perm       [label="maestro:Permission", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Role       [label="maestro:Role",       fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Mode       [label="maestro:OperatingMode\n{ AutomaticMode · ManualMode · MaintenanceMode }", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Evidence   [label="maestro:Evidence\nevidenceRef", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Action     [label="maestro:Action\n{ Invoke · Read · Write · Configure }"];
+    y_Hazard     [label="maestro:Hazard",     fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Risk       [label="maestro:Risk",       fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_Mitig      [label="maestro:Mitigation", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    y_SF         [label="maestro:SafetyFunction\n→ maestro:EmergencyStop\nrequiredSIL / achievedSIL · requiredPerformanceLevel / achievedPerformanceLevel\n(folded in from MAESTRO safety)"];
+    y_RA         [label="maestro:RiskAssessment\nhasRiskLevel { LowRisk · MediumRisk · HighRisk }\nriskAssessmentMethod · assumption\n(folded in from MAESTRO safety)"];
+
+    ep_odrl [label="«EXT» ext/odrl.ttl → W3C ODRL 2.2 core profile (logical bridge)\nmaestro:Policy subClassOf odrl:Policy · maestro:Permission subClassOf odrl:Permission\nhasPermission subPropertyOf odrl:permission · action subPropertyOf odrl:action · target subPropertyOf odrl:target · grantedTo subPropertyOf odrl:assignee", shape=note, fillcolor="#fff7ed"];
+    hk_pol  [label="hook only: XACML", shape=note, fillcolor="#F3F4F6", style="filled,dashed", color="#5C6B7A", fontcolor="#5C6B7A"];
+  }
+
+  // =========================
+  // INVOCATION HOOKS  (core/invocation.ttl)
+  // =========================
+  subgraph cluster_invocation {
+    label="Invocation Hooks  (core/invocation.ttl)";
+    color="#F59E0B"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    i_Service  [label="maestro:SkillService", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    i_Endpoint [label="maestro:Endpoint\naddress · port", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    i_Protocol [label="maestro:Protocol\n{ OpcUa · Dds · Mqtt · Profinet · Ethercat · Modbus · Http }", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    i_Binding  [label="maestro:Binding\n(protocol-specific mapping)\nmappingSpec", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    i_Event    [label="maestro:EventStream\ntopic", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    i_Sig      [label="maestro:OperationSignature\n(folded in from MAESTRO communication)"];
+    i_Format   [label="maestro:DataFormat\n{ Json · Xml · Protobuf · OpcUaBinary }"];
+    i_IDL      [label="maestro:InterfaceDescriptionLanguage\n{ OpcUaNodeSetIDL · DtdlIDL · AasSubmodelTemplateIDL · OpenApiIDL }"];
+
+    ep_opcua [label="«EXT» ext/opcua.ttl → OPC UA (HSU ODP)\nmaestro:OpcUaBinding subClassOf Binding · maestro:OpcUaSkillInterface subClassOf SkillInterface\nmaestro:OpcUaServer hostsInterface · hostedOn Module · maestro:OpcUaMethod implementsSkill", shape=note, fillcolor="#fff7ed"];
+    ep_rest  [label="«EXT» ext/rest.ttl → WADL (HSU ODP)\nmaestro:RestBinding subClassOf Binding (httpMethod · uriTemplate) · maestro:RestInterface subClassOf SkillInterface", shape=note, fillcolor="#fff7ed"];
+    ep_dtdl  [label="«EXT» ext/dtdl.ttl → DTDL v3\nmaestro:DtdlBinding subClassOf Binding · maestro:DtdlInterface subClassOf SkillInterface\nhasCommand · hasTelemetry · hasProperty", shape=note, fillcolor="#fff7ed"];
+    ep_wadl  [label="«EXT» WADL (HSU ODP)\nmaestro:OperationSignature closeMatch Method · maestro:Endpoint relatedMatch Resource", shape=note, fillcolor="#fff7ed"];
+    hk_inv   [label="hooks only: AAS submodel · OpenAPI\n(the IDL individuals are plain names of technologies)", shape=note, fillcolor="#F3F4F6", style="filled,dashed", color="#5C6B7A", fontcolor="#5C6B7A"];
+  }
+
+  // =========================
+  // MINIMAL EXECUTION  (core/execution.ttl)
+  // =========================
+  subgraph cluster_execution {
+    label="Minimal Execution, optional  (core/execution.ttl)";
+    color="#8B5CF6"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    x_Exec   [label="maestro:SkillExecution", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    x_Status [label="maestro:ExecutionStatus\n{ Idle · Executing · Held · Completed · Aborted }", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    x_Fault  [label="maestro:Fault\nfaultCode · faultCause · faultSeverity · timestamp", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    x_Time   [label="maestro:TimeInterval\nstartTime · endTime", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+
+    ep_packml [label="«EXT» PackML (HSU ODP)\nIdle / Executing / Held / Completed / Aborted closeMatch\nPackML:Idle / Execute / Held / Complete / Aborted", shape=note, fillcolor="#fff7ed"];
+    ep_prov   [label="«EXT» ext/prov.ttl → W3C PROV-O (logical bridge)\nmaestro:SkillExecution subClassOf prov:Activity · executes / hasInput / executedOn subPropertyOf prov:used\nstartedAtTime subPropertyOf prov:startedAtTime · endedAtTime subPropertyOf prov:endedAtTime · hasOutput subPropertyOf prov:generated", shape=note, fillcolor="#fff7ed"];
+    hk_exec   [label="hook only: SAREF4INMA", shape=note, fillcolor="#F3F4F6", style="filled,dashed", color="#5C6B7A", fontcolor="#5C6B7A"];
+  }
+
+  // =========================
+  // DIGITAL TWIN  (ext/digital-twin.ttl)
+  // =========================
+  subgraph cluster_twin {
+    label="Minimal Digital Twin extension  (ext/digital-twin.ttl)";
+    color="#0EA5E9"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    t_Twin    [label="maestro:DigitalTwin",  fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    t_Binding [label="maestro:TwinBinding\nplatform · mapsTo (xsd:anyURI)", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    hk_twin   [label="hook only: AAS (mapsTo stays a plain IRI)", shape=note, fillcolor="#F3F4F6", style="filled,dashed", color="#5C6B7A", fontcolor="#5C6B7A"];
+  }
+
+  // =========================
+  // LEGEND
+  // =========================
+  subgraph cluster_legend {
+    label="Reading the figure";
+    color="#555555"; style="rounded"; fontname="Helvetica"; fontsize=11;
+    lg_hhm  [label="HHM-Core v1 class\n43 of 43 carried; BOMNode and Mode\nunder the clearer names BOMItem, OperatingMode\nalignment/hhm-core.ttl: owl:equivalentClass", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    lg_add  [label="folded in from MAESTRO 1.0, or added\ndct:source / dct:references per term\nalignment/maestro-1.0.ttl: skos:*Match"];
+    lg_ext  [label="«EXT» ext/ file or documentary match\nonly to pinned copies under references/\n(CHG-023, gate 7); nothing is imported", shape=note, fillcolor="#fff7ed"];
+    lg_hhm -> lg_add [style=invis];
+    lg_add -> lg_ext [style=invis];
+  }
+
+  // ------------------------------------------------------------
+  // Product relations
+  // ------------------------------------------------------------
+  p_Type     -> p_Variant  [label="hasVariant",  color="#6E56CF"];
+  p_Type     -> p_Feature  [label="hasFeature",  color="#6E56CF"];
+  p_Type     -> p_Instance [label="hasInstance", color="#6E56CF"];
+  p_Type     -> p_BOM      [label="hasBOMItem",      color="#6E56CF"];
+  p_Type     -> p_Id       [label="hasIdentifier", color="#6E56CF"];
+  p_Type     -> p_Req      [label="hasRequirement", color="#6E56CF"];
+  p_BOM      -> p_BOM      [label="hasSubItem",     color="#6E56CF"];
+  p_BOM      -> p_Material [label="madeOf",      color="#6E56CF"];
+  p_BOM      -> p_Type     [label="nodeFor",     color="#6E56CF", style=dashed];
+  p_Req      -> p_Feature  [label="appliesTo",   color="#6E56CF"];
+  p_Feature  -> c_Step     [label="requiresOperation", color="#6E56CF"];
+  p_Variant  -> p_Type     [label="subClassOf",  color="#6E56CF", style=dotted];
+  p_Req      -> ep_61360   [style=dotted, color="#6E56CF", arrowhead=none];
+  p_Type     -> hk_prod    [style=invis];
+
+  // ------------------------------------------------------------
+  // Physical-resource relations
+  // ------------------------------------------------------------
+  r_Station -> r_Module [label="hasModule",          color="#12A594"];
+  r_Module  -> r_Cap    [label="providesCapability", color="#12A594"];
+  r_Station -> p_Id     [label="hasIdentifier",      color="#12A594", style=dashed];
+  r_Station -> ep_isa88r [style=dotted, color="#12A594", arrowhead=none];
+  r_Station -> ep_isa95  [label="partOfWorkCenter", style=dashed, color="#12A594"];
+  r_Module  -> ep_aml    [label="hasInterface", style=dashed, color="#12A594"];
+  r_Module  -> ep_vdi    [style=dotted, color="#12A594", arrowhead=none];
+
+  // ------------------------------------------------------------
+  // Skill relations
+  // ------------------------------------------------------------
+  s_Atomic    -> s_Skill    [label="subClassOf", color="#E54D2E", style=dotted];
+  s_Composite -> s_Skill    [label="subClassOf", color="#E54D2E", style=dotted];
+  s_Composite -> s_Skill    [label="hasSubSkill", color="#E54D2E"];
+  s_Skill     -> s_ParamDef [label="hasParameterDef", color="#E54D2E"];
+  s_Skill     -> s_Pre      [label="hasPrecondition", color="#E54D2E"];
+  s_Skill     -> s_Post     [label="hasPostcondition", color="#E54D2E"];
+  s_Skill     -> r_Cap      [label="requiresCapability", color="#E54D2E"];
+  s_Skill     -> s_Iface    [label="hasInterfaceContract", color="#E54D2E"];
+  s_ParamVal  -> s_ParamDef [label="valueOf", color="#E54D2E"];
+  s_ParamDef  -> s_Dir      [label="parameterDirection", color="#E54D2E", style=dashed];
+  s_Skill     -> hk_skill   [style=invis];
+
+  // ------------------------------------------------------------
+  // Recipe relations
+  // ------------------------------------------------------------
+  c_Recipe -> c_Step    [label="hasStep", color="#3B82F6"];
+  c_Step   -> s_Skill   [label="realizedBy", color="#3B82F6"];
+  c_Step   -> c_CFC     [label="hasControlFlow", color="#3B82F6"];
+  c_Step   -> c_DB      [label="hasDataBinding", color="#3B82F6"];
+  c_CFC    -> c_Step    [label="targetStep", color="#3B82F6", style=dashed];
+  c_CFC    -> c_CFT     [label="flowType", color="#3B82F6", style=dashed];
+  c_DB     -> s_ParamDef [label="bindsFrom / bindsTo", color="#3B82F6", style=dashed];
+  c_Recipe -> ep_isa88p [style=dotted, color="#3B82F6", arrowhead=none];
+
+  // ------------------------------------------------------------
+  // Policy relations
+  // ------------------------------------------------------------
+  y_Policy     -> y_Constraint [label="hasConstraint", color="#111827"];
+  y_Policy     -> y_Perm       [label="hasPermission / requiresPermission", color="#111827"];
+  y_Policy     -> y_Mode       [label="requiresMode", color="#111827"];
+  y_Policy     -> y_Evidence   [label="hasEvidence", color="#111827"];
+  y_Perm       -> y_Role       [label="grantedTo", color="#111827"];
+  y_Perm       -> y_Action     [label="action", color="#111827", style=dashed];
+  y_Perm       -> s_Skill      [label="target", color="#111827", style=dashed];
+  y_Constraint -> s_Skill      [label="constrains", color="#111827"];
+  y_Constraint -> c_Step       [label="constrains", color="#111827"];
+  y_Constraint -> r_Module     [label="constrains", color="#111827"];
+  y_Constraint -> i_Endpoint   [label="constrains", color="#111827"];
+  y_Hazard     -> y_Risk       [label="causesRisk", color="#111827"];
+  y_Mitig      -> y_Risk       [label="reduces", color="#111827"];
+  y_SF         -> y_Hazard     [label="mitigates", color="#111827", style=dashed];
+  y_RA         -> y_Risk       [label="assessesRisk", color="#111827", style=dashed];
+  y_RA         -> y_Hazard     [label="identifiesHazard", color="#111827", style=dashed];
+  y_RA         -> y_Mitig      [label="reliesOnMitigation", color="#111827", style=dashed];
+  y_RA         -> y_Evidence   [label="riskEvidence", color="#111827", style=dashed];
+  y_Policy     -> ep_odrl      [style=dotted, color="#111827", arrowhead=none];
+  y_Policy     -> hk_pol       [style=invis];
+
+  // ------------------------------------------------------------
+  // Invocation relations
+  // ------------------------------------------------------------
+  i_Service  -> s_Iface    [label="implementsInterface", color="#F59E0B"];
+  s_Iface    -> i_Endpoint [label="exposedVia", color="#F59E0B"];
+  i_Service  -> i_Endpoint [label="exposedVia", color="#F59E0B"];
+  i_Endpoint -> i_Protocol [label="usesProtocol", color="#F59E0B"];
+  i_Endpoint -> i_Binding  [label="hasBinding", color="#F59E0B"];
+  i_Endpoint -> i_Event    [label="emits", color="#F59E0B"];
+  i_Binding  -> i_Sig      [label="hasSignature", color="#F59E0B", style=dashed];
+  i_Binding  -> i_Protocol [label="usesProtocol", color="#F59E0B", style=dashed];
+  i_Binding  -> i_Format   [label="usesDataFormat", color="#F59E0B", style=dashed];
+  i_Sig      -> s_ParamDef [label="hasParameterDef / returns", color="#F59E0B", style=dashed];
+  s_Iface    -> i_IDL      [label="describedIn", color="#F59E0B", style=dashed];
+  i_Binding  -> ep_opcua   [style=dotted, color="#F59E0B", arrowhead=none];
+  i_Binding  -> ep_rest    [style=dotted, color="#F59E0B", arrowhead=none];
+  i_Binding  -> ep_dtdl    [style=dotted, color="#F59E0B", arrowhead=none];
+  i_Sig      -> ep_wadl    [style=dotted, color="#F59E0B", arrowhead=none];
+  i_IDL      -> hk_inv     [style=invis];
+
+  // ------------------------------------------------------------
+  // Execution relations
+  // ------------------------------------------------------------
+  x_Exec -> s_Skill    [label="executes", color="#8B5CF6"];
+  x_Exec -> r_Module   [label="executedOn", color="#8B5CF6"];
+  x_Exec -> i_Endpoint [label="invokedVia", color="#8B5CF6"];
+  x_Exec -> s_ParamVal [label="hasInput", color="#8B5CF6"];
+  x_Exec -> x_Status   [label="hasStatus", color="#8B5CF6"];
+  x_Exec -> x_Fault    [label="raisedFault", color="#8B5CF6"];
+  x_Exec -> x_Time     [label="hasTime", color="#8B5CF6"];
+  x_Status -> ep_packml [style=dotted, color="#8B5CF6", arrowhead=none];
+  x_Exec   -> ep_prov   [style=dotted, color="#8B5CF6", arrowhead=none];
+  x_Fault  -> hk_exec   [style=invis];
+
+  // ------------------------------------------------------------
+  // Digital-twin relations
+  // ------------------------------------------------------------
+  t_Twin -> p_Instance [label="represents", color="#0EA5E9"];
+  t_Twin -> r_Station  [label="represents", color="#0EA5E9"];
+  t_Twin -> r_Module   [label="represents", color="#0EA5E9"];
+  t_Twin -> i_Event    [label="usesEventStream", color="#0EA5E9"];
+  t_Twin -> x_Exec     [label="hasExecutionHistory", color="#0EA5E9"];
+  t_Twin -> t_Binding  [label="hasTwinBinding", color="#0EA5E9"];
+  t_Twin -> i_Service  [label="exposesService", color="#0EA5E9"];
+  t_Binding -> hk_twin [style=invis];
+
+  // ------------------------------------------------------------
+  // New in 0.2.0 (green)
+  // ------------------------------------------------------------
+  subgraph cluster_resource {
+    r_Res [label="maestro:Resource\n(grouping class of the cluster)", color="#15803D", fontcolor="#15803D", penwidth=1.6];
+  }
+  subgraph cluster_skill {
+    s_Cond [label="maestro:Condition\nhasCondition: super-property of\nhasPrecondition · hasPostcondition", color="#15803D", fontcolor="#15803D", penwidth=1.6];
+  }
+  subgraph cluster_legend {
+    lg_new [shape=note, fillcolor="#F0FDF4", color="#15803D", fontcolor="#15803D", label="New in 0.2.0 (green)\l\
+maestro:hasPart (transitive), super-property of hasModule · hasStep · hasSubSkill · hasSubItem\l\
+named inverses: partOf · moduleOf · providedBy · requiredBy · stepOf · instanceOfType\l\
+variantOf · executedBy · representedBy · hostsServer\l\
+one grouping class per cluster and maestro:ValueSet (figure 13)\l\
+sub-properties, inverses, functional properties (figure 14) · renamed terms (figure 15)\l"];
+    lg_ext -> lg_new [style=invis];
+  }
+  r_Station -> r_Res  [label="subClassOf", color="#15803D", fontcolor="#15803D", style=dotted];
+  r_Module  -> r_Res  [label="subClassOf", color="#15803D", fontcolor="#15803D", style=dotted];
+  s_Pre     -> s_Cond [label="subClassOf", color="#15803D", fontcolor="#15803D", style=dotted];
+  s_Post    -> s_Cond [label="subClassOf", color="#15803D", fontcolor="#15803D", style=dotted];
+  x_Exec    -> c_Step     [label="realizesStep", color="#15803D", fontcolor="#15803D", style=dashed, penwidth=1.4];
+  x_Exec    -> s_ParamVal [label="hasOutput", color="#15803D", fontcolor="#15803D", style=dashed, penwidth=1.4];
+  y_RA      -> y_Mitig    [label="recommendsMitigation", color="#15803D", fontcolor="#15803D", style=dashed, penwidth=1.4];
+  i_Binding -> s_Iface    [label="specializes", color="#15803D", fontcolor="#15803D", style=dashed, penwidth=1.4];
+}

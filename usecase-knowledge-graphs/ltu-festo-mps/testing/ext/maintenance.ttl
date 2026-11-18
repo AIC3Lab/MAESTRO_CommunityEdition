@@ -1,0 +1,48 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+# ext/maintenance.ttl: statements that belong to the MAESTRO maintenance module (https://w3id.org/maestro/maintenance).
+# Umbrella: ../testing.ttl. Single-file form of the use case: ../testing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix tes: <https://w3id.org/maestro/examples/ltu-festo-mps/testing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/maintenance> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station - ext/maintenance"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/testing> ;
+    owl:imports <https://w3id.org/maestro/maintenance> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:MaintenancePlan (1)
+#################################################################
+
+tes:MaintenancePlan a maestro:MaintenancePlan ;
+    rdfs:label "Testing station care plan (manual chapter 'Maintenance')"@en ;
+    maestro:description "Only 'at regular intervals' is given; no numeric interval is stated."@en ;
+    maestro:hasTask ltu:MT_CleanOptics,
+        ltu:MT_CleanProximitySensors,
+        ltu:MT_CleanStation,
+        ltu:MT_VisualCheck,
+        tes:MT_CleanCPVSilencer,
+        tes:MT_WipePistonRods ;
+    maestro:planForAsset tes:AirSlideModule,
+        tes:LiftingModule,
+        tes:MeasuringModule,
+        tes:RecognitionModule,
+        tes:SafetyLightBarrier,
+        tes:StationLinkReceiver,
+        tes:StationLinkTransmitter,
+        tes:ValveTerminal .
+
+#################################################################
+# maestro:MaintenanceTask (2)
+#################################################################
+
+tes:MT_CleanCPVSilencer a maestro:MaintenanceTask ;
+    rdfs:label "Clean or replace the CPV surface-mounted silencer when dirt raises the exhaust pressure"@en .
+
+tes:MT_WipePistonRods a maestro:MaintenanceTask ;
+    rdfs:label "Remove dirt from the cylinder piston rods with a soft cloth (cylinders have service-life lubrication)"@en .

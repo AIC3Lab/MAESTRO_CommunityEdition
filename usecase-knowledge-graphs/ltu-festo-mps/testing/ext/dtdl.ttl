@@ -1,0 +1,126 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+# ext/dtdl.ttl: statements that belong to the MAESTRO dtdl module (https://w3id.org/maestro/dtdl).
+# Umbrella: ../testing.ttl. Single-file form of the use case: ../testing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix tes: <https://w3id.org/maestro/examples/ltu-festo-mps/testing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/dtdl> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station - ext/dtdl"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/testing> ;
+    owl:imports <https://w3id.org/maestro/dtdl> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:DtdlInterface (3)
+#################################################################
+
+tes:AnalogueIO a maestro:DtdlInterface ;
+    rdfs:label "Testing station analogue height value (XMA3)"@en ;
+    maestro:description "Analogue height for a PLC with analogue processing (S7-313C analogue variant, projects 02PR_AS_Analog / 02PR_KFA_Analog)."@en ;
+    maestro:exposedVia tes:XMA3 ;
+    maestro:hasTelemetry tes:AI_Height .
+
+tes:ConsoleIO a maestro:DtdlInterface ;
+    rdfs:label "Testing station control console (XMG1)"@en ;
+    maestro:description "Operator signals of the control console."@en ;
+    maestro:exposedVia tes:XMG1 ;
+    maestro:hasProperty tes:CC_ColourLamp, tes:CC_ResetLamp, tes:CC_StartLamp ;
+    maestro:hasTelemetry tes:CC_AutoMan,
+        tes:CC_EmergencyStop,
+        tes:CC_Reset,
+        tes:CC_Start,
+        tes:CC_Stop .
+
+tes:StationIO a maestro:DtdlInterface ;
+    rdfs:label "Testing station I/O image (XMA2)"@en ;
+    maestro:description "Digital inputs I0-I7 and outputs O0-O3, O7."@en ;
+    maestro:exposedVia tes:XMA2 ;
+    maestro:hasProperty tes:DO_AirSlideOn,
+        tes:DO_ExtendEjector,
+        tes:DO_LowerLift,
+        tes:DO_RaiseLift,
+        tes:DO_StationOccupied ;
+    maestro:hasTelemetry tes:DI_DownstreamFree,
+        tes:DI_EjectorRetracted,
+        tes:DI_HeightOK,
+        tes:DI_LiftLowered,
+        tes:DI_LiftRaised,
+        tes:DI_NotBlack,
+        tes:DI_SafetyLightBarrier,
+        tes:DI_WorkpieceAvailable .
+
+#################################################################
+# maestro:DtdlTelemetry (14)
+#################################################################
+
+tes:AI_Height a maestro:DtdlTelemetry .
+
+tes:CC_AutoMan a maestro:DtdlTelemetry .
+
+tes:CC_EmergencyStop a maestro:DtdlTelemetry .
+
+tes:CC_Reset a maestro:DtdlTelemetry .
+
+tes:CC_Start a maestro:DtdlTelemetry .
+
+tes:CC_Stop a maestro:DtdlTelemetry .
+
+tes:DI_DownstreamFree a maestro:DtdlTelemetry .
+
+tes:DI_EjectorRetracted a maestro:DtdlTelemetry .
+
+tes:DI_HeightOK a maestro:DtdlTelemetry .
+
+tes:DI_LiftLowered a maestro:DtdlTelemetry .
+
+tes:DI_LiftRaised a maestro:DtdlTelemetry .
+
+tes:DI_NotBlack a maestro:DtdlTelemetry .
+
+tes:DI_SafetyLightBarrier a maestro:DtdlTelemetry .
+
+tes:DI_WorkpieceAvailable a maestro:DtdlTelemetry .
+
+#################################################################
+# maestro:DtdlProperty (18)
+#################################################################
+
+tes:CC_ColourLamp a maestro:DtdlProperty .
+
+tes:CC_ResetLamp a maestro:DtdlProperty .
+
+tes:CC_StartLamp a maestro:DtdlProperty .
+
+tes:DO_AirSlideOn a maestro:DtdlProperty .
+
+tes:DO_ExtendEjector a maestro:DtdlProperty .
+
+tes:DO_LowerLift a maestro:DtdlProperty .
+
+tes:DO_RaiseLift a maestro:DtdlProperty .
+
+tes:DO_StationOccupied a maestro:DtdlProperty .
+
+tes:TD_AirConsumption a maestro:DtdlProperty .
+
+tes:TD_AirSlideCapacity a maestro:DtdlProperty .
+
+tes:TD_DigitalInputs a maestro:DtdlProperty .
+
+tes:TD_DigitalOutputs a maestro:DtdlProperty .
+
+tes:TD_LowerSlideCapacity a maestro:DtdlProperty .
+
+tes:TD_MaxPressure a maestro:DtdlProperty .
+
+tes:TD_MeasuringModuleHeight a maestro:DtdlProperty .
+
+tes:TD_OperatingPressure a maestro:DtdlProperty .
+
+tes:TD_SupplyCurrent a maestro:DtdlProperty .
+
+tes:TD_SupplyVoltage a maestro:DtdlProperty .

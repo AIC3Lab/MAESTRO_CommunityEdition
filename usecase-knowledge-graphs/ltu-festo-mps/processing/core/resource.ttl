@@ -1,0 +1,133 @@
+# MAESTRO example: LTU Festo MPS - Processing station
+# core/resource.ttl: statements that belong to the MAESTRO resource module (https://w3id.org/maestro/resource).
+# Umbrella: ../processing.ttl. Single-file form of the use case: ../processing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+@prefix pro: <https://w3id.org/maestro/examples/ltu-festo-mps/processing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/processing/core/resource> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Processing station - core/resource"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/processing> ;
+    owl:imports <https://w3id.org/maestro/resource> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Station (1)
+#################################################################
+
+pro:Station a maestro:Station ;
+    rdfs:label "Processing station"@en ;
+    maestro:description "Station 3 (BE) of the MPS. Checks workpieces (correctly positioned, opening upwards), machines them and supplies them to the next station. A rotary indexing table driven by a DC gear motor and positioned by a relay circuit carries six workpiece retainers between material input, testing, drilling and ejection. Testing and drilling run in parallel: a solenoid plunger with inductive sensor checks the orientation, a solenoid clamps the workpiece, a 24 V drilling machine on a toothed-belt axis simulates polishing of the hole, and an electrical ejector passes finished workpieces on."@en ;
+    maestro:hasIdentifier pro:ID_ManualOrderNo, pro:ID_StationMaterialNo ;
+    maestro:hasModule pro:ClampingModule,
+        pro:ConnectionBoard,
+        pro:ControlConsole,
+        pro:DrillingModule,
+        pro:EjectorModule,
+        pro:IOTerminal,
+        pro:PLCBoard,
+        pro:RotaryIndexingTable,
+        pro:StationLinkReceiver,
+        pro:StationLinkTransmitter,
+        pro:TestingModule ;
+    maestro:hasParameterDef pro:TD_DigitalInputs,
+        pro:TD_DigitalOutputs,
+        pro:TD_IndexingAngle,
+        pro:TD_Retainers,
+        pro:TD_SupplyCurrent,
+        pro:TD_SupplyVoltage ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Processing station (BE)" .
+
+#################################################################
+# maestro:Module (11)
+#################################################################
+
+pro:ClampingModule a maestro:Module ;
+    rdfs:label "Clamping module"@en ;
+    maestro:description "Solenoid M4 fixes the workpiece during drilling. No 'clamped' sensor."@en ;
+    maestro:hasIdentifier ltu:PN_526218 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-S-BS" ;
+    maestro:providesCapability ltu:ClampingCapability .
+
+pro:ConnectionBoard a maestro:Module ;
+    rdfs:label "Connection board with relays K1-K5"@en ;
+    maestro:description "Terminal strip XA1, resistors R1 (47 Ohm / 5 W, motor M2) and R3, relays K1 (drill motor), K2 (table, self-holding), K3 (raise), K4 (lower), K5 (stop table in position). The micro switches 1B1/1B2 break the K3/K4 coils, so I3/I4 can only read 1 while O3/O2 is on (reading of the drawing)."@en ;
+    maestro:hasIdentifier ltu:PN_526229 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-KBL" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+pro:ControlConsole a maestro:Module ;
+    rdfs:label "Control console"@en ;
+    maestro:description "START, STOP, RESET, AUTO/MAN, EMERGENCY-STOP (if available) and the WORKPIECE NOK warning light; connected via XMG1."@en ;
+    maestro:providesCapability ltu:OperatorInterfaceCapability .
+
+pro:DrillingModule a maestro:Module ;
+    rdfs:label "Drilling module"@en ;
+    maestro:description "Drilling machine M3 (24 V DC, switched by K1) on a DGEL-12 toothed-belt axis driven by gear motor M1 (K3 raise, K4 lower) with micro switches 1B1 (upper) and 1B2 (lower). Simulates polishing of the workpiece hole; the spindle really turns. Drilling machine service life 200 h (data sheet 326395)."@en ;
+    maestro:hasIdentifier ltu:PN_196974 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-B-BS" ;
+    maestro:providesCapability ltu:DrillingCapability, ltu:LiftingCapability .
+
+pro:EjectorModule a maestro:Module ;
+    rdfs:label "Electrical sorting gate (ejector)"@en ;
+    maestro:description "Solenoid M6 (via series resistor R3 56 Ohm) pushes the finished workpiece to the next station."@en ;
+    maestro:hasIdentifier ltu:PN_526873 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-AW-BS" ;
+    maestro:providesCapability ltu:EjectingCapability, ltu:TransferCapability .
+
+pro:IOTerminal a maestro:Module ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:description "Station side of SysLink XMA2: all 8 inputs and 8 outputs used."@en ;
+    maestro:hasIdentifier ltu:PN_034035 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+pro:PLCBoard a maestro:Module ;
+    rdfs:label "PLC board"@en ;
+    maestro:description "Connects to XMA2, XMG1, the power supply and the PC."@en ;
+    maestro:model "PLC board (controller not stated)" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+pro:RotaryIndexingTable a maestro:Module ;
+    rdfs:label "Rotary indexing table module"@en ;
+    maestro:description "Six-position table driven by gear motor M2 through relay K2 (latched) and stopped by K5 when inductive sensor B3 sees a positioning screw. Capacitive sensors PART_AV, B1 and B2 detect workpieces at material input, testing and drilling."@en ;
+    maestro:hasIdentifier ltu:PN_654972 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RST" ;
+    maestro:providesCapability ltu:IndexingCapability,
+        ltu:PresenceSensingCapability,
+        ltu:TransferCapability .
+
+pro:StationLinkReceiver a maestro:Module ;
+    rdfs:label "StationLink receiver IP_FI"@en ;
+    maestro:description "Outgoing-material side; reads 'downstream station free' (I7) before each table rotation."@en ;
+    maestro:hasIdentifier ltu:PN_196964 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLE" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+pro:StationLinkTransmitter a maestro:Module ;
+    rdfs:label "StationLink transmitter IP_N_FO"@en ;
+    maestro:description "Incoming-material side; signals 'station occupied' to the upstream station (O7)."@en ;
+    maestro:hasIdentifier ltu:PN_196963 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLS" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+pro:TestingModule a maestro:Module ;
+    rdfs:label "Testing module"@en ;
+    maestro:description "Testing solenoid M5 lowers a plunger; if the opening faces upwards the armature reaches its end position and inductive sensor B4 switches."@en ;
+    maestro:hasIdentifier ltu:PN_195773 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-BP-B-BS" ;
+    maestro:providesCapability ltu:OrientationCheckingCapability .
