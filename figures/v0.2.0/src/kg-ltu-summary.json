@@ -1,0 +1,42 @@
+{
+ "distributing": {
+  "name": "Distributing station (VE, station 1)",
+  "individuals": 104,
+  "folded": 13,
+  "shared": 37,
+  "links": 197,
+  "triples": 736
+ },
+ "testing": {
+  "name": "Testing station (PR, station 2)",
+  "individuals": 147,
+  "folded": 56,
+  "shared": 64,
+  "links": 287,
+  "triples": 1204
+ },
+ "processing": {
+  "name": "Processing station (BE, station 3)",
+  "individuals": 141,
+  "folded": 66,
+  "shared": 53,
+  "links": 274,
+  "triples": 1198
+ },
+ "handling": {
+  "name": "Handling station (HA, station 4)",
+  "individuals": 128,
+  "folded": 53,
+  "shared": 55,
+  "links": 256,
+  "triples": 1060
+ },
+ "line": {
+  "name": "MPS line",
+  "individuals": 25,
+  "folded": 0,
+  "shared": 16,
+  "links": 41,
+  "triples": 138
+ }
+}

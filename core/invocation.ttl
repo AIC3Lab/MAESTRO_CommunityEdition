@@ -7,115 +7,210 @@
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix schema: <https://schema.org/> .
 @prefix WADL: <http://www.w3id.org/hsu-aut/WADL#> .
-@prefix maestro: <https://w3id.org/maestro#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
 
 #################################################################
-# MAESTRO HHM-Core : Invocation Hooks cluster (protocol-agnostic)
+# MAESTRO : Invocation Hooks cluster (protocol-agnostic)
 #
 # HHM-Core v1 cluster "Invocation Hooks": Endpoint, Protocol (a
-# controlled vocabulary whose individuals live in the extension
-# modules), Binding (protocol-specific mapping placeholder), plus
-# SkillService and EventStream from the HHM digital-twin diagram. The
-# MAESTRO 1.0 communication module is folded in here: OperationSignature,
-# DataFormat and InterfaceDescriptionLanguage. Like Protocol, the last two
-# are controlled vocabularies whose individuals live in the extension
-# modules: JSON, XML and Protocol Buffers in ext/data-formats.ttl, the
-# OPC UA binary encoding and node set in ext/opcua.ttl, DTDL in
-# ext/dtdl.ttl, OpenAPI in ext/rest.ttl, AAS submodel templates in
-# ext/digital-twin.ttl.
+# controlled vocabulary), Binding (protocol-specific mapping
+# placeholder), plus SkillService and EventStream from the HHM
+# digital-twin diagram. The MAESTRO 1.0 communication module is folded
+# in here: OperationSignature, DataFormat and InterfaceDescriptionLanguage.
 #
-# Extension points: one module per protocol, each declaring its
-# maestro:Protocol individual and a binding that specialises maestro:Binding:
-# OPC UA (ext/opcua.ttl), HTTP / REST (ext/rest.ttl, WADL), MQTT
-# (ext/mqtt.ttl), DDS (ext/dds.ttl), Modbus (ext/modbus.ttl), PROFINET
-# (ext/profinet.ttl), EtherCAT (ext/ethercat.ttl); DTDL binding
-# (ext/dtdl.ttl). The address and port of an endpoint and the topic of
-# a binding are in ext/addressing.ttl, which the protocol modules import. AAS submodel publication is named by the HHM diagram
-# but AAS is not in the listed standards basis: hook only, no IRIs, no
-# mapping.
+# Extension points, under experimental-extensions/: OPC UA binding
+# (opcua.ttl), REST binding (rest.ttl, WADL), DTDL binding
+# (dtdl.ttl). AAS submodel publication is named by the HHM diagram
+# but AAS is not in the listed standards basis: hook only, no IRIs,
+# no mapping.
 #################################################################
 
-<https://w3id.org/maestro/hhm/invocation> a owl:Ontology ;
-    owl:versionIRI <https://w3id.org/maestro/hhm/invocation/0.1.0> ;
-    owl:versionInfo "0.1.0" ;
-    dct:title "MAESTRO HHM-Core: Invocation Hooks" ;
-    rdfs:label "MAESTRO HHM-Core: Invocation Hooks"@en ;
+<https://w3id.org/maestro/invocation> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/invocation/0.2.0> ;
+    owl:versionInfo "0.2.0" ;
+    dct:title "MAESTRO: Invocation Hooks" ;
+    rdfs:label "MAESTRO: Invocation Hooks"@en ;
     dct:description "HHM-Core v1 Invocation Hooks cluster: endpoints, protocols, bindings, operation signatures, event streams and skill services, independent of any concrete protocol."@en ;
-    rdfs:comment "The invocation path is service -> interface -> endpoint -> binding -> signature. Apart from documentary links to the HSU WADL ontology design pattern (OperationSignature close to WADL:Method; Endpoint and DataFormat related to WADL:Resource and WADL:Representation), this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Protocol, data-format and interface-language individuals are plain names of technologies and are declared in the extension modules. Definitions are reused from the MAESTRO 1.0 communication and skill modules; dct:source names the term a definition was taken from."@en ;
+    rdfs:comment "The invocation path is service -> interface -> endpoint -> binding -> signature. Apart from documentary links to the HSU WADL ontology design pattern (OperationSignature close to WADL:Method; Endpoint and DataFormat related to WADL:Resource and WADL:Representation), this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. Protocol, data-format and interface-language individuals are plain names of technologies. Definitions are reused from the MAESTRO 1.0 communication and skill modules; dct:source names the term a definition was taken from."@en ;
     dct:creator "Melwin Xavier" ;
     dct:license <https://opensource.org/licenses/MIT> ;
     dct:created "2026-09-30"^^xsd:date ;
-    dct:modified "2026-09-30"^^xsd:date ;
+    dct:modified "2026-10-14"^^xsd:date ;
     dct:source <https://github.com/melwinxavier/MAESTRO> ;
     rdfs:seeAlso <https://w3id.org/maestro/communication> , <https://w3id.org/maestro/skill> ;
     dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
-    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    dct:isPartOf <https://w3id.org/maestro> ;
     vann:preferredNamespacePrefix "maestro" ;
     vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
-    owl:imports <https://w3id.org/maestro/hhm/skill> .
+    owl:imports <https://w3id.org/maestro/skill> .
 
 #################################################################
 # CLASSES
 #################################################################
 
+maestro:InvocationElement a owl:Class ;
+    rdfs:label "Invocation element"@en ;
+    skos:definition "A term of the Invocation Hooks cluster: an endpoint, a binding, a skill service, an event stream or an operation signature, and the protocol-specific nodes of the extensions."@en ;
+    rdfs:comment "Grouping class of the Invocation Hooks cluster; it organises the class tree and carries no disjointness axiom, so an individual may also belong to another cluster."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
 maestro:Endpoint a owl:Class ;
+    rdfs:subClassOf maestro:InvocationElement ;
     rdfs:label "Endpoint"@en ;
     skos:definition "A network-addressable access point through which a skill interface, stream or operation is reached, identified by protocol, host and port."@en ;
     rdfs:comment "HHM-Core Invocation Hooks cluster. Related to WADL:Resource of the HSU WADL ODP: for an HTTP endpoint, the WADL resources reachable under its base address describe what it exposes; a WADL resource is a URI pattern, not a host and port."@en ;
     skos:relatedMatch WADL:Resource ;
     dct:source <https://w3id.org/maestro/communication#Endpoint> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:Protocol a owl:Class ;
+    rdfs:subClassOf maestro:ValueSet ;
     rdfs:label "Protocol"@en ;
     skos:definition "A transport or application protocol an endpoint speaks."@en ;
-    rdfs:comment "HHM-Core Invocation Hooks cluster, a controlled vocabulary of individuals. The individuals are declared in the extension modules, one module per protocol (maestro:OpcUaProtocol in ext/opcua.ttl, maestro:HttpProtocol in ext/rest.ttl, maestro:MqttProtocol, maestro:DdsProtocol, maestro:ModbusProtocol, maestro:ProfinetProtocol, maestro:EthercatProtocol in the module of the same name); a knowledge graph may declare further individuals. Transport protocols only: payload encodings are maestro:DataFormat, interface description languages are maestro:InterfaceDescriptionLanguage."@en ;
+    rdfs:comment "HHM-Core Invocation Hooks cluster, a controlled vocabulary of individuals. Transport protocols only: payload encodings are maestro:DataFormat, interface description languages are maestro:InterfaceDescriptionLanguage."@en ;
     dct:source <https://w3id.org/maestro/communication#Protocol> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:OpcUaProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "OPC UA"@en ;
+    skos:definition "The OPC Unified Architecture protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpcUaProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:DdsProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "DDS"@en ;
+    skos:definition "The Data Distribution Service protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#DdsProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:MqttProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "MQTT"@en ;
+    skos:definition "The MQTT publish-subscribe protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#MqttProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:ProfinetProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "PROFINET"@en ;
+    skos:definition "The PROFINET industrial Ethernet protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#ProfinetProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:EthercatProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "EtherCAT"@en ;
+    skos:definition "The EtherCAT fieldbus protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#EthercatProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:ModbusProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "Modbus"@en ;
+    skos:definition "The Modbus protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#ModbusProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:HttpProtocol a owl:NamedIndividual , maestro:Protocol ;
+    rdfs:label "HTTP"@en ;
+    skos:definition "The Hypertext Transfer Protocol."@en ;
+    skos:scopeNote "Includes REST-style APIs; REST is an architectural style, not a protocol."@en ;
+    dct:source <https://w3id.org/maestro/communication#HttpProtocol> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:Binding a owl:Class ;
+    rdfs:subClassOf maestro:InvocationElement ;
     rdfs:label "Binding"@en ;
     skos:definition "A neutral protocol-mapping indirection between an endpoint and a concrete protocol such as OPC UA, REST or DTDL."@en ;
-    rdfs:comment "HHM-Core Invocation Hooks cluster (protocol-specific mapping placeholder). Concrete adapters specialise it: maestro:OpcUaBinding, maestro:RestBinding, maestro:MqttBinding, maestro:DdsBinding, maestro:ModbusBinding, maestro:ProfinetBinding, maestro:EthercatBinding and maestro:DtdlBinding in the extension modules."@en ;
+    rdfs:comment "HHM-Core Invocation Hooks cluster (protocol-specific mapping placeholder). Concrete adapters specialise it: maestro:OpcUaBinding, maestro:RestBinding, maestro:DtdlBinding in the extension modules."@en ;
     dct:source <https://w3id.org/maestro/communication#Binding> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:SkillService a owl:Class ;
+    rdfs:subClassOf maestro:InvocationElement ;
     rdfs:label "Skill service"@en ;
     skos:definition "A service abstraction that exposes one or more skill interfaces."@en ;
     rdfs:comment "HHM-Core SkillService (drawn in the digital-twin diagram). The commercial face of a service is an maestro:ServiceOffer."@en ;
     dct:source <https://w3id.org/maestro/skill#SkillService> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:EventStream a owl:Class ;
+    rdfs:subClassOf maestro:InvocationElement ;
     rdfs:label "Event stream"@en ;
     skos:definition "A skill-level event or telemetry stream contract, independent of the technology that carries it."@en ;
     rdfs:comment "HHM-Core EventStream (drawn in the digital-twin diagram). A contract, not an event that happened; carried for example as DTDL telemetry or OPC UA events."@en ;
     dct:source <https://w3id.org/maestro/communication#EventStream> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:OperationSignature a owl:Class ;
+    rdfs:subClassOf maestro:InvocationElement ;
     rdfs:label "Operation signature"@en ;
     skos:definition "The parameter and return schema of an invocable operation."@en ;
     rdfs:comment "Folded in from the MAESTRO 1.0 communication module. Close match to WADL:Method of the HSU WADL ODP, which describes the request and response of an HTTP method applied to a resource. Input parameters use maestro:hasParameterDef, returns use maestro:returns."@en ;
     skos:closeMatch WADL:Method ;
     dct:source <https://w3id.org/maestro/communication#OperationSignature> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:DataFormat a owl:Class ;
+    rdfs:subClassOf maestro:ValueSet ;
     rdfs:label "Data format"@en ;
     skos:definition "A payload encoding carried over a protocol."@en ;
-    rdfs:comment "Folded in from the MAESTRO 1.0 communication module, a controlled vocabulary of individuals. The individuals are declared in the extension modules (maestro:JsonFormat, maestro:XmlFormat and maestro:ProtobufFormat in ext/data-formats.ttl, maestro:OpcUaBinaryFormat in ext/opcua.ttl); a knowledge graph may declare further individuals. Related to WADL:Representation of the HSU WADL ODP, which names the media type in which a resource state is represented."@en ;
+    rdfs:comment "Folded in from the MAESTRO 1.0 communication module. Related to WADL:Representation of the HSU WADL ODP, which names the media type in which a resource state is represented."@en ;
     skos:relatedMatch WADL:Representation ;
     dct:source <https://w3id.org/maestro/communication#DataFormat> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:JsonFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "JSON"@en ;
+    skos:definition "JavaScript Object Notation payloads."@en ;
+    dct:source <https://w3id.org/maestro/communication#JsonFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:XmlFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "XML"@en ;
+    skos:definition "Extensible Markup Language payloads."@en ;
+    dct:source <https://w3id.org/maestro/communication#XmlFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:ProtobufFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "Protocol Buffers"@en ;
+    skos:definition "Protocol Buffers binary payloads."@en ;
+    dct:source <https://w3id.org/maestro/communication#ProtobufFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:OpcUaBinaryFormat a owl:NamedIndividual , maestro:DataFormat ;
+    rdfs:label "OPC UA Binary"@en ;
+    skos:definition "The OPC UA binary encoding."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpcUaBinaryFormat> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:InterfaceDescriptionLanguage a owl:Class ;
+    rdfs:subClassOf maestro:ValueSet ;
     rdfs:label "Interface description language"@en ;
     skos:definition "A language in which an interface contract is described."@en ;
-    rdfs:comment "Folded in from the MAESTRO 1.0 communication module, a controlled vocabulary of individuals. The individuals are declared in the extension module of their technology (maestro:OpcUaNodeSetIDL in ext/opcua.ttl, maestro:DtdlIDL in ext/dtdl.ttl, maestro:OpenApiIDL in ext/rest.ttl, maestro:AasSubmodelTemplateIDL in ext/digital-twin.ttl); a knowledge graph may declare further individuals. Individuals name the languages; naming AAS submodel templates or OpenAPI is not a conformance claim."@en ;
+    rdfs:comment "Folded in from the MAESTRO 1.0 communication module. Individuals name the languages; naming AAS submodel templates or OpenAPI here is not a conformance claim."@en ;
     dct:source <https://w3id.org/maestro/communication#InterfaceDescriptionLanguage> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:OpcUaNodeSetIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "OPC UA NodeSet"@en ;
+    skos:definition "An interface described as an OPC UA node set."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpcUaNodeSetIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:DtdlIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "DTDL"@en ;
+    skos:definition "An interface described in the Digital Twins Definition Language."@en ;
+    dct:source <https://w3id.org/maestro/communication#DtdlIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:AasSubmodelTemplateIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "Asset Administration Shell submodel template"@en ;
+    skos:definition "An interface described as an Asset Administration Shell submodel template. A plain name of the technology; no conformance claim."@en ;
+    dct:source <https://w3id.org/maestro/communication#AasIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:OpenApiIDL a owl:NamedIndividual , maestro:InterfaceDescriptionLanguage ;
+    rdfs:label "OpenAPI"@en ;
+    skos:definition "An interface described as an OpenAPI document. A plain name of the technology; no conformance claim."@en ;
+    dct:source <https://w3id.org/maestro/communication#OpenApiIDL> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 #################################################################
 # OBJECT PROPERTIES
@@ -128,25 +223,25 @@ maestro:exposedVia a owl:ObjectProperty ;
     rdfs:comment "HHM-Core edge SkillInterface exposedVia Endpoint; the digital-twin diagram also draws SkillService exposedVia Endpoint. Domain left open for both."@en ;
     rdfs:range  maestro:Endpoint ;
     dct:source <https://w3id.org/maestro/communication#exposedVia> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
-maestro:exposesInterface a owl:ObjectProperty ;
-    rdfs:label "exposes interface"@en ;
+maestro:implementsInterface a owl:ObjectProperty ;
+    rdfs:label "implements interface"@en ;
     skos:definition "Relates a skill service to a skill interface it exposes."@en ;
-    rdfs:comment "Implied by the HHM digital-twin diagram, which draws the service in front of the endpoint."@en ;
+    rdfs:comment "Implied by the HHM digital-twin diagram, which draws the service in front of the endpoint. 0.1.0 name maestro:exposesInterface."@en ;
     rdfs:domain maestro:SkillService ;
     rdfs:range  maestro:SkillInterface ;
     dct:source <https://w3id.org/maestro/skill#exposesInterface> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:usesProtocol a owl:ObjectProperty ;
+    schema:domainIncludes maestro:Endpoint , maestro:Binding ;
     rdfs:label "uses protocol"@en ;
-    skos:definition "Relates an endpoint to the protocol it uses."@en ;
-    rdfs:comment "HHM-Core edge Endpoint usesProtocol Protocol."@en ;
-    rdfs:domain maestro:Endpoint ;
+    skos:definition "Relates an endpoint, or a binding, to the protocol it uses."@en ;
+    rdfs:comment "HHM-Core edge Endpoint usesProtocol Protocol. Since 0.2.0 it also carries the 0.1.0 edge Binding specializesAs Protocol, so the domain is left open for both."@en ;
     rdfs:range  maestro:Protocol ;
     dct:source <https://w3id.org/maestro/communication#usesProtocol> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:hasBinding a owl:ObjectProperty ;
     rdfs:label "has binding"@en ;
@@ -155,7 +250,7 @@ maestro:hasBinding a owl:ObjectProperty ;
     rdfs:domain maestro:Endpoint ;
     rdfs:range  maestro:Binding ;
     dct:source <https://w3id.org/maestro/communication#hasBinding> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:emits a owl:ObjectProperty ;
     rdfs:label "emits"@en ;
@@ -164,7 +259,7 @@ maestro:emits a owl:ObjectProperty ;
     rdfs:domain maestro:Endpoint ;
     rdfs:range  maestro:EventStream ;
     dct:source <https://w3id.org/maestro/communication#emitsStream> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:hasSignature a owl:ObjectProperty ;
     rdfs:label "has signature"@en ;
@@ -173,7 +268,7 @@ maestro:hasSignature a owl:ObjectProperty ;
     rdfs:domain maestro:Binding ;
     rdfs:range  maestro:OperationSignature ;
     dct:source <https://w3id.org/maestro/communication#hasSignature> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:returns a owl:ObjectProperty ;
     rdfs:label "returns"@en ;
@@ -182,15 +277,7 @@ maestro:returns a owl:ObjectProperty ;
     rdfs:domain maestro:OperationSignature ;
     rdfs:range  maestro:ParameterDef ;
     dct:source <https://w3id.org/maestro/communication#returns> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
-
-maestro:specializesAs a owl:ObjectProperty ;
-    rdfs:label "specializes as"@en ;
-    skos:definition "Relates a binding to the concrete protocol it specialises to."@en ;
-    rdfs:domain maestro:Binding ;
-    rdfs:range  maestro:Protocol ;
-    dct:source <https://w3id.org/maestro/communication#specializesAs> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:usesDataFormat a owl:ObjectProperty ;
     rdfs:label "uses data format"@en ;
@@ -198,7 +285,7 @@ maestro:usesDataFormat a owl:ObjectProperty ;
     rdfs:domain maestro:Binding ;
     rdfs:range  maestro:DataFormat ;
     dct:source <https://w3id.org/maestro/communication#usesDataFormat> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
 
 maestro:describedIn a owl:ObjectProperty ;
     schema:domainIncludes maestro:SkillInterface , maestro:Binding ;
@@ -207,4 +294,86 @@ maestro:describedIn a owl:ObjectProperty ;
     rdfs:comment "Domain left open for maestro:SkillInterface and maestro:Binding."@en ;
     rdfs:range  maestro:InterfaceDescriptionLanguage ;
     dct:source <https://w3id.org/maestro/communication#describedIn> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/invocation> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:specializes a owl:ObjectProperty ;
+    rdfs:label "specializes"@en ;
+    skos:definition "Relates a binding to the protocol-neutral skill interface it maps onto a concrete protocol."@en ;
+    rdfs:comment "HHM-Core edge Binding specializes SkillInterface (digital-twin diagram). Protocol-specific sub-properties: maestro:bindsInterface (DTDL)."@en ;
+    rdfs:domain maestro:Binding ;
+    rdfs:range  maestro:SkillInterface ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+#################################################################
+# DATATYPE PROPERTIES
+#################################################################
+
+maestro:address a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "address"@en ;
+    skos:definition "URI or URL of the endpoint, for example opc.tcp://plc1:4840."@en ;
+    rdfs:domain maestro:Endpoint ;
+    rdfs:range  xsd:string ;
+    dct:source <https://w3id.org/maestro/communication#address> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:port a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "port"@en ;
+    skos:definition "The transport port number of an endpoint."@en ;
+    rdfs:domain maestro:Endpoint ;
+    rdfs:range  xsd:integer ;
+    dct:source <https://w3id.org/maestro/communication#port> ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:topic a owl:DatatypeProperty ;
+    rdfs:label "topic"@en ;
+    skos:definition "The topic, channel or node under which an event stream is published."@en ;
+    rdfs:domain maestro:EventStream ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:mappingSpec a owl:DatatypeProperty ;
+    rdfs:label "mapping specification"@en ;
+    skos:definition "A textual specification of how a binding maps the elements of a skill interface onto protocol elements."@en ;
+    rdfs:comment "Free text or a reference to a mapping document; the protocol-specific edges (maestro:bindsMethod, maestro:bindsInterface) state the mapping in the graph."@en ;
+    rdfs:domain maestro:Binding ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+#################################################################
+# DEPRECATED (0.1.0 names)
+#################################################################
+
+maestro:exposesInterface a owl:ObjectProperty ;
+    rdfs:label "exposes interface (deprecated)"@en ;
+    skos:definition "Deprecated since 0.2.0: replaced by maestro:implementsInterface, which has the same meaning. Kept as an equivalent so that data written against 0.1.0 still reasons and validates."@en ;
+    owl:deprecated true ;
+    owl:equivalentProperty maestro:implementsInterface ;
+    dct:isReplacedBy maestro:implementsInterface ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+maestro:specializesAs a owl:ObjectProperty ;
+    rdfs:label "specializes as (deprecated)"@en ;
+    skos:definition "Deprecated since 0.2.0: replaced by maestro:usesProtocol, which has the same meaning. Kept as an equivalent so that data written against 0.1.0 still reasons and validates."@en ;
+    dct:source <https://w3id.org/maestro/communication#specializesAs> ;
+    owl:deprecated true ;
+    owl:equivalentProperty maestro:usesProtocol ;
+    dct:isReplacedBy maestro:usesProtocol ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/invocation> .
+
+#################################################################
+# DISTINCT INDIVIDUALS
+#
+# The members of each controlled vocabulary are pairwise distinct.
+#################################################################
+
+# Protocols
+[] a owl:AllDifferent ;
+    owl:members ( maestro:OpcUaProtocol maestro:DdsProtocol maestro:MqttProtocol maestro:ProfinetProtocol maestro:EthercatProtocol maestro:ModbusProtocol maestro:HttpProtocol ) .
+
+# Data formats
+[] a owl:AllDifferent ;
+    owl:members ( maestro:JsonFormat maestro:XmlFormat maestro:ProtobufFormat maestro:OpcUaBinaryFormat ) .
+
+# Interface description languages
+[] a owl:AllDifferent ;
+    owl:members ( maestro:OpcUaNodeSetIDL maestro:DtdlIDL maestro:AasSubmodelTemplateIDL maestro:OpenApiIDL ) .

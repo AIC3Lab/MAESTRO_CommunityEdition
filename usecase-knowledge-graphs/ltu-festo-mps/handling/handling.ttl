@@ -1,0 +1,90 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+#
+# Umbrella of this use case: the ontology header, which imports the module files under core/ and ext/.
+# Single-file form: handling-merged.ttl (written by tools/merge_usecases.py).
+#
+# Notes carried over from the former plant.ttl, product.ttl, which this use case was split from;
+# section titles and file names in them refer to those files.
+#
+# [plant.ttl]
+# LTU FESTO MPS - HANDLING STATION - PLANT (DESIGN TIME)
+#
+# Sources (FESTO CD/04_Handling): 655633_Manual_Handling (DE/EN 04/06
+# R2.2), Electric_Circuit_Diagram_Handling (drawing 195783, 05.04.06),
+# Pneumatic_Circuit_Diagram_Handling, 526883_Parts_list_Handling,
+# assembly
+# instructions, data sheets, operating instructions, 04_Handling_GRAFCET.
+#
+# Documents disagree on: 7 digital outputs in the technical data vs 5
+# wired (O0-O3, O7); 1 slide module in the parts list vs 2 in the manual
+# and assembly instructions. The valve-to-solenoid mapping is inferred
+# from the circuit symbols and data sheets.
+#
+# STATION
+#
+# Material number 526883 (parts list) and manual order number 655633.
+#
+# TECHNICAL DATA
+#
+# Static values from the manual's technical-data table and commissioning
+# section.
+#
+# BILL OF MATERIALS
+#
+# Parts list 526883 (11.11.2002) with the components of the circuit
+# diagrams below each assembly.
+#
+# SIGNALS (DATA POINTS)
+#
+# Bits, XMA2 pins and BMKs from the electric circuit diagram, pages 4-5.
+# Sensor = maestro:Output / maestro:DtdlTelemetry; actuator command = maestro:Input /
+# maestro:DtdlProperty.
+#
+# I/O PATH: SYSLINK ENDPOINTS AND DATA INTERFACES
+#
+# XMA2 digital, XMG1 console. The URNs only name the connectors.
+#
+# MAINTENANCE
+#
+# Plus the fibre-optic device note of operating instructions 369669.
+#
+# [product.ttl]
+# LTU FESTO MPS - HANDLING STATION - PRODUCT (RECIPES)
+#
+# Source: the GRAFCET function chart of the Handling station
+# (04_Handling_GRAFCET.pdf).
+#
+# The station's control sequence as an maestro:Recipe. Steps are realised by
+# the skills of plant.ttl; data bindings connect parameters declared
+# there. The workpiece itself and the line recipe are in
+# line/product.ttl.
+#
+# CONTROL SEQUENCE (GRAFCET)
+#
+# One maestro:PlanStep per GRAFCET step with an action; maestro:stepOrder is the
+# GRAFCET step number. Empty steps (1, 5, 14) and the flag-only step 4
+# are
+# folded into the transition expressions. Both branches wait in step 14
+# for 'downstream station free' before depositing.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station"@en ;
+    rdfs:comment "The Festo MPS Handling station of the LTU line: modules, parts list, I/O allocation, skills, safety and care. The GRAFCET control sequence is an HHM-Core recipe in core/recipe.ttl. Built from manual 655633, the electric and pneumatic circuit diagrams, parts list 526883, data sheets and the GRAFCET."@en ;
+    owl:imports <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/invocation>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/maas>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/policy>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/product>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/recipe>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/resource>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/skill>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/automationml>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/dtdl>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/energy>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/isa95>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/handling/ext/maintenance>,
+        <https://w3id.org/maestro/examples/ltu-festo-mps/shared> ;
+    owl:versionIRI <https://w3id.org/maestro/examples/ltu-festo-mps/handling/0.1.0> ;
+    owl:versionInfo "0.1.0" .

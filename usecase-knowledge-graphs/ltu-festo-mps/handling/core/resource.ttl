@@ -1,0 +1,137 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# core/resource.ttl: statements that belong to the MAESTRO resource module (https://w3id.org/maestro/resource).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/resource> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - core/resource"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/resource> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Station (1)
+#################################################################
+
+han:Station a maestro:Station ;
+    rdfs:label "Handling station"@en ;
+    maestro:description "Station 4 (HA) of the MPS. Takes a workpiece from the receptacle with the PicAlfa two-axis pneumatic handling device, tells black from non-black (red, metallic) with an optical sensor in the gripper jaw, and puts black workpieces on slide 1 (inner) and red/silver ones on slide 2 (outer); after moving the slide-2 end stop it can pass workpieces to a downstream station instead. Last station of the LTU line."@en ;
+    maestro:hasIdentifier han:ID_ManualOrderNo, han:ID_StationMaterialNo ;
+    maestro:hasModule han:ControlConsole,
+        han:IOTerminal,
+        han:PLCBoard,
+        han:PicAlfaModule,
+        han:ReceptacleModule,
+        han:ServiceUnit,
+        han:Slide1,
+        han:Slide2,
+        han:StationLinkReceiver,
+        han:StationLinkTransmitter,
+        han:ValveTerminal ;
+    maestro:hasParameterDef han:TD_AirConsumption,
+        han:TD_DigitalInputs,
+        han:TD_DigitalOutputs,
+        han:TD_MaxPressure,
+        han:TD_OperatingPressure,
+        han:TD_SlideCapacity,
+        han:TD_SupplyCurrent,
+        han:TD_SupplyVoltage ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Handling station (HA, PicAlfa)" .
+
+#################################################################
+# maestro:Module (11)
+#################################################################
+
+han:ControlConsole a maestro:Module ;
+    rdfs:label "Control console"@en ;
+    maestro:description "START, STOP, RESET, AUTO/MAN and EMERGENCY-STOP (if available); connected via XMG1."@en ;
+    maestro:providesCapability ltu:OperatorInterfaceCapability .
+
+han:IOTerminal a maestro:Module ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:description "Station side of SysLink XMA2: inputs I0-I7, outputs O0-O3 and O7 used (O4-O6 free)."@en ;
+    maestro:hasIdentifier ltu:PN_034035 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP-B-AN-E/A-T" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+han:PLCBoard a maestro:Module ;
+    rdfs:label "PLC board"@en ;
+    maestro:description "Connects to XMA2, XMG1, the power supply and the PC."@en ;
+    maestro:model "PLC board (controller not stated)" ;
+    maestro:providesCapability ltu:StationControlCapability .
+
+han:PicAlfaModule a maestro:Module ;
+    rdfs:label "PicAlfa module (two-axis pick & place)"@en ;
+    maestro:description "Rodless linear axis 1A1 (DGPL-12, positions receptacle / slide 1 / slide 2, end stops with shock absorbers, sensors 1B1-1B3), flat lifting cylinder 2A1 (DZF-18-80, sensors 2B1/2B2) and parallel gripper 3A1 (HGP-10) with fibre-optic sensor 3B1 flush in the jaw. The gripper state is not sensed."@en ;
+    maestro:hasIdentifier ltu:PN_526215 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-PA-B-BS" ;
+    maestro:providesCapability ltu:LiftingCapability,
+        ltu:MaterialRecognitionCapability,
+        ltu:MechanicalGrippingCapability,
+        ltu:SortingCapability,
+        ltu:TransferCapability .
+
+han:ReceptacleModule a maestro:Module ;
+    rdfs:label "Receptacle (holder) module"@en ;
+    maestro:description "Holds the workpiece at the pick-up position ('upstream station' in the circuit diagram); fibre-optic diffuse sensor PART_AV detects it. Stand-alone, workpieces are inserted by hand."@en ;
+    maestro:hasIdentifier ltu:PN_195777 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-AN-BS" ;
+    maestro:providesCapability ltu:PresenceSensingCapability .
+
+han:ServiceUnit a maestro:Module ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:description "Compressed-air inlet, set to 4 bar."@en ;
+    maestro:hasIdentifier ltu:PN_152894 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:S-PVW-LFR" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability .
+
+han:Slide1 a maestro:Module ;
+    rdfs:label "Slide 1 (inner, black workpieces)"@en ;
+    maestro:description "Receives black workpieces; holds 5; inclination adjustable."@en ;
+    maestro:hasIdentifier ltu:PN_653393 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RT250" ;
+    maestro:providesCapability ltu:SlideConveyingCapability .
+
+han:Slide2 a maestro:Module ;
+    rdfs:label "Slide 2 (outer, red/silver workpieces)"@en ;
+    maestro:description "Receives red and silver workpieces; holds 5; inclination adjustable."@en ;
+    maestro:hasIdentifier ltu:PN_653393 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-RT250" ;
+    maestro:providesCapability ltu:SlideConveyingCapability .
+
+han:StationLinkReceiver a maestro:Module ;
+    rdfs:label "StationLink receiver IP_FI"@en ;
+    maestro:description "Outgoing-material side; reads 'downstream station free' (I7). As the last station of the line it faces no transmitter; what the program then reads is not stated."@en ;
+    maestro:hasIdentifier ltu:PN_196964 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLE" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+han:StationLinkTransmitter a maestro:Module ;
+    rdfs:label "StationLink transmitter IP_N_FO"@en ;
+    maestro:description "Incoming-material side; signals 'station occupied' to the upstream station (O7)."@en ;
+    maestro:hasIdentifier ltu:PN_196963 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-M-SLS" ;
+    maestro:providesCapability ltu:StationLinkCapability .
+
+han:ValveTerminal a maestro:Module ;
+    rdfs:label "CPV valve terminal 0V1"@en ;
+    maestro:description "CPV10 valve terminal with 1M1/1M2 (linear axis), 1V1 (5/3 closed-centre kit), 2M1 (extend gripper) and 3M1 (open gripper). Valve-to-coil mapping inferred."@en ;
+    maestro:hasIdentifier ltu:PN_526872 ;
+    maestro:manufacturer "Festo" ;
+    maestro:model "D:MP3-CP-GMM" ;
+    maestro:providesCapability ltu:PneumaticActuationCapability .

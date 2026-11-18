@@ -1,0 +1,49 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# core/policy.ttl: statements that belong to the MAESTRO policy module (https://w3id.org/maestro/policy).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/policy> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - core/policy"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/policy> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Constraint (2)
+#################################################################
+
+han:C_FibreOpticNotProtective a maestro:Constraint ;
+    rdfs:label "Fibre-optic devices must not be used as contactless protective devices"@en ;
+    maestro:constrains han:PicAlfaModule, han:ReceptacleModule ;
+    maestro:expression "PART_AV and 3B1 are not safety devices" .
+
+han:C_MaxOperatingPressure a maestro:Constraint ;
+    rdfs:label "Do not exceed the Handling station's maximum operating pressure of 4 bar (400 kPa)"@en ;
+    maestro:constrains han:Station ;
+    maestro:expression "supplyPressure <= 4 bar" .
+
+#################################################################
+# maestro:EmergencyStop (1)
+#################################################################
+
+han:EmergencyStop a maestro:EmergencyStop ;
+    rdfs:label "EMERGENCY-STOP pushbutton, Handling station control console"@en ;
+    maestro:description "The manual names the EMERGENCY-STOP pushbutton '(if available)'; together with STOP it interrupts the sequence at any time and must be released before a program is loaded. Safety category, performance level and wiring are not stated."@en ;
+    maestro:mitigates ltu:H_MovingStation .
+
+#################################################################
+# Further statements about individuals described in other files (2)
+#################################################################
+
+ltu:MPSSafetyRules
+    maestro:hasConstraint han:C_FibreOpticNotProtective, han:C_MaxOperatingPressure .
+
+ltu:Perm_TraineeRunsStations
+    maestro:target han:PickAndSortWorkpiece .

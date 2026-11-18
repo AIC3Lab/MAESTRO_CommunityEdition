@@ -1,4 +1,4 @@
-PREFIX maestro: <https://w3id.org/maestro#>
+PREFIX maestro:   <https://w3id.org/maestro#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 # CQ12 - What is the current state of each resource in each state dimension (open assertions, no validTo)?

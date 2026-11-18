@@ -1,0 +1,148 @@
+# MAESTRO example: LTU Festo MPS - shared reference data
+# core/policy.ttl: statements that belong to the MAESTRO policy module (https://w3id.org/maestro/policy).
+# Umbrella: ../shared.ttl. Single-file form of the use case: ../shared-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/shared/core/policy> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - shared reference data - core/policy"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/shared> ;
+    owl:imports <https://w3id.org/maestro/policy> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Policy (1)
+#################################################################
+
+ltu:MPSSafetyRules a maestro:Policy ;
+    rdfs:label "MPS notes on safety (station manuals)"@en ;
+    maestro:description "Rules of the 'Notes on safety' chapter that all four station manuals share."@en ;
+    maestro:hasConstraint ltu:C_AirAfterTubing,
+        ltu:C_InterventionAtRest,
+        ltu:C_LowVoltage,
+        ltu:C_MaxPressure,
+        ltu:C_NoDisconnectUnderPressure,
+        ltu:C_SecureMounting,
+        ltu:C_Supervision,
+        ltu:C_WirePowerOff ;
+    maestro:hasPermission ltu:Perm_TraineeRunsStations ;
+    maestro:requiresPermission ltu:Perm_TraineeRunsStations .
+
+#################################################################
+# maestro:Constraint (8)
+#################################################################
+
+ltu:C_AirAfterTubing a maestro:Constraint ;
+    rdfs:label "Switch on compressed air only after all tubing is connected and secured"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "airOn implies allTubingSecured" .
+
+ltu:C_InterventionAtRest a maestro:Constraint ;
+    rdfs:label "No manual intervention unless the machine is at rest"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "manualIntervention implies stationAtRest" .
+
+ltu:C_LowVoltage a maestro:Constraint ;
+    rdfs:label "Use only low voltages of up to 24 V DC"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "supplyVoltage <= 24 V DC" .
+
+ltu:C_MaxPressure a maestro:Constraint ;
+    rdfs:label "Do not exceed the permissible pressure of 8 bar (800 kPa)"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "supplyPressure <= 8 bar" .
+
+ltu:C_NoDisconnectUnderPressure a maestro:Constraint ;
+    rdfs:label "Do not disconnect air lines under pressure"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "disconnectTubing implies pressure == 0" .
+
+ltu:C_SecureMounting a maestro:Constraint ;
+    rdfs:label "Mount all components securely on the profile plate"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "allComponentsSecured" .
+
+ltu:C_Supervision a maestro:Constraint ;
+    rdfs:label "Trainees work only under the supervision of an instructor"@en ;
+    maestro:constrains ltu:Perm_TraineeRunsStations ;
+    maestro:expression "role == Trainee implies instructor present" .
+
+ltu:C_WirePowerOff a maestro:Constraint ;
+    rdfs:label "Make or break electrical connections only with the power switched off"@en ;
+    maestro:constrains ltu:MPSLine ;
+    maestro:expression "rewiring implies power == off" .
+
+#################################################################
+# maestro:Hazard (3)
+#################################################################
+
+ltu:H_CylinderMotionOnAirOn a maestro:Hazard ;
+    rdfs:label "Cylinders advance or retract when compressed air is switched on"@en ;
+    maestro:causesRisk ltu:R_Injury ;
+    maestro:description "Manual safety chapter: 'take care when switching on the compressed air; cylinders may advance or retract'."@en .
+
+ltu:H_MovingStation a maestro:Hazard ;
+    rdfs:label "Manual intervention while the station is moving"@en ;
+    maestro:causesRisk ltu:R_Injury .
+
+ltu:H_Overpressure a maestro:Hazard ;
+    rdfs:label "Supply pressure above 8 bar"@en ;
+    maestro:causesRisk ltu:R_Damage .
+
+#################################################################
+# maestro:Risk (2)
+#################################################################
+
+ltu:R_Damage a maestro:Risk ;
+    rdfs:label "Damage to the machinery or other material property"@en ;
+    maestro:description "Residual risk the manuals name for use of the stations."@en .
+
+ltu:R_Injury a maestro:Risk ;
+    rdfs:label "Physical or fatal injury to the user or third parties"@en ;
+    maestro:description "Residual risk the manuals name for use of the stations."@en .
+
+#################################################################
+# maestro:Mitigation (4)
+#################################################################
+
+ltu:M_AirAfterTubing a maestro:Mitigation ;
+    rdfs:label "Switch on air only after all tubing is connected and secured"@en ;
+    maestro:reduces ltu:R_Injury .
+
+ltu:M_InterventionAtRest a maestro:Mitigation ;
+    rdfs:label "Intervene only when the station is at rest; stop with STOP or EMERGENCY-STOP"@en ;
+    maestro:reduces ltu:R_Injury .
+
+ltu:M_ServiceUnitSetting a maestro:Mitigation ;
+    rdfs:label "Set the service unit to the station's operating pressure"@en ;
+    maestro:reduces ltu:R_Damage .
+
+ltu:M_Supervision a maestro:Mitigation ;
+    rdfs:label "Instructor supervision of trainees"@en ;
+    maestro:reduces ltu:R_Injury .
+
+#################################################################
+# maestro:Role (2)
+#################################################################
+
+ltu:InstructorRole a maestro:Role ;
+    rdfs:label "Instructor"@en ;
+    maestro:description "Supervises trainees working on the stations."@en .
+
+ltu:TraineeRole a maestro:Role ;
+    rdfs:label "Trainee"@en ;
+    maestro:description "Works on the stations under the supervision of an instructor; the stations are intended only for vocational and further training in automation and technology."@en .
+
+#################################################################
+# maestro:Permission (1)
+#################################################################
+
+ltu:Perm_TraineeRunsStations a maestro:Permission ;
+    rdfs:label "Trainees may run the station cycles"@en ;
+    maestro:action maestro:Invoke ;
+    maestro:description "Targets are the station cycle skills, added by the station files."@en ;
+    maestro:grantedTo ltu:TraineeRole .

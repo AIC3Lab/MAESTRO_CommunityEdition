@@ -1,0 +1,116 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix msh: <https://w3id.org/maestro/shapes#> .
+
+#################################################################
+# SHACL SHAPES - EXTENSIONS (experimental-extensions/:
+# digital-twin.ttl, opcua.ttl, isa95.ttl, automationml.ttl, dtdl.ttl,
+# rest.ttl)
+#
+# Digital twins and twin bindings, OPC UA nodes, skill interfaces
+# and bindings, REST bindings, DTDL interfaces, the ISA-95 site /
+# enterprise link and AutomationML internal links.
+#################################################################
+
+# ---- Digital twin ------------------------------------------------
+
+msh:DigitalTwinSubjectShape a sh:NodeShape ;
+    sh:targetClass maestro:DigitalTwin ;
+    rdfs:label "A digital twin represents at least one core entity."@en ;
+    sh:property [
+        sh:path maestro:represents ;
+        sh:minCount 1 ;
+        sh:message "A maestro:DigitalTwin must represent at least one entity via maestro:represents." ;
+    ] .
+
+msh:TwinBindingTargetShape a sh:NodeShape ;
+    sh:targetClass maestro:TwinBinding ;
+    rdfs:label "A twin binding maps to at most one IRI."@en ;
+    sh:property [
+        sh:path maestro:mapsTo ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:anyURI ;
+        sh:message "maestro:mapsTo on a maestro:TwinBinding is at most one xsd:anyURI literal." ;
+    ] .
+
+# ---- OPC UA -------------------------------------------------------
+
+msh:OpcUaNodeIdShape a sh:NodeShape ;
+    sh:targetClass maestro:OpcUaNode ;
+    rdfs:label "An OPC UA node has exactly one node id."@en ;
+    sh:property [
+        sh:path maestro:nodeId ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "A maestro:OpcUaNode must carry exactly one maestro:nodeId as an xsd:string literal." ;
+    ] .
+
+msh:OpcUaSkillInterfaceExposureShape a sh:NodeShape ;
+    sh:targetClass maestro:OpcUaSkillInterface ;
+    rdfs:label "An OPC UA skill interface exposes at least one skill."@en ;
+    sh:property [
+        sh:path maestro:exposes ;
+        sh:minCount 1 ;
+        sh:class maestro:Skill ;
+        sh:message "A maestro:OpcUaSkillInterface must expose at least one maestro:Skill via maestro:exposes." ;
+    ] .
+
+msh:OpcUaBindingMethodShape a sh:NodeShape ;
+    sh:targetClass maestro:OpcUaBinding ;
+    rdfs:label "An OPC UA binding binds OPC UA methods."@en ;
+    sh:property [
+        sh:path maestro:bindsMethod ;
+        sh:class maestro:OpcUaMethod ;
+        sh:message "maestro:bindsMethod on a maestro:OpcUaBinding must point to a maestro:OpcUaMethod." ;
+    ] .
+
+# ---- REST ---------------------------------------------------------
+
+msh:RestBindingMethodShape a sh:NodeShape ;
+    sh:targetClass maestro:RestBinding ;
+    rdfs:label "A REST binding names exactly one HTTP method."@en ;
+    sh:property [
+        sh:path maestro:httpMethod ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:in ( "GET" "POST" "PUT" "PATCH" "DELETE" ) ;
+        sh:message "A maestro:RestBinding must carry exactly one maestro:httpMethod, one of GET, POST, PUT, PATCH or DELETE." ;
+    ] .
+
+# ---- DTDL ---------------------------------------------------------
+
+msh:DtdlInterfaceCommandShape a sh:NodeShape ;
+    sh:targetClass maestro:DtdlInterface ;
+    rdfs:label "A DTDL interface's commands are DTDL commands."@en ;
+    sh:property [
+        sh:path maestro:hasCommand ;
+        sh:class maestro:DtdlCommand ;
+        sh:message "maestro:hasCommand on a maestro:DtdlInterface must point to a maestro:DtdlCommand." ;
+    ] .
+
+# ---- ISA-95 -------------------------------------------------------
+
+msh:SiteEnterpriseShape a sh:NodeShape ;
+    sh:targetClass maestro:Site ;
+    rdfs:label "A site belongs to an enterprise."@en ;
+    sh:property [
+        sh:path maestro:partOfEnterprise ;
+        sh:class maestro:Enterprise ;
+        sh:message "maestro:partOfEnterprise on a maestro:Site must point to a maestro:Enterprise." ;
+    ] .
+
+# ---- AutomationML -------------------------------------------------
+
+msh:InternalLinkInterfacesShape a sh:NodeShape ;
+    sh:targetClass maestro:InternalLink ;
+    rdfs:label "An internal link connects at least two external interfaces."@en ;
+    sh:property [
+        sh:path maestro:linksInterface ;
+        sh:minCount 2 ;
+        sh:class maestro:ExternalInterface ;
+        sh:message "A maestro:InternalLink must connect at least two maestro:ExternalInterface nodes via maestro:linksInterface." ;
+    ] .

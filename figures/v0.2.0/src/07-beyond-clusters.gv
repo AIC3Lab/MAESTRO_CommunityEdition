@@ -1,0 +1,183 @@
+// MAESTRO - the four modules that carry concerns no HHM-Core v1 cluster
+// covers (modules/runtime.ttl, energy.ttl, maintenance.ttl, maas.ttl), and the
+// HHM-Core v1 classes they attach to.
+//
+// Gold double border = HHM-Core v1 class (declared in core/, drawn here as an anchor).
+// Plain box          = class of one of the four modules; "{ ... }" lists its individuals,
+//                      a lower line lists its datatype properties.
+// Solid edge         = object property declared in the module. None of them is an
+//                      HHM-Core v1 relation: the whole figure is package additions.
+// Dotted edge        = rdfs:subClassOf.
+// «EXT» note         = documentary skos:closeMatch to a pinned reference (CHG-023).
+//
+// Hand-authored (0.2.0 names; additions made in 0.2.0 are green). When a class or relation
+// changes in core/, modules/ or ext/, edit this file. `python figures/v0.2.0/scripts/render_figures.py --check`
+// verifies that every maestro: name and edge label here is declared and not a deprecated 0.1.0 name.
+digraph HHM_BeyondClusters {
+  rankdir=LR;
+  labelloc="t";
+  fontname="Helvetica";
+  nodesep=0.28; ranksep=0.8;
+  label="MAESTRO 0.2.0  ·  beyond the clusters: runtime state, energy, maintenance, manufacturing as a service  (modules/*.ttl)\nGold double border = HHM-Core v1 class the module attaches to · plain = module class · every edge here is a package addition · dotted = subClassOf · «EXT» = documentary match";
+
+  node [shape=box, style="rounded,filled", fillcolor="#f9f9fb", fontname="Helvetica", fontsize=10, color="#1F2A36", penwidth=0.8];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.8];
+
+  // =========================
+  // ANCHORS - HHM-Core v1 classes from core/
+  // =========================
+  subgraph cluster_anchor {
+    label="HHM-Core v1 classes the modules attach to  (core/*.ttl)";
+    color="#555555"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    a_Station  [label="maestro:Station",  fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Module   [label="maestro:Module\n+ mtbfHours · remainingUsefulLifeHours (maintenance)", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Cap      [label="maestro:Capability", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Skill    [label="maestro:Skill",    fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Product  [label="maestro:ProductType", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Recipe   [label="maestro:Recipe",   fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Policy   [label="maestro:Policy",   fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Role     [label="maestro:Role\n+ { CustomerRole · ProviderRole · MarketplaceRole } (maas)", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Mode     [label="maestro:OperatingMode",     fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Evidence [label="maestro:Evidence", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Service  [label="maestro:SkillService", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Exec     [label="maestro:SkillExecution", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Status   [label="maestro:ExecutionStatus\n{ Idle · Executing · Held · Completed · Aborted }", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Fault    [label="maestro:Fault",    fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+    a_Time     [label="maestro:TimeInterval", fillcolor="#FCEFC7", peripheries=2, penwidth=1.4];
+  }
+
+  // =========================
+  // RUNTIME STATE  (modules/runtime.ttl)
+  // =========================
+  subgraph cluster_runtime {
+    label="Runtime state  (modules/runtime.ttl)";
+    color="#7C3AED"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    u_State     [label="maestro:State\n{ Available · Busy · FaultState · Alarm · Healthy · Degraded · Failed · Reserved }"];
+    u_Dim       [label="maestro:StateDimension\n{ OperationalDimension · HealthDimension · ReservationDimension · ModeDimension }\n(ModeDimension takes the maestro:OperatingMode individuals as values)"];
+    u_Assert    [label="maestro:StateAssertion\n(qualified: subject × dimension × value)\nvalidFrom · validTo · observedAt"];
+    u_Event     [label="maestro:RuntimeEvent\ntimestamp"];
+    u_Trans     [label="maestro:StateTransition"];
+    u_FaultSpec [label="maestro:FaultSpecification\n(design time: what a skill may raise)\nfaultCode · faultSeverity"];
+    u_Record    [label="maestro:ExecutionRecord\nrecordedAt"];
+    u_Snapshot  [label="maestro:Snapshot\nsnapshotTaken\n(the runtime graph itself; gate 9 keeps runtime instances out of design-time files)"];
+  }
+
+  // =========================
+  // ENERGY  (modules/energy.ttl)
+  // =========================
+  subgraph cluster_energy {
+    label="Energy  (modules/energy.ttl)";
+    color="#CA8A04"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    e_Consumer [label="maestro:EnergyConsumer\n(a module typed additionally)"];
+    e_Source   [label="maestro:EnergySource\n{ ElectricalGrid · Solar · Wind · CompressedAir }\ncarbonGCO2eqPerKwh"];
+    e_Energy   [label="maestro:EnergyMeasurement\nenergyKwh"];
+    e_Power    [label="maestro:PowerMeasurement\npowerWatts · timestamp"];
+  }
+
+  // =========================
+  // MAINTENANCE  (modules/maintenance.ttl)
+  // =========================
+  subgraph cluster_maint {
+    label="Maintenance  (modules/maintenance.ttl)";
+    color="#B91C1C"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    m_Action   [label="maestro:MaintenanceAction\nscheduledFor · performedAt"];
+    m_Kinds    [label="maestro:Preventive → maestro:ConditionBased → maestro:Predictive\nmaestro:Corrective · maestro:Inspection"];
+    m_Plan     [label="maestro:MaintenancePlan"];
+    m_Task     [label="maestro:MaintenanceTask"];
+    m_Finding  [label="maestro:Finding\nfindingDescription"];
+    m_Diag     [label="maestro:FaultDiagnosis"];
+    m_RTS      [label="maestro:ReturnToServiceAssessment"];
+    m_Outcome  [label="maestro:ReturnToServiceOutcome\n{ Cleared · ConditionallyCleared · NotCleared }"];
+  }
+
+  // =========================
+  // MANUFACTURING AS A SERVICE  (modules/maas.ttl)
+  // =========================
+  subgraph cluster_maas {
+    label="Manufacturing as a service  (modules/maas.ttl)";
+    color="#0369A1"; style="rounded"; fontname="Helvetica"; fontsize=11; penwidth=1.2;
+
+    s_Actor    [label="maestro:Actor\nlocation"];
+    s_Kinds    [label="maestro:Customer · maestro:PhysicalResourceProvider · maestro:Marketplace\n(not disjoint: one party may buy and sell)"];
+    s_Offer    [label="maestro:ServiceOffer\nleadTimeDays · maxQuantity"];
+    s_Request  [label="maestro:ServiceRequest\nrequestedQuantity · maxLeadTimeDays · submittedOn"];
+    s_Quote    [label="maestro:Quote\nprice · currency · leadTimeDays · validUntil"];
+    s_Contract [label="maestro:Contract"];
+    s_Order    [label="maestro:ProductionOrder\nquantity · dueDate"];
+
+    ep_schema [label="«EXT» schema.org\nActor closeMatch Organization · ServiceOffer closeMatch Offer · ServiceRequest closeMatch Demand\nQuote closeMatch PriceSpecification · Contract closeMatch Order", shape=note, fillcolor="#fff7ed"];
+    ep_iso    [label="«EXT» ISO 22400-2 (HSU ODP)\nmaestro:ProductionOrder closeMatch ProductionOrder", shape=note, fillcolor="#fff7ed"];
+  }
+
+  // ------------------------------------------------------------
+  // Runtime relations
+  // ------------------------------------------------------------
+  a_Status    -> u_State     [label="subClassOf", color="#7C3AED", style=dotted];
+  u_Trans     -> u_Event     [label="subClassOf", color="#7C3AED", style=dotted];
+  u_State     -> u_Dim       [label="inDimension", color="#7C3AED"];
+  u_Assert    -> a_Module    [label="stateSubject", color="#7C3AED"];
+  u_Assert    -> u_Dim       [label="stateDimension", color="#7C3AED"];
+  u_Assert    -> u_State     [label="stateValue", color="#7C3AED"];
+  u_Assert    -> a_Exec      [label="stateEvidence", color="#7C3AED"];
+  u_Event     -> a_Module    [label="eventSubject", color="#7C3AED"];
+  u_Trans     -> u_State     [label="fromState / enteredState", color="#7C3AED"];
+  a_Skill     -> u_FaultSpec [label="mayRaiseFault", color="#7C3AED"];
+  a_Fault     -> u_FaultSpec [label="instanceOfFault", color="#7C3AED"];
+  u_Record    -> a_Exec      [label="describesExecution", color="#7C3AED"];
+  a_Module    -> u_State     [label="hasState", color="#7C3AED", style=dashed];
+  u_Snapshot  -> u_Assert    [style=invis];
+
+  // ------------------------------------------------------------
+  // Energy relations
+  // ------------------------------------------------------------
+  e_Consumer -> a_Module  [label="subClassOf", color="#CA8A04", style=dotted];
+  e_Consumer -> e_Source  [label="suppliedBy", color="#CA8A04"];
+  e_Energy   -> a_Time    [label="overInterval", color="#CA8A04"];
+  e_Energy   -> a_Module  [label="measuredSubject", color="#CA8A04"];
+  e_Energy   -> a_Exec    [label="measuredSubject", color="#CA8A04"];
+  e_Power    -> a_Module  [label="measuredSubject", color="#CA8A04"];
+
+  // ------------------------------------------------------------
+  // Maintenance relations
+  // ------------------------------------------------------------
+  m_Kinds  -> m_Action  [label="subClassOf", color="#B91C1C", style=dotted];
+  m_Action -> a_Module  [label="affectsAsset", color="#B91C1C"];
+  m_Action -> a_Fault   [label="triggeredBy", color="#B91C1C"];
+  m_Action -> m_Task    [label="performsTask", color="#B91C1C"];
+  m_Action -> m_Finding [label="hasFinding", color="#B91C1C"];
+  m_Action -> a_Time    [label="hasTime", color="#B91C1C", style=dashed];
+  m_Plan   -> a_Module  [label="planForAsset", color="#B91C1C"];
+  m_Plan   -> m_Task    [label="hasTask", color="#B91C1C"];
+  m_Diag   -> a_Fault   [label="diagnosesFault", color="#B91C1C"];
+  m_RTS    -> m_Action  [label="assessesWork", color="#B91C1C"];
+  m_RTS    -> m_Outcome [label="rtsOutcome", color="#B91C1C"];
+  m_RTS    -> a_Evidence [label="rtsEvidence", color="#B91C1C"];
+
+  // ------------------------------------------------------------
+  // MaaS relations
+  // ------------------------------------------------------------
+  s_Kinds    -> s_Actor   [label="subClassOf", color="#0369A1", style=dotted];
+  s_Actor    -> a_Station [label="operates", color="#0369A1"];
+  s_Kinds    -> s_Actor   [label="operatedBy", color="#0369A1"];
+  s_Offer    -> s_Kinds   [label="offeredBy / listedOn", color="#0369A1"];
+  s_Offer    -> a_Cap     [label="offersCapability", color="#0369A1"];
+  s_Offer    -> a_Station [label="providedAt", color="#0369A1"];
+  s_Offer    -> a_Service [label="exposesService", color="#0369A1"];
+  s_Request  -> s_Kinds   [label="requestedBy", color="#0369A1"];
+  s_Request  -> a_Product [label="forProduct", color="#0369A1"];
+  s_Quote    -> s_Request [label="quoteFor", color="#0369A1"];
+  s_Quote    -> s_Offer   [label="basedOnOffer", color="#0369A1"];
+  s_Contract -> s_Quote   [label="acceptsQuote", color="#0369A1"];
+  s_Contract -> a_Policy  [label="governedBy", color="#0369A1"];
+  s_Contract -> s_Order   [label="realizedByOrder", color="#0369A1"];
+  s_Order    -> a_Product [label="ordersProduct", color="#0369A1"];
+  s_Order    -> a_Recipe  [label="executesRecipe", color="#0369A1"];
+  s_Actor    -> ep_schema [style=dotted, color="#0369A1", arrowhead=none];
+  s_Order    -> ep_iso    [style=dotted, color="#0369A1", arrowhead=none];
+  a_Role     -> s_Kinds   [style=invis];
+  a_Mode     -> u_Dim     [style=invis];
+}

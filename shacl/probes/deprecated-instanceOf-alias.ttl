@@ -1,0 +1,17 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic, valid): a parameter value written against 0.1.0
+# with the deprecated maestro:instanceOf, the equivalent of maestro:valueOf.
+# Expected: no result, because the validator adds the 0.2.0 name of every
+# deprecated equivalent before it runs the shapes. See shacl/probes/README.md.
+
+probe:Count a maestro:ParameterDef ;
+    maestro:paramType "http://www.w3.org/2001/XMLSchema#integer"^^xsd:anyURI ;
+    maestro:parameterDirection maestro:Input .
+
+probe:CountValue a maestro:ParameterValue ;
+    maestro:instanceOf probe:Count ;
+    maestro:value 1 .

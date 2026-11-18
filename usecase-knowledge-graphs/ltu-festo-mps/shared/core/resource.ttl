@@ -1,0 +1,95 @@
+# MAESTRO example: LTU Festo MPS - shared reference data
+# core/resource.ttl: statements that belong to the MAESTRO resource module (https://w3id.org/maestro/resource).
+# Umbrella: ../shared.ttl. Single-file form of the use case: ../shared-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/shared/core/resource> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - shared reference data - core/resource"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/shared> ;
+    owl:imports <https://w3id.org/maestro/resource> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Capability (19)
+#################################################################
+
+ltu:ClampingCapability a maestro:Capability ;
+    rdfs:label "Clamping"@en ;
+    maestro:description "Fix a workpiece in place during machining."@en .
+
+ltu:DrillingCapability a maestro:Capability ;
+    rdfs:label "Drilling (simulated hole polishing)"@en ;
+    maestro:description "Lower a running drilling machine onto the workpiece hole and raise it again. The Processing manual says the polishing of the hole is only simulated, for safety."@en .
+
+ltu:EjectingCapability a maestro:Capability ;
+    rdfs:label "Ejecting"@en ;
+    maestro:description "Push a workpiece off a carrier onto a slide or towards the next station."@en .
+
+ltu:FeedingCapability a maestro:Capability ;
+    rdfs:label "Feeding"@en ;
+    maestro:description "Separate workpieces one at a time from a stack magazine and make them available at a transfer point (feed device in the sense of VDI 3240, as the Distributing manual calls it)."@en .
+
+ltu:HeightMeasuringCapability a maestro:Capability ;
+    rdfs:label "Height measuring"@en ;
+    maestro:description "Measure the workpiece height with an analogue displacement sensor and compare it with a window."@en .
+
+ltu:IndexingCapability a maestro:Capability ;
+    rdfs:label "Rotary indexing"@en ;
+    maestro:description "Rotate a six-position indexing table by 60 degrees and stop it in position."@en .
+
+ltu:LiftingCapability a maestro:Capability ;
+    rdfs:label "Lifting"@en ;
+    maestro:description "Move a workpiece or tool vertically between two end positions."@en .
+
+ltu:MaterialRecognitionCapability a maestro:Capability ;
+    rdfs:label "Material / colour recognition"@en ;
+    maestro:description "Tell black workpieces from red and metallic (silver) ones with optical and capacitive sensors."@en .
+
+ltu:MechanicalGrippingCapability a maestro:Capability ;
+    rdfs:label "Mechanical gripping"@en ;
+    maestro:description "Hold a workpiece between the jaws of a pneumatic parallel gripper."@en .
+
+ltu:OperatorInterfaceCapability a maestro:Capability ;
+    rdfs:label "Operator interface"@en ;
+    maestro:description "Push buttons, key switch and indicator lights of the control console."@en .
+
+ltu:OrientationCheckingCapability a maestro:Capability ;
+    rdfs:label "Orientation checking"@en ;
+    maestro:description "Check that the workpiece opening faces upwards with a solenoid plunger and an inductive sensor."@en .
+
+ltu:PneumaticActuationCapability a maestro:Capability ;
+    rdfs:label "Pneumatic actuation"@en ;
+    maestro:description "Supply and switch compressed air for the station actuators: service unit and CPV valve terminal."@en .
+
+ltu:PresenceSensingCapability a maestro:Capability ;
+    rdfs:label "Workpiece presence sensing"@en ;
+    maestro:description "Detect whether a workpiece is present at a position (capacitive, diffuse or through-beam sensor)."@en .
+
+ltu:SlideConveyingCapability a maestro:Capability ;
+    rdfs:label "Slide conveying and buffering"@en ;
+    maestro:description "Convey workpieces on an inclined (optionally air-cushioned) slide and hold a few of them."@en .
+
+ltu:SortingCapability a maestro:Capability ;
+    rdfs:label "Sorting"@en ;
+    maestro:description "Route workpieces to different outlets by a test result or a material class."@en .
+
+ltu:StationControlCapability a maestro:Capability ;
+    rdfs:label "Station control and I/O"@en ;
+    maestro:description "Read station sensors and drive station actuators: PLC board and I/O terminal."@en .
+
+ltu:StationLinkCapability a maestro:Capability ;
+    rdfs:label "StationLink signalling"@en ;
+    maestro:description "Exchange the optical 1-bit busy / free signal with a neighbouring station."@en .
+
+ltu:TransferCapability a maestro:Capability ;
+    rdfs:label "Workpiece transfer"@en ;
+    maestro:description "Move a workpiece from one position to another: swivel arm, linear axis or rotary indexing table."@en .
+
+ltu:VacuumGrippingCapability a maestro:Capability ;
+    rdfs:label "Vacuum gripping"@en ;
+    maestro:description "Hold a workpiece with a suction cup and confirm the hold with a vacuum switch."@en .

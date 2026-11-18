@@ -1,0 +1,49 @@
+# MAESTRO example: LTU Festo MPS - Testing station
+# ext/automationml.ttl: statements that belong to the MAESTRO automationml module (https://w3id.org/maestro/automationml).
+# Umbrella: ../testing.ttl. Single-file form of the use case: ../testing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix tes: <https://w3id.org/maestro/examples/ltu-festo-mps/testing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/testing/ext/automationml> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Testing station - ext/automationml"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/testing> ;
+    owl:imports <https://w3id.org/maestro/automationml> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:ExternalInterface (4)
+#################################################################
+
+tes:Port_MaterialIn a maestro:ExternalInterface ;
+    rdfs:label "Material input: workpiece retainer"@en ;
+    maestro:description "The upstream station places the workpiece here; PART_AV detects it."@en .
+
+tes:Port_MaterialOut a maestro:ExternalInterface ;
+    rdfs:label "Material output: end of the air cushioned slide"@en ;
+    maestro:description "Pick-up position of the downstream station."@en .
+
+tes:Port_StationLinkRx a maestro:ExternalInterface ;
+    rdfs:label "StationLink receiver (outgoing-material side)"@en .
+
+tes:Port_StationLinkTx a maestro:ExternalInterface ;
+    rdfs:label "StationLink transmitter (incoming-material side)"@en .
+
+#################################################################
+# Further statements about individuals described in other files (4)
+#################################################################
+
+tes:AirSlideModule
+    maestro:hasInterface tes:Port_MaterialOut .
+
+tes:LiftingModule
+    maestro:hasInterface tes:Port_MaterialIn .
+
+tes:StationLinkReceiver
+    maestro:hasInterface tes:Port_StationLinkRx .
+
+tes:StationLinkTransmitter
+    maestro:hasInterface tes:Port_StationLinkTx .

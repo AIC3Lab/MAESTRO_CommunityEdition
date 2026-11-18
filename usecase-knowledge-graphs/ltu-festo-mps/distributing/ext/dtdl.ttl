@@ -1,0 +1,110 @@
+# MAESTRO example: LTU Festo MPS - Distributing station
+# ext/dtdl.ttl: statements that belong to the MAESTRO dtdl module (https://w3id.org/maestro/dtdl).
+# Umbrella: ../distributing.ttl. Single-file form of the use case: ../distributing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix dis: <https://w3id.org/maestro/examples/ltu-festo-mps/distributing#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/distributing/ext/dtdl> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Distributing station - ext/dtdl"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/distributing> ;
+    owl:imports <https://w3id.org/maestro/dtdl> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:DtdlInterface (2)
+#################################################################
+
+dis:ConsoleIO a maestro:DtdlInterface ;
+    rdfs:label "Distributing station control console (XMG1)"@en ;
+    maestro:description "Operator signals of the control console."@en ;
+    maestro:exposedVia dis:XMG1 ;
+    maestro:hasProperty dis:CC_MagEmptyLamp, dis:CC_ResetLamp, dis:CC_StartLamp ;
+    maestro:hasTelemetry dis:CC_AutoMan,
+        dis:CC_EmergencyStop,
+        dis:CC_Reset,
+        dis:CC_Start,
+        dis:CC_Stop .
+
+dis:StationIO a maestro:DtdlInterface ;
+    rdfs:label "Distributing station I/O image (XMA2)"@en ;
+    maestro:description "Sensor and actuator signals between the station and the PLC board."@en ;
+    maestro:exposedVia dis:XMA2 ;
+    maestro:hasProperty dis:DO_EjectingCylinder,
+        dis:DO_SwivelToDownstream,
+        dis:DO_SwivelToMagazine,
+        dis:DO_Vacuum ;
+    maestro:hasTelemetry dis:DI_ArmAtDownstream,
+        dis:DI_ArmAtMagazine,
+        dis:DI_DownstreamFree,
+        dis:DI_MagazineSlideRetracted,
+        dis:DI_WorkpieceEjected,
+        dis:DI_WorkpieceInMagazine,
+        dis:DI_WorkpiecePickedUp .
+
+#################################################################
+# maestro:DtdlTelemetry (12)
+#################################################################
+
+dis:CC_AutoMan a maestro:DtdlTelemetry .
+
+dis:CC_EmergencyStop a maestro:DtdlTelemetry .
+
+dis:CC_Reset a maestro:DtdlTelemetry .
+
+dis:CC_Start a maestro:DtdlTelemetry .
+
+dis:CC_Stop a maestro:DtdlTelemetry .
+
+dis:DI_ArmAtDownstream a maestro:DtdlTelemetry .
+
+dis:DI_ArmAtMagazine a maestro:DtdlTelemetry .
+
+dis:DI_DownstreamFree a maestro:DtdlTelemetry .
+
+dis:DI_MagazineSlideRetracted a maestro:DtdlTelemetry .
+
+dis:DI_WorkpieceEjected a maestro:DtdlTelemetry .
+
+dis:DI_WorkpieceInMagazine a maestro:DtdlTelemetry .
+
+dis:DI_WorkpiecePickedUp a maestro:DtdlTelemetry .
+
+#################################################################
+# maestro:DtdlProperty (16)
+#################################################################
+
+dis:CC_MagEmptyLamp a maestro:DtdlProperty .
+
+dis:CC_ResetLamp a maestro:DtdlProperty .
+
+dis:CC_StartLamp a maestro:DtdlProperty .
+
+dis:DO_EjectingCylinder a maestro:DtdlProperty .
+
+dis:DO_SwivelToDownstream a maestro:DtdlProperty .
+
+dis:DO_SwivelToMagazine a maestro:DtdlProperty .
+
+dis:DO_Vacuum a maestro:DtdlProperty .
+
+dis:TD_AirConsumption a maestro:DtdlProperty .
+
+dis:TD_DigitalInputs a maestro:DtdlProperty .
+
+dis:TD_DigitalOutputs a maestro:DtdlProperty .
+
+dis:TD_MagazineCapacity a maestro:DtdlProperty .
+
+dis:TD_MaxPressure a maestro:DtdlProperty .
+
+dis:TD_OperatingPressure a maestro:DtdlProperty .
+
+dis:TD_SupplyCurrent a maestro:DtdlProperty .
+
+dis:TD_SupplyVoltage a maestro:DtdlProperty .
+
+dis:TD_SwivelRange a maestro:DtdlProperty .

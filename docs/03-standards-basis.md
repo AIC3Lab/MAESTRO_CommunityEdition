@@ -4,9 +4,18 @@ The package follows the MAESTRO rule from CHG-023 (`docs/04-standard-alignment.m
 `references/README.md` at the repository root): a link to an external term is allowed
 only when that term exists in a pinned copy under `references/`. `tools/validate.py`
 gate 7 checks every `skos:*Match`, `rdfs:subClassOf`, `rdfs:subPropertyOf` and
-`owl:equivalent*` target outside `maestro:` against those files, using the MAESTRO
-`tests/mapping_register.py` vocabulary table. No upstream ontology is imported; the
-pinned copies serve verification only.
+`owl:equivalent*` target outside `maestro:`: its vocabulary must be one of those in
+the table below (`STANDARDS_BASIS` in `tools/validate.py`), and the term must exist in
+the pinned file. The pinned files are not part of this package; they are read from the
+`references/` folder next to the package folder when the package is checked out inside
+the MAESTRO 1.0 repository. Without them the gate still checks the vocabulary and
+states in its output that the existence of the terms was not checked. No upstream
+ontology is imported; the pinned copies serve verification only.
+
+The external terms a module uses are declared in `core/resource.ttl` (class, object
+property, datatype property or annotation property, nothing more), so that the ontology
+stays inside the OWL 2 profiles without an import; see "External terms" in
+`docs/02-conventions.md`.
 
 Two kinds of link are used:
 
@@ -14,7 +23,7 @@ Two kinds of link are used:
   logical consequence. Where meanings differ, the `maestro:` term carries a `skos:scopeNote`
   or an `rdfs:comment` saying how.
 - **Logical bridge**: `rdfs:subClassOf` / `rdfs:subPropertyOf` to the external term.
-  Only in `ext/prov.ttl` and `ext/odrl.ttl`, mirroring the axioms MAESTRO 1.0 makes in
+  Only in `experimental-extensions/prov.ttl` and `experimental-extensions/odrl.ttl`, mirroring the axioms MAESTRO 1.0 makes in
   its default stack.
 
 ## Vocabularies referenced at 0.1.0
@@ -23,18 +32,18 @@ Two kinds of link are used:
 |---|---|---|---|---|
 | PackML (HSU-AUT ODP), prefix `PackML:` `http://www.w3id.org/hsu-aut/PackML#` | `hsu-packml.ttl` | `core/execution.ttl` | documentary | `maestro:Idle` closeMatch `PackML:Idle`; `maestro:Executing` closeMatch `PackML:Execute`; `maestro:Held` closeMatch `PackML:Held`; `maestro:Completed` closeMatch `PackML:Complete`; `maestro:Aborted` closeMatch `PackML:Aborted` |
 | WADL (HSU-AUT ODP), `WADL:` `http://www.w3id.org/hsu-aut/WADL#` | `hsu-wadl.ttl` | `core/invocation.ttl` | documentary | `maestro:Endpoint` relatedMatch `WADL:Resource`; `maestro:OperationSignature` closeMatch `WADL:Method`; `maestro:DataFormat` relatedMatch `WADL:Representation` |
-| WADL (HSU-AUT ODP) | `hsu-wadl.ttl` | `ext/rest.ttl` | documentary | `maestro:RestInterface` relatedMatch `WADL:Resource`; `maestro:RestBinding` closeMatch `WADL:Method` |
+| WADL (HSU-AUT ODP) | `hsu-wadl.ttl` | `experimental-extensions/rest.ttl` | documentary | `maestro:RestInterface` relatedMatch `WADL:Resource`; `maestro:RestBinding` closeMatch `WADL:Method` |
 | DIN EN 61360 (HSU-AUT ODP), `DINEN61360:` `http://www.w3id.org/hsu-aut/DINEN61360#` | `hsu-dinen61360.ttl` | `core/product.ttl` | documentary | `maestro:Requirement` closeMatch `DINEN61360:Instance_Description` |
 | VDI 2206 (HSU-AUT ODP), `VDI2206:` `http://www.w3id.org/hsu-aut/VDI2206#` | `hsu-vdi2206.ttl` | `core/resource.ttl` | documentary | `maestro:Module` closeMatch `VDI2206:Module` |
-| schema.org, `schema:` `https://schema.org/` | `schemaorg-extract.ttl` | `modules/maas.ttl` | documentary | `maestro:Actor` closeMatch `schema:Organization`; `maestro:ServiceOffer` closeMatch `schema:Offer`; `maestro:ServiceRequest` closeMatch `schema:Demand`; `maestro:Quote` closeMatch `schema:PriceSpecification`; `maestro:Contract` closeMatch `schema:Order` |
-| ISO 22400-2 (HSU-AUT ODP), `ISO22400:` `http://www.w3id.org/hsu-aut/ISO22400-2#` | `hsu-iso22400-2.ttl` | `modules/maas.ttl` | documentary | `maestro:ProductionOrder` closeMatch `ISO22400:ProductionOrder` |
-| ISA-88.01 (HSU-AUT ODP), `ISA88:` `http://www.hsu-ifa.de/ontologies/ISA88.01#` | `hsu-isa88.ttl` | `ext/isa88.ttl` | documentary | `maestro:Recipe` closeMatch `ISA88:RecipeProcedure`; `maestro:PlanStep` closeMatch `ISA88:Phase`; `maestro:Station` closeMatch `ISA88:Unit`; `maestro:Module` closeMatch `ISA88:EquipmentModule`; each with a `skos:scopeNote` |
-| DIN EN 62264-2 / ISA-95 (HSU-AUT ODP), `DINEN62264:` `http://www.w3id.org/hsu-aut/DINEN62264-2#` | `hsu-dinen62264-2.ttl` | `ext/isa95.ttl` | documentary | `maestro:Enterprise`, `maestro:Site`, `maestro:Area`, `maestro:WorkCenter`, `maestro:WorkUnit` closeMatch `DINEN62264:Enterprise`, `Site`, `Area`, `Work_Center`, `Work_Unit`; `maestro:partOfEnterprise`, `maestro:partOfSite`, `maestro:partOfArea`, `maestro:partOfWorkCenter` closeMatch `DINEN62264:SiteIsPartOfEnterprise`, `AreaIsPartOfSite`, `CenterIsPartOfArea`, `UnitIsPartOfCenter` |
-| OPC UA (HSU-AUT ODP), `OpcUa:` `http://www.w3id.org/hsu-aut/OpcUa#` | `hsu-opcua.ttl` | `ext/opcua.ttl` | documentary | `maestro:OpcUaServer`, `maestro:OpcUaNode`, `maestro:OpcUaObject`, `maestro:OpcUaVariable`, `maestro:OpcUaMethod` closeMatch `OpcUa:UAServer`, `UANode`, `UAObject`, `UAVariable`, `UAMethod` |
-| AutomationML (HSU-AUT ODP), `AML:` `https://w3id.org/hsu-aut/AutomationML#` | `hsu-automationml.ttl` | `ext/automationml.ttl` | documentary | `maestro:InternalElement` relatedMatch `AML:InternalElement` (the ODP term is the CAEX model element, ours the plant element); `maestro:ExternalInterface` closeMatch `AML:ExternalInterface`; `maestro:InternalLink` closeMatch `AML:InternalLink` |
-| DTDL v3 (Azure/opendigitaltwins-dtdl), full `dtmi:` IRIs | `dtdl-v3-classes.ttl` | `ext/dtdl.ttl` | documentary | `maestro:DtdlInterface`, `maestro:DtdlCommand`, `maestro:DtdlTelemetry`, `maestro:DtdlProperty` closeMatch `<dtmi:dtdl:class:Interface;3>`, `<dtmi:dtdl:class:Command;3>`, `<dtmi:dtdl:class:Telemetry;3>`, `<dtmi:dtdl:class:Property;3>` |
-| W3C PROV-O, `prov:` `http://www.w3.org/ns/prov#` | `prov-o.ttl` | `ext/prov.ttl` | logical bridge (and one documentary) | `maestro:SkillExecution` subClassOf `prov:Activity`; `maestro:executes`, `maestro:hasInput`, `maestro:executedOn` subPropertyOf `prov:used`; `maestro:startedAtTime` subPropertyOf `prov:startedAtTime`; `maestro:endedAtTime` subPropertyOf `prov:endedAtTime`; `maestro:ExecutionRecord` broadMatch `prov:Entity` |
-| W3C ODRL 2.2 core profile, `odrl:` `http://www.w3.org/ns/odrl/2/` | `odrl-core-profile-22.ttl` | `ext/odrl.ttl` | logical bridge (and one documentary) | `maestro:Policy` subClassOf `odrl:Policy`; `maestro:Permission` subClassOf `odrl:Permission`; `maestro:hasPermission` subPropertyOf `odrl:permission`; `maestro:action` subPropertyOf `odrl:action`; `maestro:target` subPropertyOf `odrl:target`; `maestro:Action` closeMatch `odrl:Action` |
+| schema.org, `schema:` `https://schema.org/` | `schemaorg-extract.ttl` | `core/maas.ttl` | documentary | `maestro:Actor` closeMatch `schema:Organization`; `maestro:ServiceOffer` closeMatch `schema:Offer`; `maestro:ServiceRequest` closeMatch `schema:Demand`; `maestro:Quote` closeMatch `schema:PriceSpecification`; `maestro:Contract` closeMatch `schema:Order` |
+| ISO 22400-2 (HSU-AUT ODP), `ISO22400:` `http://www.w3id.org/hsu-aut/ISO22400-2#` | `hsu-iso22400-2.ttl` | `core/maas.ttl` | documentary | `maestro:ProductionOrder` closeMatch `ISO22400:ProductionOrder` |
+| ISA-88.01 (HSU-AUT ODP), `ISA88:` `http://www.hsu-ifa.de/ontologies/ISA88.01#` | `hsu-isa88.ttl` | `experimental-extensions/isa88.ttl` | documentary | `maestro:Recipe` closeMatch `ISA88:RecipeProcedure`; `maestro:PlanStep` closeMatch `ISA88:Phase`; `maestro:Station` closeMatch `ISA88:Unit`; `maestro:Module` closeMatch `ISA88:EquipmentModule`; each with a `skos:scopeNote` |
+| DIN EN 62264-2 / ISA-95 (HSU-AUT ODP), `DINEN62264:` `http://www.w3id.org/hsu-aut/DINEN62264-2#` | `hsu-dinen62264-2.ttl` | `experimental-extensions/isa95.ttl` | documentary | `maestro:Enterprise`, `maestro:Site`, `maestro:Area`, `maestro:WorkCenter`, `maestro:WorkUnit` closeMatch `DINEN62264:Enterprise`, `Site`, `Area`, `Work_Center`, `Work_Unit`; `maestro:partOfEnterprise`, `maestro:partOfSite`, `maestro:partOfArea`, `maestro:partOfWorkCenter` closeMatch `DINEN62264:SiteIsPartOfEnterprise`, `AreaIsPartOfSite`, `CenterIsPartOfArea`, `UnitIsPartOfCenter` |
+| OPC UA (HSU-AUT ODP), `OpcUa:` `http://www.w3id.org/hsu-aut/OpcUa#` | `hsu-opcua.ttl` | `experimental-extensions/opcua.ttl` | documentary | `maestro:OpcUaServer`, `maestro:OpcUaNode`, `maestro:OpcUaObject`, `maestro:OpcUaVariable`, `maestro:OpcUaMethod` closeMatch `OpcUa:UAServer`, `UANode`, `UAObject`, `UAVariable`, `UAMethod` |
+| AutomationML (HSU-AUT ODP), `AML:` `https://w3id.org/hsu-aut/AutomationML#` | `hsu-automationml.ttl` | `experimental-extensions/automationml.ttl` | documentary | `maestro:InternalElement` relatedMatch `AML:InternalElement` (the ODP term is the CAEX model element, ours the plant element); `maestro:ExternalInterface` closeMatch `AML:ExternalInterface`; `maestro:InternalLink` closeMatch `AML:InternalLink` |
+| DTDL v3 (Azure/opendigitaltwins-dtdl), full `dtmi:` IRIs | `dtdl-v3-classes.ttl` | `experimental-extensions/dtdl.ttl` | documentary | `maestro:DtdlInterface`, `maestro:DtdlCommand`, `maestro:DtdlTelemetry`, `maestro:DtdlProperty` closeMatch `<dtmi:dtdl:class:Interface;3>`, `<dtmi:dtdl:class:Command;3>`, `<dtmi:dtdl:class:Telemetry;3>`, `<dtmi:dtdl:class:Property;3>` |
+| W3C PROV-O, `prov:` `http://www.w3.org/ns/prov#` | `prov-o.ttl` | `experimental-extensions/prov.ttl` | logical bridge (and one documentary) | `maestro:SkillExecution` subClassOf `prov:Activity`; `maestro:executes`, `maestro:hasInput`, `maestro:executedOn` subPropertyOf `prov:used`; `maestro:startedAtTime` subPropertyOf `prov:startedAtTime`; `maestro:endedAtTime` subPropertyOf `prov:endedAtTime`; `maestro:ExecutionRecord` broadMatch `prov:Entity` |
+| W3C ODRL 2.2 core profile, `odrl:` `http://www.w3.org/ns/odrl/2/` | `odrl-core-profile-22.ttl` | `experimental-extensions/odrl.ttl` | logical bridge (and one documentary) | `maestro:Policy` subClassOf `odrl:Policy`; `maestro:Permission` subClassOf `odrl:Permission`; `maestro:hasPermission` subPropertyOf `odrl:permission`; `maestro:action` subPropertyOf `odrl:action`; `maestro:target` subPropertyOf `odrl:target`; `maestro:Action` closeMatch `odrl:Action` |
 
 Notes on the table:
 
@@ -42,10 +51,10 @@ Notes on the table:
   mapping: `odrl:execute`, `odrl:read` and `odrl:modify` belong to the ODRL Common
   Vocabulary, which is not in the pinned core profile.
 - `maestro:hasTime` (object property to a `maestro:TimeInterval`) is not a sub-property of the
-  PROV-O time properties, which are datatype properties; `ext/prov.ttl` adds the two
+  PROV-O time properties, which are datatype properties; `experimental-extensions/prov.ttl` adds the two
   datatype aliases `maestro:startedAtTime` and `maestro:endedAtTime` on the execution instead.
-- `ext/isa88.ttl` declares no class or property of its own; it holds only the four
-  matches and their scope notes. `ext/odrl.ttl` likewise declares no term.
+- `experimental-extensions/isa88.ttl` declares no class or property of its own; it holds only the four
+  matches and their scope notes. `experimental-extensions/odrl.ttl` likewise declares no term.
 - The DTDL identifiers are written as full IRIs in angle brackets because `dtmi:` is
   not a namespace prefix.
 - `maestro:Recipe` is close to, not the same as, `ISA88:RecipeProcedure`: the ODP orders
@@ -77,10 +86,10 @@ protocol or interface-description-language individual) is not a conformance clai
 | DPP / DPPO / RePlanIT digital product passport | `core/product.ttl` header | a passport view over `maestro:ProductType` / `maestro:ProductInstance` |
 | PRONTO | `core/product.ttl` header | variant and bill-of-materials semantics |
 | CaSkMan / CSS capability-skill patterns | `core/skill.ttl` header | `maestro:Capability` and `maestro:Skill` |
-| AAS (Asset Administration Shell) | `core/invocation.ttl` header, `ext/digital-twin.ttl` header | submodel publication of a skill interface; `maestro:mapsTo` on a twin binding stays a plain IRI. The individual `maestro:AasSubmodelTemplateIDL`, declared in `ext/digital-twin.ttl`, is a plain name of the technology |
-| OpenAPI | `ext/rest.ttl` header | REST interface description; the individual `maestro:OpenApiIDL`, declared in `ext/rest.ttl`, is a plain name. WADL is the REST description in the basis |
+| AAS (Asset Administration Shell) | `core/invocation.ttl` header, `experimental-extensions/digital-twin.ttl` header | submodel publication of a skill interface; `maestro:mapsTo` on a twin binding stays a plain IRI. The individual `maestro:AasSubmodelTemplateIDL` is a plain name of the technology |
+| OpenAPI | `core/invocation.ttl`, `experimental-extensions/rest.ttl` headers | REST interface description; the individual `maestro:OpenApiIDL` is a plain name. WADL is the REST description in the basis |
 | SAREF4INMA | `core/execution.ttl` header | traceability of executions and items |
-| XACML | `core/policy.ttl`, `ext/odrl.ttl` headers | rule and policy languages beyond the ODRL core profile |
+| XACML | `core/policy.ttl`, `experimental-extensions/odrl.ttl` headers | rule and policy languages beyond the ODRL core profile |
 
 Two vocabularies are pinned under `references/` but not referenced, because the
 modules that would use them were removed (next section):

@@ -1,0 +1,20 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
+@prefix probe: <https://w3id.org/maestro/shapes/probes#> .
+
+# SHACL PROBE (synthetic, deliberately invalid): a state assertion whose
+# validity ends before it starts. Expected: one sh:Violation from
+# msh:StateAssertionIntervalOrderShape. See shacl/probes/README.md.
+
+probe:Module a maestro:Module ;
+    maestro:providesCapability probe:Capability .
+
+probe:Capability a maestro:Capability .
+
+probe:Assertion a maestro:StateAssertion ;
+    maestro:stateSubject probe:Module ;
+    maestro:stateDimension maestro:OperationalDimension ;
+    maestro:stateValue maestro:Idle ;
+    maestro:validFrom "2026-11-13T12:00:00Z"^^xsd:dateTime ;
+    maestro:validTo "2026-11-12T12:00:00Z"^^xsd:dateTime .

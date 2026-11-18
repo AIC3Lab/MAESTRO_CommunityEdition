@@ -1,0 +1,41 @@
+# MAESTRO example: LTU Festo MPS - Handling station
+# core/invocation.ttl: statements that belong to the MAESTRO invocation module (https://w3id.org/maestro/invocation).
+# Umbrella: ../handling.ttl. Single-file form of the use case: ../handling-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix han: <https://w3id.org/maestro/examples/ltu-festo-mps/handling#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/handling/core/invocation> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Handling station - core/invocation"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/handling> ;
+    owl:imports <https://w3id.org/maestro/invocation> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:Endpoint (2)
+#################################################################
+
+han:XMA2 a maestro:Endpoint ;
+    rdfs:label "Handling station: SysLink station connector XMA2 (I/O terminal)"@en ;
+    maestro:address "urn:ltu:festo-mps:handling:XMA2" ;
+    maestro:description "24-pin SysLink plug between the station I/O terminal and the PLC board; parallel wiring, no network address. The URN only names the connector."@en ;
+    maestro:usesProtocol ltu:SysLinkDigitalIO .
+
+han:XMG1 a maestro:Endpoint ;
+    rdfs:label "Handling station: SysLink control-console connector XMG1"@en ;
+    maestro:address "urn:ltu:festo-mps:handling:XMG1" ;
+    maestro:description "SysLink plug between the control console and the PLC board. The URN only names the connector."@en ;
+    maestro:usesProtocol ltu:SysLinkDigitalIO .
+
+#################################################################
+# maestro:SkillService (1)
+#################################################################
+
+han:ControlService a maestro:SkillService ;
+    rdfs:label "Handling station PLC program"@en ;
+    maestro:description "The station manual offers Siemens S7-313C / 313C-2DP / 314 / 315-2DP (STEP7), Festo FEC FC640 / IPC HC02 / HC20 (FST 4.02), Allen-Bradley MicroLogix 1500 (RSLogix 500) and Mitsubishi FX1N (GX IEC Developer) controllers with a ready program. Which controller and program LTU runs is not stated. Program names on the CD: 4HA_AS / 4HA_KFA (S7), 04HA_FEC, 04_HA_K (ML1500), 04_HA_AS (FX1N)."@en ;
+    maestro:implementsInterface han:ConsoleIO, han:StationIO .

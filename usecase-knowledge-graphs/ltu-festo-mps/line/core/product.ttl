@@ -1,0 +1,91 @@
+# MAESTRO example: LTU Festo MPS line
+# core/product.ttl: statements that belong to the MAESTRO product module (https://w3id.org/maestro/product).
+# Umbrella: ../line.ttl. Single-file form of the use case: ../line-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix lin: <https://w3id.org/maestro/examples/ltu-festo-mps/line#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/line/core/product> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS line - core/product"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/line> ;
+    owl:imports <https://w3id.org/maestro/product> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:ProductType (1)
+#################################################################
+
+lin:Workpiece a maestro:ProductType ;
+    rdfs:label "MPS workpiece: basic body of an assemblable pneumatic cylinder"@en ;
+    maestro:description "Cylindrical body with an opening on one side; stacked in the Distributing magazine with the opening upwards. Comes in red, silver (metallic) and black. Diameter not stated."@en ;
+    maestro:hasFeature lin:F_Height, lin:F_MaterialClass, lin:F_Opening ;
+    maestro:hasRequirement lin:R_OpeningUp ;
+    maestro:hasVariant lin:WorkpieceBlack, lin:WorkpieceRed, lin:WorkpieceSilver .
+
+#################################################################
+# maestro:Variant (3)
+#################################################################
+
+lin:WorkpieceBlack a maestro:Variant ;
+    rdfs:label "MPS workpiece, black"@en ;
+    maestro:description "Not detected by the diffuse sensors; sorted onto slide 1 by the Handling station. Whether the Testing height window rejects it is not stated."@en ;
+    maestro:hasRequirement lin:R_HeightBlack .
+
+lin:WorkpieceRed a maestro:Variant ;
+    rdfs:label "MPS workpiece, red"@en ;
+    maestro:description "Detected by the capacitive and the diffuse sensors ('not black'); passes the height check set up with a red workpiece."@en ;
+    maestro:hasRequirement lin:R_HeightRed .
+
+lin:WorkpieceSilver a maestro:Variant ;
+    rdfs:label "MPS workpiece, silver (metallic)"@en ;
+    maestro:description "Called 'metallic' in the manuals. The sensors cannot tell it from red."@en ;
+    maestro:hasRequirement lin:R_HeightSilver .
+
+#################################################################
+# maestro:Feature (3)
+#################################################################
+
+lin:F_Height a maestro:Feature ;
+    rdfs:label "Workpiece height"@en ;
+    maestro:description "Measured by the Testing station's analogue sensor and comparator."@en .
+
+lin:F_MaterialClass a maestro:Feature ;
+    rdfs:label "Colour / material class (black vs red or silver)"@en ;
+    maestro:description "Recognised optically by the Testing and Handling stations; the Handling station sorts by it."@en .
+
+lin:F_Opening a maestro:Feature ;
+    rdfs:label "Opening (hole) on one side"@en ;
+    maestro:description "Must face upwards in the magazine; the Processing station checks it with the testing solenoid and simulates polishing of the hole."@en ;
+    maestro:requiresOperation lin:LS3_Process .
+
+#################################################################
+# maestro:Requirement (4)
+#################################################################
+
+lin:R_HeightBlack a maestro:Requirement ;
+    rdfs:label "Height of the black workpiece 22.5 mm (derived)"@en ;
+    maestro:appliesTo lin:F_Height ;
+    maestro:description "Derived: 2.5 mm lower than the 25 mm red workpiece; not printed in the documents."@en ;
+    maestro:requiredValue "22.5 mm" .
+
+lin:R_HeightRed a maestro:Requirement ;
+    rdfs:label "Height of the red workpiece 25 mm"@en ;
+    maestro:appliesTo lin:F_Height ;
+    maestro:description "Testing manual: the comparator is set up with the red 25 mm workpiece."@en ;
+    maestro:requiredValue "25 mm" .
+
+lin:R_HeightSilver a maestro:Requirement ;
+    rdfs:label "Height of the silver workpiece 25 mm"@en ;
+    maestro:appliesTo lin:F_Height ;
+    maestro:description "Testing manual: 'Red and silver workpieces are 2.5 mm higher than black workpieces'."@en ;
+    maestro:requiredValue "25 mm (2.5 mm higher than black)" .
+
+lin:R_OpeningUp a maestro:Requirement ;
+    rdfs:label "Opening faces upwards"@en ;
+    maestro:appliesTo lin:F_Opening ;
+    maestro:description "Distributing: 'the opening of the workpieces must point upwards'. Processing: workpieces inserted the wrong way up are not drilled and raise WORKPIECE NOK."@en ;
+    maestro:mandatory true ;
+    maestro:requiredValue "opening upwards" .

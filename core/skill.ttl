@@ -6,10 +6,10 @@
 @prefix dct:  <http://purl.org/dc/terms/> .
 @prefix vann: <http://purl.org/vocab/vann/> .
 @prefix schema: <https://schema.org/> .
-@prefix maestro: <https://w3id.org/maestro#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
 
 #################################################################
-# MAESTRO HHM-Core : Skills cluster
+# MAESTRO : Skills cluster
 #
 # HHM-Core v1 cluster "Skills": Skill with its two kinds AtomicSkill
 # and CompositeSkill, typed parameters (ParameterDef / ParameterValue),
@@ -22,35 +22,49 @@
 #                standards basis; named here, no IRIs, no mapping.
 #################################################################
 
-<https://w3id.org/maestro/hhm/skill> a owl:Ontology ;
-    owl:versionIRI <https://w3id.org/maestro/hhm/skill/0.1.0> ;
-    owl:versionInfo "0.1.0" ;
-    dct:title "MAESTRO HHM-Core: Skills" ;
-    rdfs:label "MAESTRO HHM-Core: Skills"@en ;
+<https://w3id.org/maestro/skill> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/skill/0.2.0> ;
+    owl:versionInfo "0.2.0" ;
+    dct:title "MAESTRO: Skills" ;
+    rdfs:label "MAESTRO: Skills"@en ;
     dct:description "HHM-Core v1 Skills cluster: atomic and composite skills, typed parameters, pre- and postconditions and the protocol-neutral skill interface."@en ;
     rdfs:comment "Skills are logical specifications; execution technologies implement them. MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. Definitions are reused from the MAESTRO 1.0 skill and core modules; dct:source names the term a definition was taken from."@en ;
     dct:creator "Melwin Xavier" ;
     dct:license <https://opensource.org/licenses/MIT> ;
     dct:created "2026-09-30"^^xsd:date ;
-    dct:modified "2026-09-30"^^xsd:date ;
+    dct:modified "2026-10-14"^^xsd:date ;
     dct:source <https://github.com/melwinxavier/MAESTRO> ;
-    rdfs:seeAlso <https://w3id.org/maestro/skill> , <https://w3id.org/maestro/core> ;
+    rdfs:seeAlso <https://w3id.org/maestro/core> ;
     dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
-    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    dct:isPartOf <https://w3id.org/maestro> ;
     vann:preferredNamespacePrefix "maestro" ;
     vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
-    owl:imports <https://w3id.org/maestro/hhm/resource> .
+    owl:imports <https://w3id.org/maestro/resource> .
 
 #################################################################
 # CLASSES
 #################################################################
 
+maestro:SkillElement a owl:Class ;
+    rdfs:label "Skill element"@en ;
+    skos:definition "A term of the Skills cluster: a skill, its parameters, conditions or interface contract."@en ;
+    rdfs:comment "Grouping class of the Skills cluster; it organises the class tree and carries no disjointness axiom, so an individual may also belong to another cluster."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+maestro:Condition a owl:Class ;
+    rdfs:subClassOf maestro:SkillElement ;
+    rdfs:label "Condition"@en ;
+    skos:definition "A condition on a skill, stated as an expression the evaluating system understands."@en ;
+    rdfs:comment "Common superclass of maestro:Precondition and maestro:Postcondition; the condition text is carried by maestro:expression."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
 maestro:Skill a owl:Class ;
+    rdfs:subClassOf maestro:SkillElement ;
     rdfs:label "Skill"@en ;
     skos:definition "A reusable specification of executable behaviour that can be realised by a deployed implementation."@en ;
     rdfs:comment "HHM-Core Skills cluster. A skill is a specification, not a running program and not a piece of hardware. Its kind is stated by the subclasses maestro:AtomicSkill and maestro:CompositeSkill."@en ;
     dct:source <https://w3id.org/maestro/core#Skill> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:AtomicSkill a owl:Class ;
     rdfs:label "Atomic skill"@en ;
@@ -59,69 +73,80 @@ maestro:AtomicSkill a owl:Class ;
     rdfs:subClassOf maestro:Skill ;
     owl:disjointWith maestro:CompositeSkill ;
     dct:source <https://w3id.org/maestro/skill#AtomicSkill> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:CompositeSkill a owl:Class ;
     rdfs:label "Composite skill"@en ;
     skos:definition "A skill built by composing other skills."@en ;
-    rdfs:comment "HHM-Core Skills cluster. Its constituents are stated with maestro:hasSubSkillLink; the order in which they run is a recipe concern (maestro:PlanStep, maestro:ControlFlowConstraint)."@en ;
+    rdfs:comment "HHM-Core Skills cluster. Its constituents are stated with maestro:hasSubSkill; the order in which they run is a recipe concern (maestro:PlanStep, maestro:ControlFlowConstraint)."@en ;
     rdfs:subClassOf maestro:Skill ;
     dct:source <https://w3id.org/maestro/skill#CompositeSkill> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:ParameterDef a owl:Class ;
+    rdfs:subClassOf maestro:SkillElement ;
     rdfs:label "Parameter definition"@en ;
     skos:definition "Typed parameter definition of a skill: a data type, an optional unit reference and an optional numeric range."@en ;
     rdfs:comment "HHM-Core Skills cluster (ParameterDef: type, unitRef, range). Also used as the parameter and return schema of an maestro:OperationSignature."@en ;
     dct:source <https://w3id.org/maestro/skill#ParameterDef> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:ParameterValue a owl:Class ;
+    rdfs:subClassOf maestro:SkillElement ;
     rdfs:label "Parameter value"@en ;
     skos:definition "An instance-level value supplied for a parameter definition, for example at a skill execution."@en ;
     rdfs:comment "HHM-Core Skills cluster."@en ;
     dct:source <https://w3id.org/maestro/skill#ParameterValue> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:ParameterDirection a owl:Class ;
+    rdfs:subClassOf maestro:ValueSet ;
     rdfs:label "Parameter direction"@en ;
-    skos:definition "Whether a parameter definition is consumed (input) or produced (output) by its skill."@en ;
-    rdfs:comment "Controlled vocabulary with the two individuals maestro:Input and maestro:Output. A data binding flows from an output to an input."@en ;
+    skos:definition "Whether a parameter definition is consumed (input), produced (output) or both (in-out) by its skill."@en ;
+    rdfs:comment "Controlled vocabulary with the individuals maestro:Input, maestro:Output and maestro:InOut. A data binding flows from an output (or in-out) parameter to an input (or in-out) parameter."@en ;
     dct:source <https://w3id.org/maestro/skill#ParameterDirection> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:Input a owl:NamedIndividual , maestro:ParameterDirection ;
     rdfs:label "Input"@en ;
     skos:definition "The parameter is consumed by the skill."@en ;
     dct:source <https://w3id.org/maestro/skill#Input> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:Output a owl:NamedIndividual , maestro:ParameterDirection ;
     rdfs:label "Output"@en ;
     skos:definition "The parameter is produced by the skill."@en ;
     dct:source <https://w3id.org/maestro/skill#Output> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+maestro:InOut a owl:NamedIndividual , maestro:ParameterDirection ;
+    rdfs:label "In-out"@en ;
+    skos:definition "The parameter is both read as input and written as output by the skill, as an OPC UA in-out argument or a PLC in-out variable."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:Precondition a owl:Class ;
+    rdfs:subClassOf maestro:Condition ;
     rdfs:label "Precondition"@en ;
     skos:definition "A condition that must hold before a skill runs."@en ;
     rdfs:comment "HHM-Core Skills cluster. The condition text is carried by maestro:expression."@en ;
     dct:source <https://w3id.org/maestro/skill#Precondition> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:Postcondition a owl:Class ;
+    rdfs:subClassOf maestro:Condition ;
     rdfs:label "Postcondition"@en ;
     skos:definition "A condition that holds after a skill has run: the effect it produces."@en ;
     rdfs:comment "HHM-Core Skills cluster, using the HHM name Postcondition; MAESTRO 1.0 also calls it Effect. The condition text is carried by maestro:expression."@en ;
     dct:source <https://w3id.org/maestro/skill#Postcondition> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:SkillInterface a owl:Class ;
+    rdfs:subClassOf maestro:SkillElement ;
     rdfs:label "Skill interface"@en ;
     skos:definition "A protocol-neutral contract through which a skill is invoked."@en ;
     rdfs:comment "HHM-Core Skills cluster (semantic contract). Protocol-specific interfaces, such as an OPC UA or a REST interface, are subclasses declared in the extension modules; the endpoint that exposes the contract is stated with maestro:exposedVia."@en ;
     dct:source <https://w3id.org/maestro/skill#SkillInterface> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 #################################################################
 # OBJECT PROPERTIES
@@ -134,25 +159,35 @@ maestro:hasParameterDef a owl:ObjectProperty ;
     rdfs:comment "HHM-Core edge Skill hasParameterDef ParameterDef. Domain left open so an maestro:OperationSignature can declare its input parameters with the same property."@en ;
     rdfs:range  maestro:ParameterDef ;
     dct:source <https://w3id.org/maestro/skill#hasParameterDef> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+maestro:hasCondition a owl:ObjectProperty ;
+    rdfs:label "has condition"@en ;
+    skos:definition "Relates a skill to a condition on it, before or after it runs."@en ;
+    rdfs:comment "Super-property of maestro:hasPrecondition and maestro:hasPostcondition."@en ;
+    rdfs:domain maestro:Skill ;
+    rdfs:range  maestro:Condition ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:hasPrecondition a owl:ObjectProperty ;
+    rdfs:subPropertyOf maestro:hasCondition ;
     rdfs:label "has precondition"@en ;
     skos:definition "Relates a skill to a condition that must hold before it runs."@en ;
     rdfs:comment "HHM-Core edge Skill hasPrecondition Precondition."@en ;
     rdfs:domain maestro:Skill ;
     rdfs:range  maestro:Precondition ;
     dct:references <https://w3id.org/maestro/skill#hasPrecondition> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:hasPostcondition a owl:ObjectProperty ;
+    rdfs:subPropertyOf maestro:hasCondition ;
     rdfs:label "has postcondition"@en ;
     skos:definition "Relates a skill to a condition that holds after it has run."@en ;
     rdfs:comment "HHM-Core edge Skill hasPostcondition Postcondition."@en ;
     rdfs:domain maestro:Skill ;
     rdfs:range  maestro:Postcondition ;
     dct:references <https://w3id.org/maestro/skill#hasPostcondition> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:requiresCapability a owl:ObjectProperty ;
     rdfs:label "requires capability"@en ;
@@ -161,7 +196,16 @@ maestro:requiresCapability a owl:ObjectProperty ;
     rdfs:domain maestro:Skill ;
     rdfs:range  maestro:Capability ;
     dct:source <https://w3id.org/maestro/skill#requiresCapability> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+maestro:requiredBy a owl:ObjectProperty ;
+    rdfs:label "required by"@en ;
+    skos:definition "Relates a capability to a skill whose executor must provide it."@en ;
+    rdfs:comment "Inverse of maestro:requiresCapability."@en ;
+    owl:inverseOf maestro:requiresCapability ;
+    rdfs:domain maestro:Capability ;
+    rdfs:range  maestro:Skill ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:hasInterfaceContract a owl:ObjectProperty ;
     rdfs:label "has interface contract"@en ;
@@ -170,73 +214,74 @@ maestro:hasInterfaceContract a owl:ObjectProperty ;
     rdfs:domain maestro:Skill ;
     rdfs:range  maestro:SkillInterface ;
     dct:source <https://w3id.org/maestro/skill#hasInterfaceContract> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
-maestro:hasSubSkillLink a owl:ObjectProperty ;
-    rdfs:label "has sub-skill link"@en ;
+maestro:hasSubSkill a owl:ObjectProperty ;
+    rdfs:subPropertyOf maestro:hasPart ;
+    rdfs:label "has sub-skill"@en ;
     skos:definition "Relates a composite skill to a skill that is one of its constituents."@en ;
-    rdfs:comment "HHM-Core edge CompositeSkill hasSubSkillLink Skill, stated directly between the two skills as the HHM diagram draws it. MAESTRO 1.0 reifies the link (skill:SubSkillLink) so that control flow can attach to it; in this package ordering and control flow belong to the recipe cluster."@en ;
+    rdfs:comment "HHM-Core edge CompositeSkill hasSubSkillLink Skill (0.1.0 name maestro:hasSubSkillLink), stated directly between the two skills as the HHM diagram draws it. A sub-property of maestro:hasPart, so maestro:hasPart+ reaches nested sub-skills. MAESTRO 1.0 reifies the link (skill:SubSkillLink) so that control flow can attach to it; in this package ordering and control flow belong to the recipe cluster."@en ;
     rdfs:domain maestro:CompositeSkill ;
     rdfs:range  maestro:Skill ;
     dct:references <https://w3id.org/maestro/skill#hasSubSkillLink> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
-maestro:instanceOf a owl:ObjectProperty ;
-    rdfs:label "instance of"@en ;
+maestro:valueOf a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:label "value of"@en ;
     skos:definition "Relates a parameter value to the parameter definition it instantiates."@en ;
-    rdfs:comment "HHM-Core edge ParameterValue instanceOf ParameterDef."@en ;
+    rdfs:comment "HHM-Core edge ParameterValue instanceOf ParameterDef (0.1.0 name maestro:instanceOf). Functional: a value instantiates one definition."@en ;
     rdfs:domain maestro:ParameterValue ;
     rdfs:range  maestro:ParameterDef ;
     dct:source <https://w3id.org/maestro/skill#instanceOf> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
-maestro:parameterDirection a owl:ObjectProperty ;
+maestro:parameterDirection a owl:ObjectProperty , owl:FunctionalProperty ;
     rdfs:label "parameter direction"@en ;
-    skos:definition "Relates a parameter definition to its direction, input or output."@en ;
-    rdfs:comment "A data binding flows from an maestro:Output parameter to an maestro:Input parameter (checked by the recipe shapes)."@en ;
+    skos:definition "Relates a parameter definition to its direction: input, output or bidirectional (InOut)."@en ;
+    rdfs:comment "A data binding flows from a maestro:Output or maestro:InOut parameter to a maestro:Input or maestro:InOut parameter (checked by the recipe shapes)."@en ;
     rdfs:domain maestro:ParameterDef ;
     rdfs:range  maestro:ParameterDirection ;
     dct:source <https://w3id.org/maestro/skill#parameterDirection> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 #################################################################
 # DATATYPE PROPERTIES
 #################################################################
 
-maestro:paramType a owl:DatatypeProperty ;
+maestro:paramType a owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:label "parameter type"@en ;
     skos:definition "Data type of the parameter, given as an XSD datatype IRI (for example xsd:double)."@en ;
     rdfs:domain maestro:ParameterDef ;
     rdfs:range  xsd:anyURI ;
     dct:source <https://w3id.org/maestro/skill#paramType> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
-maestro:unitRef a owl:DatatypeProperty ;
+maestro:unitRef a owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:label "unit reference"@en ;
     skos:definition "The unit of the parameter, given as the IRI of a QUDT unit (for example http://qudt.org/vocab/unit/MilliM)."@en ;
     rdfs:comment "HHM-Core ParameterDef unitRef, and the QUDT/OM extension point of the Skills cluster. MAESTRO 1.0 points at a unit individual of its unit module; this package has no unit module and keeps the QUDT IRI as a literal."@en ;
     rdfs:domain maestro:ParameterDef ;
     rdfs:range  xsd:anyURI ;
     dct:references <https://w3id.org/maestro/skill#unitRef> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
-maestro:minValue a owl:DatatypeProperty ;
+maestro:minValue a owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:label "minimum value"@en ;
     skos:definition "Lower bound of the numeric range a parameter definition admits."@en ;
     rdfs:comment "Numeric value. The range is rdfs:Literal on purpose: the accepted datatypes are xsd:decimal, xsd:integer, xsd:double and xsd:float, checked by the shapes, so source literals are preserved rather than forced into one XSD family."@en ;
     rdfs:domain maestro:ParameterDef ;
     rdfs:range  rdfs:Literal ;
     dct:source <https://w3id.org/maestro/skill#minValue> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
-maestro:maxValue a owl:DatatypeProperty ;
+maestro:maxValue a owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:label "maximum value"@en ;
     skos:definition "Upper bound of the numeric range a parameter definition admits."@en ;
     rdfs:comment "Numeric value; range rdfs:Literal for the same reason as maestro:minValue."@en ;
     rdfs:domain maestro:ParameterDef ;
     rdfs:range  rdfs:Literal ;
     dct:source <https://w3id.org/maestro/skill#maxValue> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:value a owl:DatatypeProperty ;
     rdfs:label "value"@en ;
@@ -244,7 +289,7 @@ maestro:value a owl:DatatypeProperty ;
     rdfs:comment "No range: the literal's datatype follows the parameter definition's maestro:paramType."@en ;
     rdfs:domain maestro:ParameterValue ;
     dct:source <https://w3id.org/maestro/skill#value> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 maestro:expression a owl:DatatypeProperty ;
     schema:domainIncludes maestro:Constraint , maestro:Precondition , maestro:Postcondition ;
@@ -253,7 +298,37 @@ maestro:expression a owl:DatatypeProperty ;
     rdfs:comment "Domain left open: used by maestro:Precondition, maestro:Postcondition and maestro:Constraint. An evaluator that does not understand the language answers Unknown, never true."@en ;
     rdfs:range xsd:string ;
     dct:references <https://w3id.org/maestro/skill#guardExpression> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/skill> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+maestro:paramName a owl:DatatypeProperty , owl:FunctionalProperty ;
+    rdfs:label "parameter name"@en ;
+    skos:definition "The name of a parameter definition as used in an operation signature or a controller program."@en ;
+    rdfs:comment "Distinct from rdfs:label: the label is for people, the parameter name is the identifier an invocation uses."@en ;
+    rdfs:domain maestro:ParameterDef ;
+    rdfs:range  xsd:string ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+#################################################################
+# DEPRECATED (0.1.0 names)
+#################################################################
+
+maestro:hasSubSkillLink a owl:ObjectProperty ;
+    rdfs:label "has sub-skill link (deprecated)"@en ;
+    skos:definition "Deprecated since 0.2.0: replaced by maestro:hasSubSkill, which has the same meaning. Kept as an equivalent so that data written against 0.1.0 still reasons and validates."@en ;
+    rdfs:comment "The HHM-Core v1 diagram name; alignment/hhm-core.ttl maps the HHM term to maestro:hasSubSkill."@en ;
+    owl:deprecated true ;
+    owl:equivalentProperty maestro:hasSubSkill ;
+    dct:isReplacedBy maestro:hasSubSkill ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+maestro:instanceOf a owl:ObjectProperty ;
+    rdfs:label "instance of (deprecated)"@en ;
+    skos:definition "Deprecated since 0.2.0: replaced by maestro:valueOf, which has the same meaning. Kept as an equivalent so that data written against 0.1.0 still reasons and validates."@en ;
+    rdfs:comment "The HHM-Core v1 diagram name; alignment/hhm-core.ttl maps the HHM term to maestro:valueOf."@en ;
+    owl:deprecated true ;
+    owl:equivalentProperty maestro:valueOf ;
+    dct:isReplacedBy maestro:valueOf ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
 
 #################################################################
 # DISTINCT INDIVIDUALS
@@ -263,4 +338,4 @@ maestro:expression a owl:DatatypeProperty ;
 
 # Parameter directions
 [] a owl:AllDifferent ;
-    owl:members ( maestro:Input maestro:Output ) .
+    owl:members ( maestro:Input maestro:Output maestro:InOut ) .

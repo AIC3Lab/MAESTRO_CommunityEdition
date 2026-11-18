@@ -5,124 +5,146 @@
 @prefix skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix dct:  <http://purl.org/dc/terms/> .
 @prefix vann: <http://purl.org/vocab/vann/> .
-@prefix maestro: <https://w3id.org/maestro#> .
+@prefix maestro:   <https://w3id.org/maestro#> .
 
 #################################################################
-# MAESTRO HHM-Core : Recipe / Planning cluster
+# MAESTRO : Recipe / Planning cluster
 #
 # HHM-Core v1 cluster "Recipe / Planning": Recipe (also called
 # ProcessPlan), PlanStep, ControlFlowConstraint (precedes / parallel /
 # alternative / loop / optional) and DataBinding (output -> input).
 #
 # Three relations are not drawn in the HHM diagram but are needed to
-# make its annotated nodes usable: maestro:relatedStep on a control-flow
+# make its annotated nodes usable: maestro:targetStep on a control-flow
 # constraint, and maestro:bindsFrom / maestro:bindsTo on a data binding.
 #
-# Extension points: ISA-88 procedural model (ext/isa88.ttl) and
-# ISA-95 / IEC 62264 work orders (ext/isa95.ttl, modules/maas.ttl).
+# Extension points: ISA-88 procedural model
+# (experimental-extensions/isa88.ttl) and ISA-95 / IEC 62264 work
+# orders (experimental-extensions/isa95.ttl, core/maas.ttl).
 #################################################################
 
-<https://w3id.org/maestro/hhm/recipe> a owl:Ontology ;
-    owl:versionIRI <https://w3id.org/maestro/hhm/recipe/0.1.0> ;
-    owl:versionInfo "0.1.0" ;
-    dct:title "MAESTRO HHM-Core: Recipe / Planning" ;
-    rdfs:label "MAESTRO HHM-Core: Recipe / Planning"@en ;
+<https://w3id.org/maestro/recipe> a owl:Ontology ;
+    owl:versionIRI <https://w3id.org/maestro/recipe/0.2.0> ;
+    owl:versionInfo "0.2.0" ;
+    dct:title "MAESTRO: Recipe / Planning" ;
+    rdfs:label "MAESTRO: Recipe / Planning"@en ;
     dct:description "HHM-Core v1 Recipe / Planning cluster: recipes made of plan steps realised by skills, with control-flow constraints and data bindings between steps."@en ;
-    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The documentary ISA-88 matches live in ext/isa88.ttl. Definitions are reused from the MAESTRO 1.0 recipe and skill modules; dct:source names the term a definition was taken from."@en ;
+    rdfs:comment "MAESTRO-local vocabulary; it is not aligned with, and makes no conformance claim to, any external standard. The documentary ISA-88 matches live in experimental-extensions/isa88.ttl. Definitions are reused from the MAESTRO 1.0 recipe and skill modules; dct:source names the term a definition was taken from."@en ;
     dct:creator "Melwin Xavier" ;
     dct:license <https://opensource.org/licenses/MIT> ;
     dct:created "2026-09-30"^^xsd:date ;
-    dct:modified "2026-09-30"^^xsd:date ;
+    dct:modified "2026-10-14"^^xsd:date ;
     dct:source <https://github.com/melwinxavier/MAESTRO> ;
-    rdfs:seeAlso <https://w3id.org/maestro/recipe> , <https://w3id.org/maestro/skill> ;
+    rdfs:seeAlso <https://w3id.org/maestro/skill> ;
     dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
-    dct:isPartOf <https://w3id.org/maestro/hhm> ;
+    dct:isPartOf <https://w3id.org/maestro> ;
     vann:preferredNamespacePrefix "maestro" ;
     vann:preferredNamespaceUri "https://w3id.org/maestro#"^^xsd:anyURI ;
-    owl:imports <https://w3id.org/maestro/hhm/skill> .
+    owl:imports <https://w3id.org/maestro/skill> .
 
 #################################################################
 # CLASSES
 #################################################################
 
+maestro:RecipeElement a owl:Class ;
+    rdfs:label "Recipe element"@en ;
+    skos:definition "A term of the Recipe / Planning cluster: a recipe, a plan step, a control-flow constraint or a data binding."@en ;
+    rdfs:comment "Grouping class of the Recipe / Planning cluster; it organises the class tree and carries no disjointness axiom, so an individual may also belong to another cluster."@en ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
+
 maestro:Recipe a owl:Class ;
+    rdfs:subClassOf maestro:RecipeElement ;
     rdfs:label "Recipe"@en ;
     skos:altLabel "Process plan"@en ;
     skos:definition "An ordered container of plan steps, each realised by a skill, that describes how a product is made."@en ;
     rdfs:comment "HHM-Core Recipe / ProcessPlan. Not restricted to batch production: its steps are realised by skills and may apply to discrete manufacturing. Disjoint with maestro:PlanStep."@en ;
     owl:disjointWith maestro:PlanStep ;
     dct:source <https://w3id.org/maestro/recipe#Recipe> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:PlanStep a owl:Class ;
+    rdfs:subClassOf maestro:RecipeElement ;
     rdfs:label "Plan step"@en ;
     skos:definition "A single step of a recipe, realised by a skill and carrying control-flow constraints and data bindings."@en ;
     rdfs:comment "HHM-Core Recipe / Planning cluster. One occurrence of a skill in a plan; the same skill may be used by several steps."@en ;
     dct:source <https://w3id.org/maestro/recipe#PlanStep> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:ControlFlowConstraint a owl:Class ;
+    rdfs:subClassOf maestro:RecipeElement ;
     rdfs:label "Control-flow constraint"@en ;
     skos:definition "A constraint on when a plan step runs relative to another step: before it, in parallel with it, as an alternative to it, repeatedly, or optionally."@en ;
-    rdfs:comment "HHM-Core Recipe / Planning cluster (ControlFlowConstraint: precedes / parallel / alt / loop / optional). The kind is stated with maestro:flowType, the other step with maestro:relatedStep. MAESTRO 1.0 models the kinds as subclasses of skill:ControlFlow; here they are individuals of maestro:ControlFlowType."@en ;
+    rdfs:comment "HHM-Core Recipe / Planning cluster (ControlFlowConstraint: precedes / parallel / alt / loop / optional). The kind is stated with maestro:flowType, the other step with maestro:targetStep. MAESTRO 1.0 models the kinds as subclasses of skill:ControlFlow; here they are individuals of maestro:ControlFlowType."@en ;
     dct:references <https://w3id.org/maestro/skill#ControlFlow> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:ControlFlowType a owl:Class ;
+    rdfs:subClassOf maestro:ValueSet ;
     rdfs:label "Control-flow type"@en ;
     skos:definition "The kind of a control-flow constraint: precedes, parallel, alternative, loop or optional."@en ;
     rdfs:comment "Controlled vocabulary with the five individuals the HHM diagram names."@en ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:Precedes a owl:NamedIndividual , maestro:ControlFlowType ;
     rdfs:label "Precedes"@en ;
     skos:definition "The constrained step runs before the related step."@en ;
     dct:references <https://w3id.org/maestro/skill#Sequence> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:Parallel a owl:NamedIndividual , maestro:ControlFlowType ;
     rdfs:label "Parallel"@en ;
     skos:definition "The constrained step and the related step run concurrently."@en ;
     dct:references <https://w3id.org/maestro/skill#Parallel> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:Alternative a owl:NamedIndividual , maestro:ControlFlowType ;
     rdfs:label "Alternative"@en ;
     skos:definition "Either the constrained step or the related step runs, not both."@en ;
     dct:references <https://w3id.org/maestro/skill#Alternative> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:Loop a owl:NamedIndividual , maestro:ControlFlowType ;
     rdfs:label "Loop"@en ;
     skos:definition "The constrained step repeats while its condition holds."@en ;
     dct:references <https://w3id.org/maestro/skill#Loop> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:Optional a owl:NamedIndividual , maestro:ControlFlowType ;
     rdfs:label "Optional"@en ;
     skos:definition "The constrained step runs only when its condition holds."@en ;
     dct:references <https://w3id.org/maestro/skill#Optional> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:DataBinding a owl:Class ;
+    rdfs:subClassOf maestro:RecipeElement ;
     rdfs:label "Data binding"@en ;
     skos:definition "Binds a producing skill's output parameter to a consuming skill's input parameter."@en ;
     rdfs:comment "HHM-Core Recipe / Planning cluster (DataBinding: output -> input). The producing parameter is maestro:bindsFrom, the consuming parameter maestro:bindsTo; the step that owns the binding consumes the value."@en ;
     dct:source <https://w3id.org/maestro/skill#DataBinding> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 #################################################################
 # OBJECT PROPERTIES
 #################################################################
 
 maestro:hasStep a owl:ObjectProperty ;
+    rdfs:subPropertyOf maestro:hasPart ;
     rdfs:label "has step"@en ;
     skos:definition "Relates a recipe to a plan step it contains."@en ;
-    rdfs:comment "HHM-Core edge Recipe hasStep PlanStep. Order is stated on the step with maestro:stepOrder and with control-flow constraints."@en ;
+    rdfs:comment "HHM-Core edge Recipe hasStep PlanStep. Order is stated on the step with maestro:stepOrder and with control-flow constraints. A sub-property of maestro:hasPart."@en ;
     rdfs:domain maestro:Recipe ;
     rdfs:range  maestro:PlanStep ;
     dct:source <https://w3id.org/maestro/recipe#hasStep> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
+
+maestro:stepOf a owl:ObjectProperty ;
+    rdfs:label "step of"@en ;
+    skos:definition "Relates a plan step to the recipe that contains it."@en ;
+    rdfs:comment "Inverse of maestro:hasStep. Not functional: whether a step may be shared by several recipes is a SHACL warning, not an OWL axiom."@en ;
+    owl:inverseOf maestro:hasStep ;
+    rdfs:domain maestro:PlanStep ;
+    rdfs:range  maestro:Recipe ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:realizedBy a owl:ObjectProperty ;
     rdfs:label "realized by"@en ;
@@ -131,7 +153,7 @@ maestro:realizedBy a owl:ObjectProperty ;
     rdfs:domain maestro:PlanStep ;
     rdfs:range  maestro:Skill ;
     dct:source <https://w3id.org/maestro/recipe#realizedBy> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:hasControlFlow a owl:ObjectProperty ;
     rdfs:label "has control flow"@en ;
@@ -140,7 +162,7 @@ maestro:hasControlFlow a owl:ObjectProperty ;
     rdfs:domain maestro:PlanStep ;
     rdfs:range  maestro:ControlFlowConstraint ;
     dct:source <https://w3id.org/maestro/recipe#hasControlFlow> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 maestro:hasDataBinding a owl:ObjectProperty ;
     rdfs:label "has data binding"@en ;
@@ -149,53 +171,75 @@ maestro:hasDataBinding a owl:ObjectProperty ;
     rdfs:domain maestro:PlanStep ;
     rdfs:range  maestro:DataBinding ;
     dct:source <https://w3id.org/maestro/recipe#hasDataBinding> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
-maestro:flowType a owl:ObjectProperty ;
+maestro:flowType a owl:ObjectProperty , owl:FunctionalProperty ;
     rdfs:label "flow type"@en ;
     skos:definition "Relates a control-flow constraint to its kind."@en ;
     rdfs:comment "Implied by the HHM diagram's annotation (precedes / parallel / alt / loop / optional)."@en ;
     rdfs:domain maestro:ControlFlowConstraint ;
     rdfs:range  maestro:ControlFlowType ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
-maestro:relatedStep a owl:ObjectProperty ;
-    rdfs:label "related step"@en ;
+maestro:targetStep a owl:ObjectProperty ;
+    rdfs:label "target step"@en ;
     skos:definition "Relates a control-flow constraint to the other plan step it relates the constrained step to."@en ;
-    rdfs:comment "Implied by the HHM diagram: a constraint such as 'precedes' or 'parallel' needs a second step. A loop or optional constraint may omit it."@en ;
+    rdfs:comment "Implied by the HHM diagram: a constraint such as 'precedes' or 'parallel' needs a second step. A loop or optional constraint may omit it. 0.1.0 name maestro:relatedStep."@en ;
     rdfs:domain maestro:ControlFlowConstraint ;
     rdfs:range  maestro:PlanStep ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
-maestro:bindsFrom a owl:ObjectProperty ;
+maestro:bindsParameter a owl:ObjectProperty ;
+    rdfs:label "binds parameter"@en ;
+    skos:definition "Relates a data binding to a parameter definition it connects, on either side."@en ;
+    rdfs:comment "Super-property of maestro:bindsFrom and maestro:bindsTo."@en ;
+    rdfs:domain maestro:DataBinding ;
+    rdfs:range  maestro:ParameterDef ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
+
+maestro:bindsFrom a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:subPropertyOf maestro:bindsParameter ;
     rdfs:label "binds from"@en ;
     skos:definition "Relates a data binding to the producing (output) parameter definition."@en ;
     rdfs:comment "Implied by the HHM diagram's annotation (output -> input)."@en ;
     rdfs:domain maestro:DataBinding ;
     rdfs:range  maestro:ParameterDef ;
     dct:source <https://w3id.org/maestro/skill#bindsFrom> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
-maestro:bindsTo a owl:ObjectProperty ;
+maestro:bindsTo a owl:ObjectProperty , owl:FunctionalProperty ;
+    rdfs:subPropertyOf maestro:bindsParameter ;
     rdfs:label "binds to"@en ;
     skos:definition "Relates a data binding to the consuming (input) parameter definition."@en ;
     rdfs:comment "Implied by the HHM diagram's annotation (output -> input)."@en ;
     rdfs:domain maestro:DataBinding ;
     rdfs:range  maestro:ParameterDef ;
     dct:source <https://w3id.org/maestro/skill#bindsTo> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 #################################################################
 # DATATYPE PROPERTIES
 #################################################################
 
-maestro:stepOrder a owl:DatatypeProperty ;
+maestro:stepOrder a owl:DatatypeProperty , owl:FunctionalProperty ;
     rdfs:label "step order"@en ;
     skos:definition "Position of a plan step within its recipe, counting from 1."@en ;
     rdfs:domain maestro:PlanStep ;
     rdfs:range  xsd:integer ;
     dct:source <https://w3id.org/maestro/skill#stepOrder> ;
-    rdfs:isDefinedBy <https://w3id.org/maestro/hhm/recipe> .
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
+
+#################################################################
+# DEPRECATED (0.1.0 names)
+#################################################################
+
+maestro:relatedStep a owl:ObjectProperty ;
+    rdfs:label "related step (deprecated)"@en ;
+    skos:definition "Deprecated since 0.2.0: replaced by maestro:targetStep, which has the same meaning. Kept as an equivalent so that data written against 0.1.0 still reasons and validates."@en ;
+    owl:deprecated true ;
+    owl:equivalentProperty maestro:targetStep ;
+    dct:isReplacedBy maestro:targetStep ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/recipe> .
 
 #################################################################
 # DISTINCT INDIVIDUALS

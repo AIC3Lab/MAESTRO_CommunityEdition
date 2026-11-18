@@ -1,0 +1,30 @@
+{
+ "0.1.0": {
+  "Classes": 110,
+  "Object properties": 128,
+  "Datatype properties": 61,
+  "Named individuals": 68,
+  "Top-level classes": 84,
+  "subClassOf axioms (maestro: \u2192 maestro:)": 27,
+  "subPropertyOf axioms": 8,
+  "inverseOf axioms": 0,
+  "Functional properties": 0,
+  "Transitive properties": 1,
+  "Disjointness axioms": 3,
+  "Deprecated terms": 0
+ },
+ "0.2.0": {
+  "Classes": 126,
+  "Object properties": 144,
+  "Datatype properties": 63,
+  "Named individuals": 69,
+  "Top-level classes": 20,
+  "subClassOf axioms (maestro: \u2192 maestro:)": 109,
+  "subPropertyOf axioms": 19,
+  "inverseOf axioms": 10,
+  "Functional properties": 27,
+  "Transitive properties": 2,
+  "Disjointness axioms": 6,
+  "Deprecated terms": 13
+ }
+}

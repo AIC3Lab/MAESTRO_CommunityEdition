@@ -12,13 +12,13 @@ names; in this package they are `maestro:` terms with the same local name unless
 |---|---|---|---|---|
 | `cross-cutting/communication.ttl` | Fold in | `core/invocation.ttl` | Endpoint, Protocol, Binding, EventStream, OperationSignature, DataFormat (4 individuals), InterfaceDescriptionLanguage (4 individuals), 7 Protocol individuals, address, port, hasSignature, hasParameterDef, returns, specializesAs, usesDataFormat, describedIn, exposedVia, usesProtocol, hasBinding, emitsStream (as `maestro:emits`); WADL matches | Channel, hasEndpoint, bindsEndpoint, DtdlProtocol, conformsToStream |
 | `cross-cutting/safety.ttl` | Fold in | `core/policy.ttl` | SafetyFunction, EmergencyStop, SafetyIntegrityLevel (SIL1-4), PerformanceLevel (PLa-e), RiskLevel (Low / Medium / High), RiskAssessment; Hazard, Risk, Mitigation, increases, reduces (already HHM terms); mitigates, requiredSIL, achievedSIL, requiredPerformanceLevel, achievedPerformanceLevel, assessedSubject, assessesRisk, identifiesHazard, reliesOnMitigation, riskLevel, riskEvidence, riskAssessmentMethod, assumption | deprecated hasSIL, hasPerformanceLevel |
-| `runtime/runtime.ttl` | Split | `core/execution.ttl` and `modules/telemetry.ttl` | Core: SkillExecution, TimeInterval, Fault (from FaultEvent), ExecutionStatus and its values, executes, executedOn, invokedVia, hasInput, hasStatus, mayRaise (from raisedFault), hasTime, startTime, endTime, faultCode, faultCause, faultSeverity, timestamp. Module: State (+ Available, Busy, FaultState, Alarm, Healthy, Degraded, Failed, Reserved), StateDimension (4 individuals), StateAssertion, TelemetryEvent (from RuntimeEvent), StateTransition, FaultSpecification, ExecutionRecord, Snapshot; hasState, inDimension, stateSubject, stateDimension, stateValue, stateEvidence, eventSubject, fromState, enteredState, mayRaiseFault, instanceOfFault, describesExecution; validFrom, validTo, observedAt, recordedAt, snapshotTaken | performedBy, recordedBy |
+| `runtime/runtime.ttl` | Split | `core/execution.ttl` and `experimental-extensions/runtime.ttl` | Core: SkillExecution, TimeInterval, Fault (from FaultEvent), ExecutionStatus and its values, executes, executedOn, invokedVia, hasInput, hasStatus, mayRaise (from raisedFault), hasTime, startTime, endTime, faultCode, faultCause, faultSeverity, timestamp. Module: State (+ Available, Busy, FaultState, Alarm, Healthy, Degraded, Failed, Reserved), StateDimension (4 individuals), StateAssertion, RuntimeEvent, StateTransition, FaultSpecification, ExecutionRecord, Snapshot; hasState, inDimension, stateSubject, stateDimension, stateValue, stateEvidence, eventSubject, fromState, enteredState, mayRaiseFault, instanceOfFault, describesExecution; validFrom, validTo, observedAt, recordedAt, snapshotTaken | performedBy, recordedBy |
 | `cross-cutting/unit.ttl` | Removed (user decision) | none | nothing | Unit, Quantity, hasUnit, numericValue, symbol, baseUnit, conversionFactor, conversionOffset, all unit individuals, the QUDT bridge |
-| `cross-cutting/energy.ttl` | New module | `modules/energy.ttl` | EnergyConsumer (subclass of Module), EnergyMeasurement, PowerMeasurement, EnergySource (4 individuals); suppliedBy, measuredSubject, overInterval; energyKwh, powerWatts, carbonGCO2eqPerKwh | energyValue, powerValue (Quantity-valued) |
-| `cross-cutting/maintenance.ttl` | New module | `modules/maintenance.ttl` | all 12 classes; hasTask, planForAsset, performsTask, affectsAsset, triggeredBy, hasFinding, assessesWork, rtsOutcome, rtsEvidence; scheduledFor, performedAt, findingDescription, mtbfHours, remainingUsefulLifeHours; 3 outcome individuals; added diagnosesFault | nothing (Inspection keeps one parent) |
-| `logical/maas.ttl` | New module | `modules/maas.ttl` | Actor, Customer, PhysicalResourceProvider, Marketplace, ServiceOffer, ServiceRequest, Quote, Contract; CustomerRole, ProviderRole, MarketplaceRole; offeredBy, offersCapability, providedAt, listedOn, exposesService, requestedBy, forProduct, quoteFor, basedOnOffer, acceptsQuote, governedBy, realizedByOrder, operates, operatedBy; requestedQuantity, submittedOn, maxQuantity, price, currency, validUntil; schema.org matches; added ProductionOrder (from `reasoning/planning.ttl`) with ordersProduct, executesRecipe, quantity, dueDate; leadTimeDays, maxLeadTimeDays | fulfilledByProcess, locatedAt (Actor gets `maestro:location` literal), Organization / Enterprise parents, Quantity-valued leadTime and maxLeadTime |
+| `cross-cutting/energy.ttl` | New module | `experimental-extensions/energy.ttl` | EnergyConsumer (subclass of Module), EnergyMeasurement, PowerMeasurement, EnergySource (4 individuals); suppliedBy, measuredSubject, overInterval; energyKwh, powerWatts, carbonGCO2eqPerKwh | energyValue, powerValue (Quantity-valued) |
+| `cross-cutting/maintenance.ttl` | New module | `experimental-extensions/maintenance.ttl` | all 12 classes; hasTask, planForAsset, performsTask, affectsAsset, triggeredBy, hasFinding, assessesWork, rtsOutcome, rtsEvidence; scheduledFor, performedAt, findingDescription, mtbfHours, remainingUsefulLifeHours; 3 outcome individuals; added diagnosesFault | nothing (Inspection keeps one parent) |
+| `logical/maas.ttl` | New module | `core/maas.ttl` | Actor, Customer, PhysicalResourceProvider, Marketplace, ServiceOffer, ServiceRequest, Quote, Contract; CustomerRole, ProviderRole, MarketplaceRole; offeredBy, offersCapability, providedAt, listedOn, exposesService, requestedBy, forProduct, quoteFor, basedOnOffer, acceptsQuote, governedBy, realizedByOrder, operates, operatedBy; requestedQuantity, submittedOn, maxQuantity, price, currency, validUntil; schema.org matches; added ProductionOrder (from `reasoning/planning.ttl`) with ordersProduct, executesRecipe, quantity, dueDate; leadTimeDays, maxLeadTimeDays | fulfilledByProcess, locatedAt (Actor gets `maestro:location` literal), Organization / Enterprise parents, Quantity-valued leadTime and maxLeadTime |
 | `cross-cutting/sensor.ttl` | Removed (user decision) | none | nothing | Sensor, Observation, ObservableProperty, FeatureOfInterest, hasObservationEvidence, the SOSA bridge |
-| `execution/opcua.ttl` | Realises an extension point | `ext/opcua.ttl` | OpcUaServer, OpcUaNode, OpcUaObject, OpcUaVariable, OpcUaMethod, OpcUaSkillInterface; nodeId, browseName; hostsInterface, exposes, implementsSkill; HSU OPC UA matches; added OpcUaBinding, hostedOn, bindsMethod | accessibleThrough |
+| `execution/opcua.ttl` | Realises an extension point | `experimental-extensions/opcua.ttl` | OpcUaServer, OpcUaNode, OpcUaObject, OpcUaVariable, OpcUaMethod, OpcUaSkillInterface; nodeId, browseName; hostsInterface, exposes, implementsSkill; HSU OPC UA matches; added OpcUaBinding, hostedOn, bindsMethod | accessibleThrough |
 
 ## Per file
 
@@ -35,18 +35,8 @@ parameter definitions and return schema, declared through `hasSignature`,
 `AasSubmodelTemplateIDL` and `OpenApiIDL` (via `describedIn`). The seven protocol
 individuals `OpcUaProtocol`, `DdsProtocol`, `MqttProtocol`, `ProfinetProtocol`,
 `EthercatProtocol`, `ModbusProtocol` and `HttpProtocol` are plain names of technologies.
-They were later moved out of the core into one extension module per protocol
-(`ext/opcua.ttl`, `ext/rest.ttl` for HTTP, `ext/mqtt.ttl`, `ext/dds.ttl`,
-`ext/modbus.ttl`, `ext/profinet.ttl`, `ext/ethercat.ttl`), each also declaring a binding
-for its protocol; the umbrella keeps the `owl:AllDifferent` over the seven.
-The data-format and interface-language individuals followed the same way:
-`OpcUaBinaryFormat` and `OpcUaNodeSetIDL` to `ext/opcua.ttl`, `DtdlIDL` to
-`ext/dtdl.ttl`, `OpenApiIDL` to `ext/rest.ttl`, `AasSubmodelTemplateIDL` to
-`ext/digital-twin.ttl`, and `JsonFormat`, `XmlFormat` and `ProtobufFormat` to the new
-`ext/data-formats.ttl`; their two `owl:AllDifferent` axioms are in the umbrella too.
-`address` and `port` sit on the endpoint; they were later moved, with a binding-level
-`topic`, to `ext/addressing.ttl`, which every protocol module imports; `specializesAs` lets a protocol-neutral
-binding name the `Protocol` individual it specialises to. `emitsStream` became
+`address` and `port` sit on the endpoint; `usesProtocol` (0.1.0: `specializesAs`) lets a
+protocol-neutral binding name the `Protocol` individual it specialises to. `emitsStream` became
 `maestro:emits`, the name the HHM diagram uses. The three WADL matches (`OperationSignature`
 close to `WADL:Method`, `Endpoint` and `DataFormat` related to `WADL:Resource` and
 `WADL:Representation`) were kept because WADL is pinned.
@@ -60,37 +50,36 @@ such node, and the binding plus endpoint pair covers the use), `hasEndpoint` and
 ### `cross-cutting/safety.ttl` -> folded into `core/policy.ttl`
 
 The HHM Safety / Security / Policy cluster carries Hazard, Risk and Mitigation with
-`increases` and `reduces`. The MAESTRO safety module adds what an integrator records
+`increases` (0.2.0: `causesRisk`) and `reduces`. The MAESTRO safety module adds what an integrator records
 about functional safety, so all of it went into the same cluster file: `SafetyFunction`
 and its subclass `EmergencyStop`; the declared levels `SafetyIntegrityLevel` (`SIL1` to
 `SIL4`) and `PerformanceLevel` (`PLa` to `PLe`) with `requiredSIL`, `achievedSIL`,
 `requiredPerformanceLevel` and `achievedPerformanceLevel`; `mitigates` from a safety
 function to a hazard; `RiskLevel` with `LowRisk`, `MediumRisk`, `HighRisk`; and
 `RiskAssessment` with `assessedSubject`, `assessesRisk`, `identifiesHazard`,
-`reliesOnMitigation`, `riskLevel`, `riskEvidence`, `riskAssessmentMethod` and
+`reliesOnMitigation`, `riskLevel` (0.2.0: `hasRiskLevel`), `riskEvidence`, `riskAssessmentMethod` and
 `assumption`. The module header states that levels are declared by the integrator and
 that the ontology neither defines nor verifies them.
 
 Dropped: `hasSIL` and `hasPerformanceLevel`, which MAESTRO 1.0 already marks
 `owl:deprecated true` in favour of the required / achieved pairs.
 
-### `runtime/runtime.ttl` -> split between `core/execution.ttl` and `modules/telemetry.ttl`
+### `runtime/runtime.ttl` -> split between `core/execution.ttl` and `experimental-extensions/runtime.ttl`
 
 The HHM Minimal Execution cluster is exactly four nodes: SkillExecution,
 ExecutionStatus, Fault, TimeInterval, with the seven edges the diagram draws. Those went
 to `core/execution.ttl`, taking their definitions from the MAESTRO runtime module.
 `maestro:Fault` is the occurrence (MAESTRO calls it `FaultEvent` and uses `Fault` for the
-state value, which is `maestro:FaultState` here); `maestro:mayRaise` is the HHM name for
+state value, which is `maestro:FaultState` here); `maestro:raisedFault` is the HHM name for
 `raisedFault`. `timestamp` is declared in core with an open domain because faults,
 runtime events and power measurements all carry one.
 
 Everything MAESTRO says about the live state of a resource has no HHM node, so it
-became `modules/telemetry.ttl`: `State` with the values `Available`, `Busy`, `FaultState`,
+became `experimental-extensions/runtime.ttl`: `State` with the values `Available`, `Busy`, `FaultState`,
 `Alarm`, `Healthy`, `Degraded`, `Failed`, `Reserved`; `StateDimension` with
 `OperationalDimension`, `HealthDimension`, `ReservationDimension`, `ModeDimension`;
 qualified `StateAssertion` (`stateSubject`, `stateDimension`, `stateValue`,
-`validFrom`, `validTo`, `observedAt`, `stateEvidence`); `TelemetryEvent` (MAESTRO 1.0
-`RuntimeEvent`) and
+`validFrom`, `validTo`, `observedAt`, `stateEvidence`); `RuntimeEvent` and
 `StateTransition` (`eventSubject`, `fromState`, `enteredState`);
 `FaultSpecification` (`mayRaiseFault` from a skill, `instanceOfFault` from an
 occurrence); `ExecutionRecord` (`describesExecution`, `recordedAt`); and `Snapshot`
@@ -113,9 +102,9 @@ a datatype property of range `xsd:anyURI` holding a QUDT unit IRI (the example u
 properties `energyKwh`, `powerWatts`, `leadTimeDays` and `maxLeadTimeDays`, whose unit
 is fixed by the name. QUDT remains a pinned reference but is not pointed at.
 
-### `cross-cutting/energy.ttl` -> new module `modules/energy.ttl`
+### `cross-cutting/energy.ttl` -> new module `experimental-extensions/energy.ttl`
 
-Energy is not an HHM cluster, so it is a module. `EnergyConsumer` is a subclass of
+Energy is not an HHM cluster, so it is a module of its own, kept under `experimental-extensions/`. `EnergyConsumer` is a subclass of
 `maestro:Module` (MAESTRO ranges on `core:Resource` became `maestro:Module`, the only physical
 class an execution attaches to); a module is typed additionally as an energy consumer
 to record its supply through `suppliedBy` to an `EnergySource` (`ElectricalGrid`,
@@ -126,9 +115,9 @@ range left open so a module, a station or an execution can be measured.
 
 Dropped: `energyValue` and `powerValue`, which pointed at unit-module quantities.
 
-### `cross-cutting/maintenance.ttl` -> new module `modules/maintenance.ttl`
+### `cross-cutting/maintenance.ttl` -> new module `experimental-extensions/maintenance.ttl`
 
-Maintenance is not an HHM cluster, so it is a module, and it was carried whole: the
+Maintenance is not an HHM cluster, so it is a module of its own under `experimental-extensions/`, and it was carried whole: the
 twelve classes `MaintenanceAction`, `Preventive`, `Corrective`, `ConditionBased`
 (subclass of `Preventive`), `Predictive` (subclass of `ConditionBased`), `Inspection`,
 `FaultDiagnosis`, `MaintenancePlan`, `MaintenanceTask`, `Finding`,
@@ -143,10 +132,10 @@ action and its diagnosis link to the fault occurrence that caused them;
 `planForAsset` and `affectsAsset` range over `maestro:Module`. An action takes its duration
 from `maestro:hasTime` to a `maestro:TimeInterval`.
 
-### `logical/maas.ttl` -> new module `modules/maas.ttl`
+### `logical/maas.ttl` -> new module `core/maas.ttl`
 
-Manufacturing as a service is the market tier above the HHM clusters, so it is a
-module. Carried: `Actor` with `Customer`, `PhysicalResourceProvider` and `Marketplace`
+Manufacturing as a service is the market tier above the HHM clusters. It is not an
+HHM cluster, but the file is kept in `core/` beside them. Carried: `Actor` with `Customer`, `PhysicalResourceProvider` and `Marketplace`
 (not disjoint: one party may buy on one order and sell on the next), the three
 `maestro:Role` individuals `CustomerRole`, `ProviderRole`, `MarketplaceRole`, and the chain
 `ServiceOffer` (`offeredBy`, `offersCapability`, `providedAt` a `maestro:Station`,
@@ -174,10 +163,10 @@ SOSA/SSN extension point on `maestro:Skill` stays a documented hook in the `core
 header; no `sosa:` IRI appears in the package. Evidence is recorded with `maestro:Evidence`,
 readings with the energy module.
 
-### `execution/opcua.ttl` -> realises the extension point in `ext/opcua.ttl`
+### `execution/opcua.ttl` -> realises the extension point in `experimental-extensions/opcua.ttl`
 
 The HHM diagram names OPC UA as an extension point on Binding, so the MAESTRO OPC UA
-module became an `ext/` file. Carried: `OpcUaServer`, `OpcUaNode` with its subclasses
+module became an `experimental-extensions/` file. Carried: `OpcUaServer`, `OpcUaNode` with its subclasses
 `OpcUaObject`, `OpcUaVariable` and `OpcUaMethod`, and `OpcUaSkillInterface` (a subclass
 of both `OpcUaObject` and `maestro:SkillInterface`); `nodeId` and `browseName`;
 `hostsInterface` (server to interface), `exposes` (interface to skill) and

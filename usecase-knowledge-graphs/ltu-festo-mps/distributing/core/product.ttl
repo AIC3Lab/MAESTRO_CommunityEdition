@@ -1,0 +1,145 @@
+# MAESTRO example: LTU Festo MPS - Distributing station
+# core/product.ttl: statements that belong to the MAESTRO product module (https://w3id.org/maestro/product).
+# Umbrella: ../distributing.ttl. Single-file form of the use case: ../distributing-merged.ttl.
+
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix maestro: <https://w3id.org/maestro#> .
+@prefix dis: <https://w3id.org/maestro/examples/ltu-festo-mps/distributing#> .
+@prefix ltu: <https://w3id.org/maestro/examples/ltu-festo-mps/shared#> .
+
+<https://w3id.org/maestro/examples/ltu-festo-mps/distributing/core/product> a owl:Ontology ;
+    rdfs:label "MAESTRO example: LTU Festo MPS - Distributing station - core/product"@en ;
+    dct:isPartOf <https://w3id.org/maestro/examples/ltu-festo-mps/distributing> ;
+    owl:imports <https://w3id.org/maestro/product> ;
+    owl:versionInfo "0.1.0" .
+
+#################################################################
+# maestro:ProductType (1)
+#################################################################
+
+dis:StationType a maestro:ProductType ;
+    rdfs:label "Festo MPS Distributing station (equipment type)"@en ;
+    maestro:description "The station as a Festo product; its bill of materials follows the parts list and the component tables of the documents."@en ;
+    maestro:hasBOMItem dis:BOM_EjectingCylinder,
+        dis:BOM_FibreOpticCable,
+        dis:BOM_FibreOpticDevice,
+        dis:BOM_FlowControlValves,
+        dis:BOM_IOTerminal,
+        dis:BOM_MicroSwitches,
+        dis:BOM_NonReturnValve,
+        dis:BOM_ProximitySensors,
+        dis:BOM_RotaryDrive,
+        dis:BOM_ServiceUnit,
+        dis:BOM_Silencer,
+        dis:BOM_StationLinkReceiver,
+        dis:BOM_SuctionCup,
+        dis:BOM_VacuumFilter,
+        dis:BOM_VacuumGenerator,
+        dis:BOM_VacuumSwitch,
+        dis:BOM_Valve3_2NO,
+        dis:BOM_Valve5_2 ;
+    maestro:hasIdentifier dis:ID_ManualOrderNo ;
+    maestro:manufacturer "Festo Didactic GmbH & Co. KG" ;
+    maestro:model "MPS Distributing station (VE)" .
+
+#################################################################
+# maestro:Identifier (1)
+#################################################################
+
+dis:ID_ManualOrderNo a maestro:Identifier ;
+    maestro:identifierScheme "Festo order number (technical documentation)" ;
+    maestro:identifierValue "648811" .
+
+#################################################################
+# maestro:BOMItem (18)
+#################################################################
+
+dis:BOM_EjectingCylinder a maestro:BOMItem ;
+    rdfs:label "Round cylinder DSNU-8-80"@en ;
+    maestro:description "Stack magazine module; ejecting cylinder by inference (the only cylinder on the list)."@en ;
+    maestro:nodeFor ltu:PT_019181 ;
+    maestro:refDesignator "ejecting cylinder" .
+
+dis:BOM_FibreOpticCable a maestro:BOMItem ;
+    rdfs:label "Fibre-optic cable, through-beam"@en ;
+    maestro:description "Stack magazine module, through-beam heads on the magazine barrel."@en ;
+    maestro:nodeFor ltu:PT_165360 .
+
+dis:BOM_FibreOpticDevice a maestro:BOMItem ;
+    rdfs:label "Fibre-optic device"@en ;
+    maestro:description "Stack magazine module, filling-level sensor."@en ;
+    maestro:nodeFor ltu:PT_165327 ;
+    maestro:refDesignator "filling level" .
+
+dis:BOM_FlowControlValves a maestro:BOMItem ;
+    rdfs:label "One-way flow control valve, type C"@en ;
+    maestro:description "Stack magazine module, ejecting-cylinder speed."@en ;
+    maestro:nodeFor ltu:PT_175056 .
+
+dis:BOM_IOTerminal a maestro:BOMItem ;
+    rdfs:label "I/O terminal"@en ;
+    maestro:nodeFor ltu:PT_034035 .
+
+dis:BOM_MicroSwitches a maestro:BOMItem ;
+    rdfs:label "Micro switch"@en ;
+    maestro:description "Changer module, swivel end positions; number not stated."@en ;
+    maestro:nodeFor ltu:PT_007347 .
+
+dis:BOM_NonReturnValve a maestro:BOMItem ;
+    rdfs:label "Non-return valve H-QS-4"@en ;
+    maestro:nodeFor ltu:PT_153462 .
+
+dis:BOM_ProximitySensors a maestro:BOMItem ;
+    rdfs:label "Proximity sensor SME-8"@en ;
+    maestro:description "Stack magazine module, ejecting-cylinder end positions; number not stated."@en ;
+    maestro:nodeFor ltu:PT_150857 .
+
+dis:BOM_RotaryDrive a maestro:BOMItem ;
+    rdfs:label "Semi-rotary drive DSR-16-180"@en ;
+    maestro:description "Changer module."@en ;
+    maestro:nodeFor ltu:PT_011910 .
+
+dis:BOM_ServiceUnit a maestro:BOMItem ;
+    rdfs:label "Service unit (start-up valve with filter-control valve)"@en ;
+    maestro:nodeFor ltu:PT_152894 .
+
+dis:BOM_Silencer a maestro:BOMItem ;
+    rdfs:label "Silencer"@en ;
+    maestro:nodeFor ltu:PT_004645 .
+
+dis:BOM_StationLinkReceiver a maestro:BOMItem ;
+    rdfs:label "Through-beam sensor, receiver"@en ;
+    maestro:description "StationLink receiver (inferred)."@en ;
+    maestro:nodeFor ltu:PT_165323 .
+
+dis:BOM_SuctionCup a maestro:BOMItem ;
+    rdfs:label "Vacuum suction cup"@en ;
+    maestro:description "Changer module (inferred)."@en ;
+    maestro:nodeFor ltu:PT_036135 .
+
+dis:BOM_VacuumFilter a maestro:BOMItem ;
+    rdfs:label "Vacuum filter"@en ;
+    maestro:description "Changer module (inferred)."@en ;
+    maestro:nodeFor ltu:PT_015889 .
+
+dis:BOM_VacuumGenerator a maestro:BOMItem ;
+    rdfs:label "Vacuum generator"@en ;
+    maestro:description "Changer module."@en ;
+    maestro:nodeFor ltu:PT_185865 .
+
+dis:BOM_VacuumSwitch a maestro:BOMItem ;
+    rdfs:label "Vacuum switch VPEV"@en ;
+    maestro:description "Changer module."@en ;
+    maestro:nodeFor ltu:PT_152629 .
+
+dis:BOM_Valve3_2NO a maestro:BOMItem ;
+    rdfs:label "Solenoid valve 3/2-way, normally open"@en ;
+    maestro:description "Valve terminal (inferred)."@en ;
+    maestro:nodeFor ltu:PT_161417 .
+
+dis:BOM_Valve5_2 a maestro:BOMItem ;
+    rdfs:label "Solenoid valve 5/2-way, single solenoid"@en ;
+    maestro:description "Valve terminal (inferred)."@en ;
+    maestro:nodeFor ltu:PT_161414 .
