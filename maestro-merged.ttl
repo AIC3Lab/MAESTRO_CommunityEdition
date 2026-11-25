@@ -691,9 +691,9 @@ maestro:hasParameterDef a owl:ObjectProperty ;
 maestro:hasPart a owl:ObjectProperty , owl:TransitiveProperty ;
     rdfs:label "has part"@en ;
     skos:definition "Relates a whole to one of its parts."@en ;
-    rdfs:comment "Transitive super-property of the structural part-whole edges of the package: maestro:hasModule (station to module), maestro:hasStep (recipe to plan step), maestro:hasSubSkill (composite skill to constituent skill) and maestro:hasSubItem (bill-of-materials item to nested item). Domain and range left open so that a property path such as maestro:hasPart+ reaches every nested part. HHM-Core draws hasPart between BOM nodes only; that edge is maestro:hasSubItem here."@en ;
+    rdfs:comment "Transitive super-property of the structural part-whole edges of the package: maestro:hasSubStation (station to station), maestro:hasModule (station to module), maestro:hasStep (recipe to plan step), maestro:hasSubSkill (composite skill to constituent skill) and maestro:hasSubItem (bill-of-materials item to nested item). Domain and range left open so that a property path such as maestro:hasPart+ reaches every nested part. HHM-Core draws hasPart between BOM nodes only; that edge is maestro:hasSubItem here."@en ;
     schema:domainIncludes maestro:BOMItem , maestro:CompositeSkill , maestro:Recipe , maestro:Station ;
-    schema:rangeIncludes maestro:BOMItem , maestro:Module , maestro:PlanStep , maestro:Skill ;
+    schema:rangeIncludes maestro:BOMItem , maestro:Module , maestro:PlanStep , maestro:Skill , maestro:Station ;
     dct:references <https://w3id.org/maestro/core#hasPart> ;
     rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
@@ -831,6 +831,15 @@ maestro:hasSubSkillLink a owl:ObjectProperty ;
     owl:deprecated "true"^^xsd:boolean ;
     dct:isReplacedBy maestro:hasSubSkill ;
     rdfs:isDefinedBy <https://w3id.org/maestro/skill> .
+
+###  https://w3id.org/maestro#hasSubStation
+maestro:hasSubStation a owl:ObjectProperty ;
+    rdfs:label "has sub-station"@en ;
+    skos:definition "Relates a station to a station it directly contains."@en ;
+    rdfs:subPropertyOf maestro:hasPart ;
+    rdfs:domain maestro:Station ;
+    rdfs:range maestro:Station ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 ###  https://w3id.org/maestro#hasTask
 maestro:hasTask a owl:ObjectProperty ;
@@ -1153,7 +1162,7 @@ maestro:partOf a owl:ObjectProperty , owl:TransitiveProperty ;
     skos:definition "Relates a part to a whole it belongs to."@en ;
     rdfs:comment "Inverse of maestro:hasPart, and transitive like it."@en ;
     owl:inverseOf maestro:hasPart ;
-    schema:domainIncludes maestro:BOMItem , maestro:Module , maestro:PlanStep , maestro:Skill ;
+    schema:domainIncludes maestro:BOMItem , maestro:Module , maestro:PlanStep , maestro:Skill , maestro:Station ;
     schema:rangeIncludes maestro:BOMItem , maestro:CompositeSkill , maestro:Recipe , maestro:Station ;
     rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
@@ -3315,8 +3324,8 @@ maestro:StateTransition a owl:Class ;
 ###  https://w3id.org/maestro#Station
 maestro:Station a owl:Class ;
     rdfs:label "Station"@en ;
-    skos:definition "A work station composed of plug-and-produce modules; the top physical unit of the HHM-Core resource model."@en ;
-    rdfs:comment "HHM-Core Physical Resources cluster. A station carries modules through maestro:hasModule; which modules it carries may change through reconfiguration while the station itself stays stable."@en ;
+    skos:definition "A work station that can contain sub-stations and carry plug-and-produce modules."@en ;
+    rdfs:comment "HHM-Core Physical Resources cluster. Each sub-station is itself a station and can be subdivided further. A station carries modules through maestro:hasModule and can be reconfigured while retaining its identity."@en ;
     skos:scopeNote "ISA88:Unit is made up of equipment modules and control modules and combines all necessary physical processing and control equipment (HSU ISA88.01 ODP). This package does not adopt the presumption that a unit operates on no more than one batch at a time."@en ;
     rdfs:subClassOf maestro:Resource ;
     skos:closeMatch ISA88:Unit ;
