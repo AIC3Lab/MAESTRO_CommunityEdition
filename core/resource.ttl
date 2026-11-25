@@ -16,6 +16,7 @@
 #
 # HHM-Core v1 cluster "Physical Resources": Station, Module,
 # Capability, and the two edges hasModule and providesCapability.
+# Stations may also contain sub-stations through hasSubStation.
 # This is the root module of the package; it also declares the few
 # datatype properties every other module reuses (description,
 # version, serialNumber, manufacturer, model, location) and the
@@ -31,12 +32,12 @@
     owl:versionInfo "0.2.0" ;
     dct:title "MAESTRO: Physical Resources" ;
     rdfs:label "MAESTRO: Physical Resources"@en ;
-    dct:description "HHM-Core v1 Physical Resources cluster: stations composed of plug-and-produce modules, and the capabilities a module provides."@en ;
+    dct:description "HHM-Core v1 Physical Resources cluster: stations, their sub-stations and plug-and-produce modules, and the capabilities a module provides."@en ;
     rdfs:comment "Root module of the MAESTRO package. Apart from a documentary skos:closeMatch of Module to the HSU VDI 2206 ontology design pattern, this module is MAESTRO-local vocabulary and makes no conformance claim to any external standard. It also declares the kind (class, property or annotation property) of the external terms the package uses, so that the import closure of every module is in the OWL 2 RL profile; no upstream ontology is imported. Definitions are reused from the MAESTRO 1.0 resource and core modules; dct:source names the term a definition was taken from."@en ;
     dct:creator "Melwin Xavier" ;
     dct:license <https://opensource.org/licenses/MIT> ;
     dct:created "2026-09-30"^^xsd:date ;
-    dct:modified "2026-11-13"^^xsd:date ;
+    dct:modified "2026-11-24"^^xsd:date ;
     dct:source <https://github.com/melwinxavier/MAESTRO> ;
     rdfs:seeAlso <https://w3id.org/maestro/core> ;
     dct:conformsTo <https://www.w3.org/TR/owl2-profiles/#OWL_2_RL> ;
@@ -62,9 +63,9 @@ maestro:ValueSet a owl:Class ;
 maestro:hasPart a owl:ObjectProperty , owl:TransitiveProperty ;
     rdfs:label "has part"@en ;
     skos:definition "Relates a whole to one of its parts."@en ;
-    rdfs:comment "Transitive super-property of the structural part-whole edges of the package: maestro:hasModule (station to module), maestro:hasStep (recipe to plan step), maestro:hasSubSkill (composite skill to constituent skill) and maestro:hasSubItem (bill-of-materials item to nested item). Domain and range left open so that a property path such as maestro:hasPart+ reaches every nested part. HHM-Core draws hasPart between BOM nodes only; that edge is maestro:hasSubItem here."@en ;
+    rdfs:comment "Transitive super-property of the structural part-whole edges of the package: maestro:hasSubStation (station to station), maestro:hasModule (station to module), maestro:hasStep (recipe to plan step), maestro:hasSubSkill (composite skill to constituent skill) and maestro:hasSubItem (bill-of-materials item to nested item). Domain and range left open so that a property path such as maestro:hasPart+ reaches every nested part. HHM-Core draws hasPart between BOM nodes only; that edge is maestro:hasSubItem here."@en ;
     schema:domainIncludes maestro:Station , maestro:Recipe , maestro:CompositeSkill , maestro:BOMItem ;
-    schema:rangeIncludes maestro:Module , maestro:PlanStep , maestro:Skill , maestro:BOMItem ;
+    schema:rangeIncludes maestro:Station , maestro:Module , maestro:PlanStep , maestro:Skill , maestro:BOMItem ;
     dct:references <https://w3id.org/maestro/core#hasPart> ;
     rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
@@ -73,7 +74,7 @@ maestro:partOf a owl:ObjectProperty , owl:TransitiveProperty ;
     skos:definition "Relates a part to a whole it belongs to."@en ;
     rdfs:comment "Inverse of maestro:hasPart, and transitive like it."@en ;
     owl:inverseOf maestro:hasPart ;
-    schema:domainIncludes maestro:Module , maestro:PlanStep , maestro:Skill , maestro:BOMItem ;
+    schema:domainIncludes maestro:Station , maestro:Module , maestro:PlanStep , maestro:Skill , maestro:BOMItem ;
     schema:rangeIncludes maestro:Station , maestro:Recipe , maestro:CompositeSkill , maestro:BOMItem ;
     rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
@@ -89,8 +90,8 @@ maestro:Resource a owl:Class ;
 
 maestro:Station a owl:Class ;
     rdfs:label "Station"@en ;
-    skos:definition "A work station composed of plug-and-produce modules; the top physical unit of the HHM-Core resource model."@en ;
-    rdfs:comment "HHM-Core Physical Resources cluster. A station carries modules through maestro:hasModule; which modules it carries may change through reconfiguration while the station itself stays stable."@en ;
+    skos:definition "A work station that can contain sub-stations and carry plug-and-produce modules."@en ;
+    rdfs:comment "HHM-Core Physical Resources cluster. Each sub-station is itself a station and can be subdivided further. A station carries modules through maestro:hasModule and can be reconfigured while retaining its identity."@en ;
     rdfs:subClassOf maestro:Resource ;
     dct:source <https://w3id.org/maestro/resource#Station> ;
     rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
@@ -114,6 +115,14 @@ maestro:Capability a owl:Class ;
 #################################################################
 # OBJECT PROPERTIES
 #################################################################
+
+maestro:hasSubStation a owl:ObjectProperty ;
+    rdfs:label "has sub-station"@en ;
+    skos:definition "Relates a station to a station it directly contains."@en ;
+    rdfs:subPropertyOf maestro:hasPart ;
+    rdfs:domain maestro:Station ;
+    rdfs:range  maestro:Station ;
+    rdfs:isDefinedBy <https://w3id.org/maestro/resource> .
 
 maestro:hasModule a owl:ObjectProperty ;
     rdfs:label "has module"@en ;
